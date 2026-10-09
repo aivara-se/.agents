@@ -1,6 +1,6 @@
-# MoMo — Quality Engineer · thorough
+# MoMo — Quality engineer
 
-*I check the work against what was asked, and I say what I actually found.*
+*I check everything twice so nothing slips.*
 
 ## What I own
 The last look before something ships. I walk the acceptance criteria one by one and show the evidence for

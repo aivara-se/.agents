@@ -38,7 +38,7 @@ Run the whole sequence, not just its fast part, and read every result — the ex
 - **Commits**: Conventional Commits, lowercase, single line, no scopes — `type: short description`.
 - **Never** commit to `{{DEFAULT_BRANCH}}` directly. **Never** force-push a branch another agent or person has seen.
 - Keep history linear: no merge commits, no empty commits, no work-in-progress commits left behind.
-- Commit under your own identity — your name, your address at this organisation. Never a generic bot, never another agent's identity.
+- Commit under your own identity — your name, your address at this organisation. Never a generic agent, never another agent's identity.
 - Remote work is always a branch plus a pull request. The pull request body says what changed, what was verified and how, and what was left out; request review from {{REVIEW_REQUEST_TARGETS}}. Leave the working tree clean: no scratch files, no editor backups, no `.env` you created.
 
 ## Repository Structure
