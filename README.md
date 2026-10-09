@@ -53,7 +53,7 @@ over the profile's `SOUL.md` loses nothing, and this repository is where the tex
 ## Checks
 
 ```sh
-grep -rn '{{' agents skills --exclude-dir=.git   # must print nothing: only templates/ carries slots
+grep -rn '{{' . --exclude-dir=.git          # must print nothing
 find skills -name SKILL.md | sort           # must match the index in AGENTS.md, no more and no fewer
 head -4 skills/*/SKILL.md                   # name, description, when-to-use in each
 ```
