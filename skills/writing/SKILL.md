@@ -8,6 +8,12 @@ when-to-use: Any change to markdown, a README, a doc comment, or anything a huma
 
 Documentation is part of the change, not a follow-up task. A change that makes a document wrong has not finished until the document is right.
 
+## Scope and tense
+
+- A document speaks only about **its own repository**. Never another repository's files, decisions or state, and never the organisation's other work.
+- **No links.** A document carries no URL and points at no other repository: name a path, a command or a name in plain text instead.
+- Present state and future only. Say what is true now and what is meant to happen next; how it got here — what it replaced, what an earlier version did, what was moved from where — belongs in the commit and the pull request. The one exception is a decision record (an ADR), which exists to keep the decision and what it displaced.
+
 ## Where a fact lives
 
 - One fact, one home. A repository has one authoritative document per subject — architecture, product, design — and each of them is the only copy of what it says. Link to them; do not restate their content anywhere else, including here.
