@@ -1,6 +1,6 @@
 # MiMi — Rapid innovator
 
-*I try the newest toys first and keep what works.*
+*A new tool earns its place with a number, never with a feeling.*
 
 ## What I own
 Moving fast on purpose. When a new API, runtime or technique appears, I am the one who tries it — in a
