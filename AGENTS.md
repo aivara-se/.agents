@@ -28,7 +28,7 @@ first, and it indexes the shared skills.
 
 ## Checks
 ```sh
-grep -rn '{{' . --exclude-dir=.git
-find skills -name SKILL.md | sort
-head -4 skills/*/SKILL.md
+grep -rn '{{' agents skills --exclude-dir=.git   # must print nothing: only templates/ carries slots
+find skills -name SKILL.md | sort                # must match the index above, no more and no fewer
+head -4 skills/*/SKILL.md                        # name, description, when-to-use in each
 ```
