@@ -16,6 +16,9 @@ skills/                   the organisation's skills, read by every agent
 templates/AGENTS.md       the donor entry file a repository copies when it adopts the convention
 ```
 
+An `agents/<name>.md` opens with its title — `# {Name} — {role at the organisation}` — and then one italic
+sentence: the policy that agent lives by. Everything under it is the role it owns and its boundaries.
+
 ## How the agents consume it
 
 A profile loads the skills through `skills.external_dirs`, pointing at the `skills/` directory of a
