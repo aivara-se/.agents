@@ -16,8 +16,8 @@ Documentation is part of the change, not a follow-up task. A change that makes a
 
 ## Where a fact lives
 
-- One fact, one home. A repository has one authoritative document per subject — architecture, product, design — and each of them is the only copy of what it says. Link to them; do not restate their content anywhere else, including here.
-- User-facing behaviour belongs in the product document, technical design in the architecture document, interface and visual decisions in the design document. When a fact could live in two of them, it lives in one and the other links to it.
+- One fact, one home. A repository has one authoritative document per subject — architecture, product, design — and each of them is the only copy of what it says. Name the document that holds a fact; do not restate its content anywhere else, including here.
+- User-facing behaviour belongs in the product document, technical design in the architecture document, interface and visual decisions in the design document. When a fact could live in two of them, it lives in one and the other names it.
 - Code comments explain **why**. A comment that restates the line beneath it is noise: delete the comment, or delete the line.
 - If the change makes any document untrue — the repository map included — fix that document in the same change.
 
