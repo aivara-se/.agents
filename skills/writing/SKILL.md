@@ -10,14 +10,14 @@ Documentation is part of the change, not a follow-up task. A change that makes a
 
 ## Scope and tense
 
-- A document speaks only about **its own repository**. Never another repository's files, decisions or state, and never the organisation's other work.
-- **No links.** A document carries no URL and points at no other repository: name a path, a command or a name in plain text instead.
-- Present state and future only. Say what is true now and what is meant to happen next; how it got here — what it replaced, what an earlier version did, what was moved from where — belongs in the commit and the pull request. The one exception is a decision record (an ADR), which exists to keep the decision and what it displaced.
+- A document is written for a reader working in this repository: what is here, how to use it, how to check it, what to do next.
+- Leave out what that reader does not need. A path, a pointer or a link earns its place by being needed to act on what the document says; a sentence about another repository's business, or about the organisation's other work, is detail nobody asked for.
+- Present state and future. Say what is true now and what is meant to happen next; what a thing replaced, what an earlier version did, or where it moved from belongs in the commit and the pull request. A decision record (an ADR) is the exception — keeping the decision and what it displaced is the point of it.
 
 ## Where a fact lives
 
-- One fact, one home. A repository has one authoritative document per subject — architecture, product, design — and each of them is the only copy of what it says. Name the document that holds a fact; do not restate its content anywhere else, including here.
-- User-facing behaviour belongs in the product document, technical design in the architecture document, interface and visual decisions in the design document. When a fact could live in two of them, it lives in one and the other names it.
+- One fact, one home. A repository has one authoritative document per subject — architecture, product, design — and each of them is the only copy of what it says. Link to them; do not restate their content anywhere else, including here.
+- User-facing behaviour belongs in the product document, technical design in the architecture document, interface and visual decisions in the design document. When a fact could live in two of them, it lives in one and the other links to it.
 - Code comments explain **why**. A comment that restates the line beneath it is noise: delete the comment, or delete the line.
 - If the change makes any document untrue — the repository map included — fix that document in the same change.
 
