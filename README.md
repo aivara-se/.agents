@@ -8,7 +8,7 @@ text. That shared text lives here, once.
 ```
 README.md                 this file — what is here and how it is consumed
 AGENTS.md                 the entry file for an agent working in this repository
-agents/                   one file per agent: the role it owns and its boundaries
+agents/                   one file per agent: its identity, the role it owns and its boundaries
   root.md  mama.md  meme.md  mimi.md  momo.md
 skills/                   the organisation's skills, read by every agent
   coding/SKILL.md  review/SKILL.md  testing/SKILL.md  writing/SKILL.md
@@ -22,8 +22,9 @@ A profile loads the skills through `skills.external_dirs`, pointing at the `skil
 checkout of this repository (the checkout follows the usual convention: `~/github/aivara-se/.agents`).
 A skill therefore changes once, here, and every agent reads the new text on its next turn.
 
-The files under `agents/` are the source of an agent's profile identity: its `SOUL.md` is the copy the
-agent loads on every turn, and this repository is where the text is decided.
+The files under `agents/` are an agent's profile identity: one file per agent, and the text of that
+profile's `SOUL.md`, which the agent loads on every turn. Each file is complete as it stands, so copying it
+over the profile's `SOUL.md` loses nothing, and this repository is where the text is decided.
 
 ## How a repository adopts the convention
 
@@ -52,7 +53,7 @@ agent loads on every turn, and this repository is where the text is decided.
 ## Checks
 
 ```sh
-grep -rn '{{' . --exclude-dir=.git          # must print nothing
+grep -rn '{{' agents skills --exclude-dir=.git   # must print nothing: only templates/ carries slots
 find skills -name SKILL.md | sort           # must match the index in AGENTS.md, no more and no fewer
 head -4 skills/*/SKILL.md                   # name, description, when-to-use in each
 ```
