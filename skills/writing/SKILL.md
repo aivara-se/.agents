@@ -1,7 +1,7 @@
 ---
 name: writing
-description: Rules for the documentation that ships with the code — where a fact lives, how it is written, and the README every application and library needs.
-when-to-use: Any change to markdown, a README, a doc comment, or anything a human will read in order to understand the code.
+description: The rules for every document a repository ships — where a fact lives, and how it is written.
+when-to-use: Any markdown, spec, brief, README, doc comment, or anything a human reads in order to understand the code.
 ---
 
 # Writing
@@ -16,8 +16,11 @@ Documentation is part of the change, not a follow-up task. A change that makes a
 
 ## Where a fact lives
 
-- One fact, one home. A repository has one authoritative document per subject — architecture, product, design — and each of them is the only copy of what it says. Link to them; do not restate their content anywhere else, including here.
-- User-facing behaviour belongs in the product document, technical design in the architecture document, interface and visual decisions in the design document. When a fact could live in two of them, it lives in one and the other links to it.
+- One fact, one home. A repository has one authoritative document per subject — product, design, system — and each of them is the only copy of what it says. Link to them; do not restate their content anywhere else, including here.
+- User-facing behaviour belongs in the product document, serving and checks in the system document, interface and visual decisions in the design document. When a fact could live in two of them, it lives in one and the other links to it.
+- The shape of a product document, and how to work from an idea brief, is `references/product-doc.md`.
+- The shape of a design document — the interface and the values it fixes — is `references/design-doc.md`.
+- The shape of a system document — how it is hosted, built, and kept working offline — is `references/system-doc.md`.
 - Code comments explain **why**. A comment that restates the line beneath it is noise: delete the comment, or delete the line.
 - If the change makes any document untrue — the repository map included — fix that document in the same change.
 
@@ -30,8 +33,13 @@ Documentation is part of the change, not a follow-up task. A change that makes a
 - Every command quoted in prose must be the command the repository actually runs; if they differ, the document is wrong.
 - Concrete over abstract: a path, a command and an example beat a paragraph of principles. Delete any sentence that would survive unchanged in a different repository.
 
+## Length
+
+- Concise and to the point is the rule for every document, in every repository — a product spec, an idea brief, a design note, a README. The reader wants what to do, not prose. A section that can be one line is one line.
+- Write from these rules, not from the file next door. An existing document is not a model for a new one: documents drift, they run far past the length this skill allows, and copying their shape spreads the drift. A verbose neighbour is the reason to follow this skill, not to match it.
+
 ## READMEs
 
 - Every application and every shared library in this repository has a `README.md` at its root.
-- Start from `resources/readme-template.md`, next to this file, rather than from a blank page; fill it in and delete the guidance you did not use.
+- Start from `templates/readme-template.md`, next to this file, rather than from a blank page; fill it in and delete the guidance you did not use.
 - A README answers, in this order: what this is, how to run it locally, how to use it, how to check it. It does not carry history: not where the code came from, not what it replaced, not how an earlier version behaved. That belongs in the commit and the pull request, and in a README it is padding that pushes the useful part further down. Nor does it describe a roadmap or an org chart.

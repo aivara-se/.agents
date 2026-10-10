@@ -29,3 +29,4 @@ when-to-use: Any change that adds or alters behaviour, any bug fix, and any chan
 - Quote the command and the tree it ran against. A report without either is a claim, not a verification.
 - If the repository has no test command at all, or has one that nothing runs — not your loop, not CI — say that in the handoff instead of claiming coverage.
 - A test that passes only sometimes is a broken test. Fix it or delete it in the same change — **never** retry until green, and never mark a flaky test as expected failure to get past a gate.
+- A web front-end is checked in a real browser, not only in unit tests: `references/browser-checks.md` has the recipe — serve from the check script, drive Chromium with Playwright, measure in the page.
