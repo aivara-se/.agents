@@ -10,7 +10,7 @@ Style is the language's own business: run the formatter and linter this reposito
 
 ## The task and the spec
 
-- Build the behaviour the specification states. Where two of its own numbers cannot both hold — a cap and a floor that collide, a minimum gap equal to a budget — satisfy the measurable acceptance criterion, take the rest as far as it goes, and say plainly in the change what you chose and why.
+- Build what the specification says. When two of its numbers cannot both be true — a maximum and a minimum that collide — do what the checkable requirement asks, get as close as you can on the rest, and say in the change what you picked and why.
 - **Never** choose between two readings of a specification in silence. The reviewer sees the code but not the reading you dropped, so the choice belongs in the change.
 
 ## Structure and size
@@ -52,5 +52,5 @@ Before you call a change done:
 
 1. Run the formatter and linter this repository already uses — clean, with no suppressions you added for this change.
 2. Run the checks this repository gates on, on the final tree — the whole sequence, not just the fast one.
-3. Read the diff once, top to bottom, as the reviewer will: no debug output, no stray files, no unrelated reformatting, no scope the task did not ask for.
-4. Re-read the change's own description — the pull-request body — against the final tree. It is a claim about the code, and a reviewer reads it before the diff, so a body that still names a module the change deleted, or reports a count of checks that has since moved, is a defect of the change and not a stale nicety. Grep the repository for the names the change removed and fix every hit.
+3. Read the diff once, top to bottom, as the reviewer will: no debug output, no stray files left behind.
+4. Take out everything the task did not ask for: no drive-by reformatting, no rename, no tidy-up, no unrelated fix. Where the human operator explicitly asked for one of them, name it in the pull-request body; anything else comes out before you push.

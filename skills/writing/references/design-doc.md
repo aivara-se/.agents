@@ -12,7 +12,7 @@ The design document is the one authoritative place for what the interface looks 
 
 ## Rules
 
-- A concept diagram is binding. Encode its geometry exactly as drawn — the anchor, the ratio, the direction of growth — and describe what the diagram shows, not a rationale for it you have not verified.
+- A concept diagram is a guide, not law: follow what it shows — the anchor, the ratio, the direction of growth — and describe it as drawn rather than arguing a rationale you have not verified. Do not do the opposite of it either: a concept drawn in a light theme is not shipped dark because nothing said otherwise.
 - A value is measured on the surface it is used on before it ships; until then it is marked measured-at-build. Never invent a number and mark it decided.
 - Write the edge: what happens when the column fills, a line wraps, the oldest item leaves. An unstated edge is where the build guesses.
 - Nothing is signalled by colour alone: a changed or marked thing is also a shape, a weight or a word.

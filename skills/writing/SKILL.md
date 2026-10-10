@@ -1,7 +1,7 @@
 ---
 name: writing
 description: The rules for every document a repository ships — where a fact lives, and how it is written.
-when-to-use: Any markdown, spec, brief, README, doc comment, or anything a human reads in order to understand the code.
+when-to-use: Any markdown, spec, README, doc comment, or anything a human reads in order to understand the code.
 ---
 
 # Writing
@@ -18,7 +18,7 @@ Documentation is part of the change, not a follow-up task. A change that makes a
 
 - One fact, one home. A repository has one authoritative document per subject — product, design, system — and each of them is the only copy of what it says. Link to them; do not restate their content anywhere else, including here.
 - User-facing behaviour belongs in the product document, serving and checks in the system document, interface and visual decisions in the design document. When a fact could live in two of them, it lives in one and the other links to it.
-- The shape of a product document, and how to work from an idea brief, is `references/product-doc.md`.
+- The shape of a product document is `references/product-doc.md`.
 - The shape of a design document — the interface and the values it fixes — is `references/design-doc.md`.
 - The shape of a system document — how it is hosted, built, and kept working offline — is `references/system-doc.md`.
 - Code comments explain **why**. A comment that restates the line beneath it is noise: delete the comment, or delete the line.
@@ -35,7 +35,7 @@ Documentation is part of the change, not a follow-up task. A change that makes a
 
 ## Length
 
-- Concise and to the point is the rule for every document, in every repository — a product spec, an idea brief, a design note, a README. The reader wants what to do, not prose. A section that can be one line is one line.
+- Concise and to the point is the rule for every document, in every repository — a product spec, a design note, a README. The reader wants what to do, not prose. A section that can be one line is one line.
 - Write from these rules, not from the file next door. An existing document is not a model for a new one: documents drift, they run far past the length this skill allows, and copying their shape spreads the drift. A verbose neighbour is the reason to follow this skill, not to match it.
 
 ## READMEs
