@@ -8,7 +8,7 @@ when-to-use: A pull request or a task handoff is waiting on your review. Never f
 
 ## Do this, in order
 
-1. Read the task or pull request body: what was claimed, and what the acceptance criteria are. The claim and the task are not always the same thing, and the difference is a finding.
+1. Read the task or pull request body: what was claimed, and what the acceptance criteria are. The claim and the task are not always the same thing, and the difference is a finding. A body that names a file the diff deletes, or a mechanism the diff removes, is a finding of its own — grep the body for the symbols the change takes away, because a description of a program that no longer exists is the first thing a reader acts on.
 2. Read the diff twice — once for what it does, once for what it does **not** do: the caller nobody updated, the test that would have caught it, the document it just made untrue, the error path that swallows.
 3. Run it. Check out the branch, run the checks this repository gates on — whatever CI runs, where there is CI — and exercise the thing the change claims to fix. A reviewer who did not run the change is reading, not reviewing.
 4. Test the claim, not the description: if the body says empty input is handled, feed it empty input; if it says the bug is fixed, reproduce the bug on the parent commit first.
@@ -23,6 +23,8 @@ Return exactly one, and put it on the first line:
 - `block` — only when the decision is not yours: missing access, a product decision, an external service. Say who must decide.
 
 **Never** approve a change you did not run, and **never** approve a change to a branch you wrote in this task. A review with no findings says so plainly; it does not invent findings to look thorough, and it does not pad with praise.
+
+When the author is asked whether their own branch is ready, that is a readiness question and it gets a readiness answer: what is done and verified, what is blocked and on whom, what was not attempted and why. State the blocker and who clears it; do not issue a verdict on your own work, and do not let "ready for review" and "ready to merge" pass as the same word.
 
 ## The report
 

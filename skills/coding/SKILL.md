@@ -8,6 +8,11 @@ when-to-use: Any change to source code, or to the build and CI definitions aroun
 
 Style is the language's own business: run the formatter and linter this repository already uses and do not argue with them. This skill covers what they cannot decide.
 
+## The task and the spec
+
+- Build the behaviour the specification states. Where two of its own numbers cannot both hold — a cap and a floor that collide, a minimum gap equal to a budget — satisfy the measurable acceptance criterion, take the rest as far as it goes, and say plainly in the change what you chose and why.
+- **Never** choose between two readings of a specification in silence. The reviewer sees the code but not the reading you dropped, so the choice belongs in the change.
+
 ## Structure and size
 
 - One responsibility per function, module and file. Prefer small, single-purpose units that return early over deep nesting.
@@ -38,7 +43,8 @@ Style is the language's own business: run the formatter and linter this reposito
 
 - Keep the public API as small as it can be: private by default, public where another module genuinely needs it.
 - Changing an existing public interface is a decision, not an edit. Say who consumes it and why the change cannot be additive.
-- Every public symbol is documented at the point of definition, in the language's own doc-comment form.
+- Every function, method, class and constant carries a block comment above it: what it is for, and anything the signature cannot say.
+- **Never** a JSDoc block — no `@param`, `@returns`, `@typedef`. Types are the type system's job: in TypeScript the signature already is the type, and a JSDoc block only repeats it in prose and drifts from it.
 
 ## Pre-Completion Verification
 
@@ -47,3 +53,4 @@ Before you call a change done:
 1. Run the formatter and linter this repository already uses — clean, with no suppressions you added for this change.
 2. Run the checks this repository gates on, on the final tree — the whole sequence, not just the fast one.
 3. Read the diff once, top to bottom, as the reviewer will: no debug output, no stray files, no unrelated reformatting, no scope the task did not ask for.
+4. Re-read the change's own description — the pull-request body — against the final tree. It is a claim about the code, and a reviewer reads it before the diff, so a body that still names a module the change deleted, or reports a count of checks that has since moved, is a defect of the change and not a stale nicety. Grep the repository for the names the change removed and fix every hit.

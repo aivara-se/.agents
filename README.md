@@ -12,7 +12,7 @@ agents/                   one file per agent: its identity, the role it owns and
   root.md  mama.md  meme.md  mimi.md  momo.md
 skills/                   the organisation's skills, read by every agent
   coding/SKILL.md  review/SKILL.md  testing/SKILL.md  writing/SKILL.md
-  writing/resources/readme-template.md
+  references/  templates/  scripts/  assets/   beside any SKILL.md that ships them
 templates/AGENTS.md       the donor entry file a repository copies when it adopts the convention
 ```
 
@@ -46,9 +46,12 @@ over the profile's `SOUL.md` loses nothing, and this repository is where the tex
    index is invisible; a skill in the index and not on disk is a lie.
 3. Front matter is exactly three keys: `name` (equal to the directory name), `description` (one sentence),
    `when-to-use` (the trigger in the reader's own words). Keep a skill under about 120 lines; past that it
-   is either two skills or the detail belongs in `resources/`.
+   is either two skills or the detail belongs in `references/`.
 4. A skill stands on its own: it names no other file of the convention and points at no other skill. Where
    a rule needs a command, the skill names the concept and leaves the literal command to the repository.
+5. A skill's supporting files live in one of four directories beside its `SKILL.md` — the four the runtime
+   reads: `references/` (a document the skill points at), `templates/` (a file to copy and fill),
+   `scripts/` (code the skill runs), `assets/` (images and other blobs).
 
 ## Checks
 
