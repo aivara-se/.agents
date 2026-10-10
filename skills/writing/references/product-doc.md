@@ -12,6 +12,10 @@ The product document is the one authoritative place for user-facing behaviour. I
 - Scope: what v1 does not do. Then acceptance: what v1 must do, each item measurable.
 - The name: what the name has to do, not the name itself.
 
+## Rules
+
+- A number that cannot be measured yet gets a provisional value, marked provisional, and the thing that will freeze it — a measured session, a spike. Never invent a number and mark it decided.
+
 ## Pitfalls
 
 - Do not write the document in the voice of an existing document in the repository. Long-form documents drift past the length this skill allows; write from the rules, not from the neighbour.
