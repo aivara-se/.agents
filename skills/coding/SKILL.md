@@ -54,3 +54,4 @@ Before you call a change done:
 2. Run the checks this repository gates on, on the final tree — the whole sequence, not just the fast one.
 3. Read the diff once, top to bottom, as the reviewer will: no debug output, no stray files left behind.
 4. Take out everything the task did not ask for: no drive-by reformatting, no rename, no tidy-up, no unrelated fix. Where the human operator explicitly asked for one of them, name it in the pull-request body; anything else comes out before you push.
+5. **A fix is the smallest diff that removes the cause.** Not a new check script, not a guard or a build-time gate, not a rewritten document, not a comment describing the change — and a comment or doc that has to change because of the fix is more likely the thing that should not have been there at all. Every file the fix did not have to touch is a file it must not touch.
