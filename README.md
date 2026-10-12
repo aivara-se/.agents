@@ -28,9 +28,9 @@ over the profile's `SOUL.md` loses nothing, and this repository is where the tex
 
 ## How a repository adopts the convention
 
-1. Copy `templates/AGENTS.md` to the repository root as `AGENTS.md`, and `skills/` to `.agents/skills/`
-   in that repository. If the repository already has an `AGENTS.md`, **merge, do not overwrite**: keep its
-   house rules, its procedures and its deploy note, and put the shared sections around them.
+1. Copy `templates/AGENTS.md` to the repository root as `AGENTS.md`; do not copy `skills/` into the
+   repository. If the repository already has an `AGENTS.md`, **merge, do not overwrite**: keep its house
+   rules, its procedures and its deploy note, and put the shared sections around them.
 2. Fill every `{{UPPER_SNAKE_CASE}}` slot in the copy. The slots are `{{ORG}}`, `{{CONVENTION_VERSION}}`,
    `{{ADOPTED_FROM}}`, `{{REPO_PURPOSE}}`, `{{REPO_OVERVIEW}}`, `{{CURRENT_FOCUS}}`,
    `{{REPO_HOUSE_RULES}}`, `{{REPO_CHECK_COMMAND}}`, `{{REPO_CHECK_NOTES}}`, `{{DEFAULT_BRANCH}}`,
