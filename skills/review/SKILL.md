@@ -26,34 +26,19 @@ Return exactly one, and put it on the first line:
 
 ## The report
 
-Lead with the verdict line, then the sections below, in this order. Two reviewers of the same diff produce comparable reports because they use the same shape. Every finding carries the evidence that shows it: a finding without evidence is an opinion, and opinions are not actionable.
+Lead with the verdict line, then state only what must change and why — nothing else. No summary of the change, no restatement of the body, no praise, no section that exists to make the review look thorough. When nothing must change, the report is the verdict line plus one line naming what was run and what held.
 
-### 1. Summary and code health audit
-
-What the change does, in the reviewer's own words, and whether that matches what the body claimed. Then the one or two systemic risks in it: what would still matter six months from now.
-
-### 2. Findings
-
-Most severe first, each in this shape:
+Each finding, most severe first, in this shape:
 
 - **Location:** file and line, or the smallest unit that identifies it.
 - **The violation:** the rule or principle broken — correctness, maintainability, the repository's own conventions.
-- **The problem and impact:** how this degrades correctness, testability or maintenance cost, concretely.
+- **The impact:** how this degrades correctness, testability or maintenance cost, concretely.
 - **The evidence:** the command, the input or the output that shows it.
+- **The fix:** the smallest change that settles it.
 
-Separate **must fix before this lands** from **worth doing later**. A review that cannot tell the two apart blocks work that should have landed and approves work that should not.
+Split **must fix before this lands** from **worth doing later**, and keep each finding to those five lines. Every finding carries the evidence that shows it: a finding without evidence is an opinion, and opinions are not actionable.
 
-### 3. Target design
-
-The shape the change should have instead: what moves where, what the boundary is, which finding it settles. One screen, not a redesign of the repository.
-
-### 4. Phased plan
-
-Only when changes are required, and only for the requested changes: a low-risk-first sequence, so the author can land the safe part without waiting on the decision in the risky part.
-
-### 5. Blueprint
-
-Only when a concrete transformation makes the finding clearer than prose does. Contrast the current shape with the intended one, in the repository's own language, over the smallest excerpt that shows it.
+Add a target design, or a low-risk-first sequence for the requested changes, only when the change cannot land with a small fix. Never a section the change does not need.
 
 ## What a review is not
 
