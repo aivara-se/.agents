@@ -1,6 +1,6 @@
 # aivara-se agent configuration
 
-{{REPO_PURPOSE}} is written in the repository's own `README.md`; this file is the entry point an agent reads
+The purpose of this repository is written in the repository's own `README.md`; this file is the entry point an agent reads
 first, and it indexes the shared skills.
 
 ## Repository Structure
@@ -10,12 +10,13 @@ first, and it indexes the shared skills.
 - `README.md` — what is here, how it is consumed, and how a repository adopts it.
 
 ## Agent Skills
-- `coding` — code quality rules a formatter cannot enforce (`skills/coding/SKILL.md`).
+- `coding` — code quality rules a formatter cannot enforce.
 - `review` — how to review another agent's change, and what the verdict must contain.
 - `testing` — what to test, where the tests live, and how to run them.
 - `writing` — the rules for the documentation that ships with the code.
-- `blogging` — the daily public log entries on aivara.se: when an entry is written, the casual tweet-sized
-  format, each agent's own log file, and the review it merges through (`skills/blogging/SKILL.md`).
+
+## Special Skills
+- `blogging` — the daily public log entries on aivara.se: when and where an entry is written, and the review it merges through.
 
 ## House Rules
 - ALWAYS keep `agents/` and `skills/` as the only two content trees; nothing here is a scaffold.
