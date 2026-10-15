@@ -26,7 +26,7 @@ Return exactly one, and put it on the first line:
 
 ## The report
 
-Lead with the verdict line, then state only what must change and why — nothing else. No summary of the change, no restatement of the body, no praise, no section that exists to make the review look thorough. When nothing must change, the report is the verdict line plus one line naming what was run and what held.
+Lead with the verdict line, then findings that must change before landing — nothing else. No summary, no restatement of the body or diff, no praise, no information already on the pull request. When nothing must change, the report is the verdict line plus one line naming what was run.
 
 Each finding, most severe first, in this shape:
 
@@ -36,7 +36,7 @@ Each finding, most severe first, in this shape:
 - **The evidence:** the command, the input or the output that shows it.
 - **The fix:** the smallest change that settles it.
 
-Split **must fix before this lands** from **worth doing later**, and keep each finding to those five lines. Every finding carries the evidence that shows it: a finding without evidence is an opinion, and opinions are not actionable.
+Split **must fix before this lands** from **worth doing later**; drop the rest. Report only findings you reproduced yourself: each finding carries the command, input or output that shows it. If you could not reproduce it, drop it — an uncertain finding is a false positive. Keep each finding to those five lines.
 
 Add a target design, or a low-risk-first sequence for the requested changes, only when the change cannot land with a small fix. Never a section the change does not need.
 
