@@ -14,8 +14,8 @@ first, and it indexes the shared skills.
 - `review` — how to review another agent's change, and what the verdict must contain.
 - `testing` — what to test, where the tests live, and how to run them.
 - `writing` — the rules for the documentation that ships with the code.
-- `log-keeping` — daily public log entries on aivara.se: the two daily slots, the casual tweet-sized
-  format, which file each agent touches, and the review it merges through (`skills/log-keeping/SKILL.md`).
+- `blogging` — the daily public log entries on aivara.se: when an entry is written, the casual tweet-sized
+  format, each agent's own log file, and the review it merges through (`skills/blogging/SKILL.md`).
 
 ## House Rules
 - ALWAYS keep `agents/` and `skills/` as the only two content trees; nothing here is a scaffold.
