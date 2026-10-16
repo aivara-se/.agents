@@ -26,19 +26,27 @@ Return exactly one, and put it on the first line:
 
 ## The report
 
-Lead with the verdict line, then findings that must change before landing — nothing else. No summary, no restatement of the body or diff, no praise, no information already on the pull request. When nothing must change, the report is the verdict line plus one line naming what was run.
+Lead with the verdict line, then the findings that block the merge — nothing else. No summary, no restatement of the body or diff, no praise, no run log, no information already on the pull request. When nothing blocks the merge, the report is the verdict line plus one line naming what was run.
 
-Each finding, most severe first, in this shape:
+Report a finding only when the author has to act on it to land the change. A nit, a style the formatter already enforces, a "nice to have", a "worth doing later" — none of them are findings, and none of them go in the report. Report only what you reproduced yourself: a finding you could not reproduce is a false positive, and is dropped.
 
-- **Location:** file and line, or the smallest unit that identifies it.
-- **The violation:** the rule or principle broken — correctness, maintainability, the repository's own conventions.
-- **The impact:** how this degrades correctness, testability or maintenance cost, concretely.
-- **The evidence:** the command, the input or the output that shows it.
-- **The fix:** the smallest change that settles it.
+Each finding is **at most three lines of on-screen text**, most severe first, in plain words and no labels:
 
-Split **must fix before this lands** from **worth doing later**; drop the rest. Report only findings you reproduced yourself: each finding carries the command, input or output that shows it. If you could not reproduce it, drop it — an uncertain finding is a false positive. Keep each finding to those five lines.
+- what is wrong, and the file and line it is wrong at;
+- the evidence: the command, the input or the output that shows it, cut to the part that shows it;
+- the fix: the smallest change that settles it.
+
+Nothing else survives in a finding: not the rule's history, not how you came to it, not what the fix buys, not what the author got right. Write those three lines for the person fixing it, and leave out every word they would not act on.
 
 Add a target design, or a low-risk-first sequence for the requested changes, only when the change cannot land with a small fix. Never a section the change does not need.
+
+A finding, as it looks on screen:
+
+```text
+internal/router/router.go:388 — the reason handed to a run names the card's number alone, so two cards of one number start two identical runs.
+Stub board, `9` in two repositories, both Backlog, neither held: two runs, each `card 9 sits in Backlog with nobody holding it` — the same board at the parent starts none.
+Thread the identity into the reason the way the audit line already threads it.
+```
 
 ## What a review is not
 
