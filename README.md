@@ -11,7 +11,7 @@ AGENTS.md                 the entry file for an agent working in this repository
 agents/                   one file per agent: its identity, the role it owns and its boundaries
   root.md  mama.md  meme.md  mimi.md  momo.md
 skills/                   the organisation's skills, read by every agent
-  coding/SKILL.md  review/SKILL.md  testing/SKILL.md  writing/SKILL.md
+  blogging/SKILL.md  coding/SKILL.md  review/SKILL.md  testing/SKILL.md  writing/SKILL.md
   references/  templates/  scripts/  assets/   beside any SKILL.md that ships them
 templates/AGENTS.md       the donor entry file a repository copies when it adopts the convention
 ```
