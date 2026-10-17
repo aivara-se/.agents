@@ -17,6 +17,15 @@ Build and run the artifact from your home directory, not `/tmp`: a sandbox commo
 5. Drive the entry point the way production does: a real request through the listening socket, formed and signed as the sender forms it. Stop the process the way production stops it, then read the files it left: the record it writes is part of what a review checks.
 6. Give asynchronous work a bounded poll rather than a sleep, and run the case that matters more than once: a race that shows once is a finding, and one that vanishes on the second run is your harness.
 
+## Proving a rule is load-bearing
+
+A rule the change states — in the card it closes, in its own comment, in the document it edits — is only as good as the test that goes red when the code implementing it is removed. One directory per mutation:
+
+1. Copy the tree under review (`cp -r wt mut_<name>`), apply one substitution with an assertion that the text was found, and re-run the gate on the copy: `gofmt -l .`, `go vet ./...`, `go test ./...`. One mutation per directory, so a re-run is one command and one diff to read.
+2. Read which tests went red, and where. **A mutation that goes red nowhere is the finding**: the rule is implemented and unpinned, and the next touch drops it in silence. A mutation that only breaks the build is not a finding — see the pitfalls.
+3. Before reporting it, show the rule is load-bearing and not merely unpinned: drive the head's artifact and the mutated artifact over the same content, arranged so the two must disagree. A rule about *which* of two read items the pass chooses turns on the order they are read in, so have the stub answer them in the opposite order — where the head still chooses the item its rule names and the mutant chooses the stub's first, the rule is doing work on the real path and not only inside the tests.
+4. Cite both halves: the mutation, the command and its green gate, and the two artifacts' outputs on the same content. The green gate is what the author has to close; the disagreement is what leaving it costs.
+
 ## Pitfalls
 
 - Reserve ports by binding `127.0.0.1:0`, or give the stub and the service different ports. Two listeners on one port produce an "address already in use" that reads like the change's own boot bug.
@@ -25,6 +34,8 @@ Build and run the artifact from your home directory, not `/tmp`: a sandbox commo
 - A probe that only repeats the author's own test proves nothing new. Aim it at the case the tests skip — a missing input, a failure in the middle of an ordered sequence, a restart, a stale record.
 - Keep the script and its raw output; cite the path and the command in the review, so the finding is reproducible rather than asserted.
 - Run a boot-refusal probe under a bounded timeout and read its two outcomes apart: a non-zero exit carrying the message is the refusal, and a process still alive at the timeout is a boot that bound its listener — connect to the reserved port to confirm, rather than reading it off the clock. A refusal is proven by the whole set and not the message alone: nothing listened, the backend stub was never called, the spawned child never ran, and the record files are empty — a file that exists at 0 bytes was opened and never written, and an opened file is not a write.
+- **Move every site of a key mutation together.** A mutation that changes what the pass keys a per-card record by — an identity back to a bare number — touches the map's declared type, the parameter that carries it into the functions that read and write it, and every index site. Some of them and the package does not build; a build failure, or a `go vet` failure, is not a finding. Mutate them all, confirm `gofmt -l .` empty and `go vet ./...` clean, and only then read which tests went red — a mutation whose gate is not green proves nothing either way.
+- The probe is a scratch harness under your own home, not a script the repository commits: a repository rule about the language its scripts are written in governs what lands in its tree, not what you run to interrogate it. Write the harness in whatever gets the evidence fastest.
 
 ## Template
 
