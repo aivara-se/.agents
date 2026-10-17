@@ -30,6 +30,9 @@ Lead with the verdict line, then the findings that block the merge — nothing e
 
 Report a finding only when the author has to act on it to land the change. A nit, a style the formatter already enforces, a "nice to have", a "worth doing later" — none of them are findings, and none of them go in the report. Report only what you reproduced yourself: a finding you could not reproduce is a false positive, and is dropped.
 
+- **A sentence carries its own scope** — its subject and the clause it sits in. A finding against the strongest reading it could bear is a false positive: the author dismisses it rather than fixes it, and the verdict is spent on a reading nobody wrote. Where a rule and the tree part company, quote the change's own words.
+- **Every finding names the changed line it settles**, and what the merge turns on: the behaviour this change makes true, or the older defect this change makes reachable. The body's bookkeeping is not a finding — verify its check counts, its line references and its run log to decide, then leave them out of the report; a wrong number there blocks nothing and costs the author a reply.
+
 Each finding is **at most three lines of on-screen text**, most severe first, in plain words and no labels:
 
 - what is wrong, and the file and line it is wrong at;
