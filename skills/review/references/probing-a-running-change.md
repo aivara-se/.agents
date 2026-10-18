@@ -6,7 +6,7 @@ Use when the change's claims are about behaviour at runtime — a boot, an order
 
 ## Where it runs
 
-Build and run the artifact from your home directory, not `/tmp`: a sandbox commonly mounts `/tmp` `noexec`, and an artifact that cannot be exec'd looks like a build failure. Keep one probe per directory — `<home>/scratch/<name>/` — so the harness, its logs and the artifact are separate files you can point the review at.
+Build and run the artifact from your home directory, not `/tmp`: a sandbox commonly mounts `/tmp` `noexec` and commonly clears it — an artifact that cannot be exec'd looks like a build failure, and a worktree that vanishes mid-probe takes the harness with it. Keep one probe per directory — `<home>/scratch/<name>/` — so the harness, its logs and the artifact are separate files you can point the review at. When the build's own temporary directory refuses exec, point `TMPDIR` and `GOTMPDIR` at a directory under the home and rebuild.
 
 ## The shape
 
@@ -26,10 +26,19 @@ A rule the change states — in the card it closes, in its own comment, in the d
 3. Before reporting it, show the rule is load-bearing and not merely unpinned: drive the head's artifact and the mutated artifact over the same content, arranged so the two must disagree. A rule about *which* of two read items the pass chooses turns on the order they are read in, so have the stub answer them in the opposite order — where the head still chooses the item its rule names and the mutant chooses the stub's first, the rule is doing work on the real path and not only inside the tests.
 4. Cite both halves: the mutation, the command and its green gate, and the two artifacts' outputs on the same content. The green gate is what the author has to close; the disagreement is what leaving it costs.
 
+## A claim about what outlives the service
+
+A restart claim — what the service still knows once it dies, what it starts again, what bounds a survivor — cannot be probed in-process: the repository's own harness boots its `run()`/`boot()` in a goroutine of the test, so killing the service kills the test. Run the built binary instead.
+
+1. `go build -o <dir>/artifact .` from the head and start it with `exec.Command` plus an explicit `cmd.Env`: a stub's behaviour variable and the secrets the config names are not inherited, and a child started without them answers for a different world.
+2. Stop it the two ways apart, because they are different worlds: `process.Kill()` (SIGKILL — a crash, an OOM kill, a `Restart=on-failure`) and `Signal(syscall.SIGTERM)` (the graceful stop). Read the survivor count after each. A service that reaps its children on the graceful path proves nothing about the ungraceful one, and the ungraceful one is what a claim about a restart is about.
+3. Count survivors by walking `/proc/<pid>/cmdline` and matching the spawned child's own path and arguments. A pid nobody recorded is the whole evidence for a process the artifact's own table does not hold — and the same walk is how the leftovers are reaped, grandchildren included, since a shell stub that ends in `sleep <n>` keeps the `sleep` alive after the shell's pid is killed.
+4. Boot a second artifact over the same stub state and read both logs: how many children are alive now, and what the second boot appended to its record. That pair is the finding — a live child the table never held, plus the second run started for its profile.
+
 ## Pitfalls
 
 - Reserve ports by binding `127.0.0.1:0`, or give the stub and the service different ports. Two listeners on one port produce an "address already in use" that reads like the change's own boot bug.
-- Kill the stub and the service between probes: a live leftover holds its port and can answer for the next run.
+- Kill the stub and the service between probes: a live leftover holds its port and can answer for the next run. Reap them by pid — walk `/proc/<pid>/cmdline` yourself — and never `pkill -f "<pattern>"`: `-f` matches the full command line of every process, your own shell's included, so a pattern your own command contains kills the session mid-probe and the worktree's cwd goes with it.
 - Do not conclude from a single boot when the change has a boot-time pass and further triggers (a request, a child exiting): the second look is where repeats, claims and repairs show.
 - A probe that only repeats the author's own test proves nothing new. Aim it at the case the tests skip — a missing input, a failure in the middle of an ordered sequence, a restart, a stale record.
 - Keep the script and its raw output; cite the path and the command in the review, so the finding is reproducible rather than asserted.
