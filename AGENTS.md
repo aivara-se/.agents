@@ -1,37 +1,33 @@
 # aivara-se agent configuration
 
-The purpose of this repository is written in the repository's own `README.md`; this file is the entry point an agent reads
-first, and it indexes the shared skills.
+Who each agent in this organisation is, and the procedures they all work by. `README.md` says how the two reach a profile.
 
-## Repository Structure
-- `agents/` — one file per agent (root, mama, meme, mimi, momo): the role it owns and its boundaries.
-- `skills/` — the organisation's skills, read by every agent through `skills.external_dirs`.
-- `templates/AGENTS.md` — the donor entry file a repository copies when it adopts the convention.
-- `README.md` — what is here, how it is consumed, and how a repository adopts it.
+## Layout
 
-## Agent Skills
-- `coding` — code quality rules a formatter cannot enforce.
-- `review` — how to review another agent's change, and what the verdict must contain.
-- `testing` — what to test, where the tests live, and how to run them.
-- `writing` — the rules for the documentation that ships with the code.
+- `agents/` — one file per agent: the whole of that profile's `SOUL.md`.
+- `skills/` — one directory per skill, each holding a `SKILL.md`.
+- `README.md` — what is here, how it is consumed, and how a skill is written.
 
-## Special Skills
-- `blogging` — the daily public log entries on aivara.se: when and where an entry is written, and the review it merges through.
+The tree is the index. A new skill is a new directory with a `SKILL.md` — nothing in this file lists it, and no list can drift out of step with the disk. Every `SKILL.md` under `skills/` is a skill and is read by every agent.
 
 ## House Rules
-- ALWAYS keep `agents/` and `skills/` as the only two content trees; nothing here is a scaffold.
-- Never leave a slot (`{{...}}`) unfilled in `templates/AGENTS.md`'s consumers; this repository's own file
-  carries none.
+
+- The entry file a repository adopts is `aivara-se/.template`, never this repository's own `AGENTS.md`.
+- Never leave a slot (`{{...}}`) unfilled in a copy of the template; no slot exists in this repository.
 - Never write a secret, a token, a host path or a personal name into this repository.
-- ALWAYS change a skill here once, rather than copying it into a profile.
+- ALWAYS change a skill here once, rather than copying it into a profile or a repository.
+- An agent file is complete on its own: copy it over `SOUL.md` and nothing is lost.
 
 ## Version Control
+
 - `main` is the default branch; work lands through a pull request.
 - A pull request asks the operator and one peer agent for review.
 
 ## Checks
+
 ```sh
-grep -rn '{{' agents skills --exclude-dir=.git   # must print nothing: only templates/ carries slots
-find skills -name SKILL.md | sort                # must match the index above, no more and no fewer
+grep -rn '{{' agents skills --exclude-dir=.git   # must print nothing: this repository fills no slot
+find skills -name SKILL.md | sort                # every skill on disk
 head -4 skills/*/SKILL.md                        # name, description, when-to-use in each
 ```
+
