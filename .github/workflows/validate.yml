@@ -1,0 +1,21 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: No unfilled slots
+        run: |
+          if grep -rn '{{' agents skills; then
+            echo "::error::an unfilled template slot remains"
+            exit 1
+          fi
