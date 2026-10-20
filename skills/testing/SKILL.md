@@ -13,26 +13,17 @@ when-to-use: Any change that adds or alters behaviour, any bug fix, and any chan
 - Test the contract, not the implementation: given this input, this output or this failure. A test that breaks when the internals are refactored is testing the wrong thing.
 - Prefer parameterised or table-driven cases over copy-pasted blocks — one case per line, with the expectation visible.
 - **Never** write a test that can pass for the wrong reason: no assertions that a call happened without checking what it returned, no `assert True`, no snapshot nobody reads.
-- **When the code must read one of two fields that carry the same kind of value, plant a different valid value in the field that must be ignored** — another configured login ahead of the real one in an `assignees` array, say — so a mutation that reads the wrong field wakes the wrong target and the test fails, instead of passing because both fields happen to agree.
 - **A list of candidates is pinned with two valid entries.** When the payload carries several candidates and the specification names one — the first pull request of a run — give the fixture two and assert the named one; a fixture with a single entry cannot tell first from last.
+- **A compound filter is pinned one clause at a time.** When a delivery acts only if several conditions all hold — event, action, review state, pull-request state, draft, a null field — give every clause its own case that differs only in that clause. A happy path plus one negative case leaves every other clause free to be deleted without a test going red, which is exactly what a mutation-based review probes for.
 - **A cap is four tests, not one.** The limit-th delivery wakes, the next is refused, a delivery of the same kind that wakes nobody spends nothing from the budget, and each cap leaves any other cap on the same repository and number untouched in both directions. Without the third, moving the advance ahead of the match passes; without the fourth, wiring two caps to one counter passes.
 - **Pin a "must not use" guard by driving the shared state to its limit.** When a new flow shares a handler with an existing counter or cache but must ignore it, test the case at the limit — the counter maxed for the same key, the id already cached — because a test below the limit passes when the guard is deleted.
 - Deterministic above all: no wall-clock time, no randomness, no network, no dependence on file ordering or locale. Inject or freeze what you cannot control.
 - Fast and local: mock the network and filesystem boundaries instead of calling them. A suite nobody runs is a suite that rots.
 
-## Testing a spawned process
-
-- Point the launcher at the test binary itself instead of writing a fake executable: configure the path as `os.Args[0]`, and in `TestMain` check an env var plus the first argument, write `os.Args[1:]` to a capture file and exit 0. A script fixture in `t.TempDir()` fails to exec where `TMPDIR` is mounted noexec, and re-exec needs no second toolchain. `flag.Parse` has not run when `TestMain` is called, so inspecting `os.Args` there is safe.
-- Assert the whole argv — element count, each element, and a sentinel planted in every text field of the input that must appear in no element — because a substring check passes on an argument that carries the payload along with the reason.
-- Poll for the capture file under a short bounded deadline; the child is asynchronous, and a fixed sleep is a flaky test.
-- Drive the test through the boundary the process is called on (a signed HTTP request to the handler) and keep the decision function unexported; calling internals proves a branch, not the contract.
-- For booting the finished binary and checking it answers, `references/process-and-server-checks.md` has the recipe.
-
 ## Where they live
 
 - Follow the placement convention the repository already uses; if it has none, put the test next to the code it verifies and say so in the pull request.
 - Test data belongs with the test, named for the case it covers. Do not commit a fixture that another test would silently depend on.
-- When the only copy of a machine-readable shape lives in a document the repository ships — a README example, a spec block — have the test extract and load that document instead of restating it in a fixture: a duplicated fixture keeps passing while the document rots.
 - A harness that is code is code: written in the repository's own language and run with its package manager, not as a shell script of commands.
 
 ## Running them
