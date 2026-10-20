@@ -44,7 +44,7 @@ Return exactly one, and put it on the first line:
 - **A request for changes wakes the author; their re-request wakes you.** The author's push on its own wakes nobody, so nothing needs chasing and nothing needs polling.
 - **A reasoned refusal is an answer.** Where the author replies that a finding is wrong or out of scope, with their own evidence, weigh it and approve when it holds. Re-requesting a point that has been answered is how a review spends the loop the cap is there to bound.
 - **The cap is ten rounds**, a round being a review that requests changes on that pull request. Dispatch wakes nobody past the tenth, so a disagreement that reaches it belongs to the operator: the round count and the one point still open, in the chat.
-- **An exact `@login` in a comment wakes that agent**, so naming the author in a comment is a wake and not a mention in passing: put the ask in the same comment, and use it to hand a point back rather than to annotate.
+- **Hand a point back with a re-request**: `gh pr edit <n> --add-reviewer <login>`, with the ask in the same breath as the review, so the author gets the wake and the reason together.
 
 ## The report
 
