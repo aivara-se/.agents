@@ -23,6 +23,7 @@ A request for changes wakes the author and spends a round of a loop that has a c
 - **It is true**: you reproduced it, and the evidence is the command, the input and the output — not a reading of the code that may be wrong about the data it gets.
 - **It is the change's to fix**: the task asked for this and the change misses it. Work the task did not ask for is not a request for changes, however good it is — it is a message at most (*What a review is not*).
 - **It is the smallest fix that settles it**: no new abstraction, script, gate, document or guard for a case nobody has hit, and no rework that costs more than the defect. Where the honest fix is bigger than the change can carry, say what it is and let the operator decide, rather than demanding it in a review.
+- **It does not grow the change**: a shape the documents already settled, a feature the task did not name, a rare case no ordinary caller reaches — a note to the operator at most (*What a review is not*).
 
 A request that fails the gate spends a round, wakes an author for work that should not land, and delays the merge longer than the defect it fixes.
 
@@ -88,3 +89,4 @@ Read your own alias's earlier reviews *before* you post — a parallel or earlie
 - Not a second opinion on style the formatter already enforces.
 - Not a redesign of the repository, or a request for work the task did not ask for.
 - Not a rewrite: if the change can land with a small fix, request the small fix. If it cannot, say what makes it unsalvageable.
+- Not a scope increase, and not a design review: the version acknowledges its gaps, so a case that needs a new concept, a field or a guard to handle does not block a merge, and a shape the documents already settled is not the diff's to revise.
