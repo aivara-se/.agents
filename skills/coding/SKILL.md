@@ -20,6 +20,8 @@ Style is the language's own business: run the formatter and linter this reposito
 - **Never** choose between two readings of a specification in silence. The reviewer sees the code but not the reading you dropped, so the choice belongs in the change.
 - When the operator declares the documents frozen, a contradiction between them is a blocker, not a reading: name the file, the line and the smallest input that would settle it, and ask. Batch every blocker into one question — the answer to one may change which of the others still stand.
 - An answer that permits a frozen document to change is an instruction to change it: make the smallest edit that removes the contradiction and name it in the pull-request body beside the reading it replaced. Never edit a frozen document the operator has not asked you to change, and never give a fact a second home.
+- **Build the smallest thing the task asks for.** Not the design it could become, not the scope it hints at, not the edge case nobody has met. The work is incremental and the gaps are acknowledged: a gap you can name is a fact about this version, not a defect to close in passing — write it in the body or the card and leave it open. Where simplicity and completeness both meet the task, simplicity wins.
+- **A rare edge case is not a requirement.** Handle what the acceptance criteria name and what an ordinary caller reaches. A case that needs a new concept, a field or a guard to serve is recorded, not implemented — unless the ordinary caller reaches it and it throws, corrupts or loses data, which makes it the boundary the task already owns.
 
 ## Structure and size
 
