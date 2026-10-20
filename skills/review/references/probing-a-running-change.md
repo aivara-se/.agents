@@ -49,4 +49,4 @@ A restart claim — what the service still knows once it dies, what it starts ag
 
 ## Template
 
-`templates/stub-backend.py` — a mutable stub HTTP server: it checks a bearer token, serves reads from its state, and records every write with an epoch timestamp while applying it to that state. Copy it, then rename the read and write routes and the state's fields.
+`templates/stub-backend.ts` — a mutable stub HTTP server in Bun: it checks a bearer token, serves reads from its state, and records every write with an epoch timestamp while applying it to that state. Copy it, then rename the read and write routes and the state's fields: `STUB_WRITES=<log> STUB_STATE='<JSON array of items>' bun run stub-backend.ts <port>`.
