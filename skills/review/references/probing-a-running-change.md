@@ -37,6 +37,7 @@ A restart claim — what the service still knows once it dies, what it starts ag
 
 ## Pitfalls
 
+- Boot the artifact with the terminal tool's background mode, not a shell `&`: a command carrying `&` is refused outright and runs nothing, so stubs and logs written in that same command never appear, and the next call reads the artifact's "start failed: no such file" as the change's own defect. Write the stub, `ls -l` it, then boot; read the service's log file rather than its console.
 - Reserve ports by binding `127.0.0.1:0`, or give the stub and the service different ports. Two listeners on one port produce an "address already in use" that reads like the change's own boot bug.
 - Kill the stub and the service between probes: a live leftover holds its port and can answer for the next run. Reap them by pid — walk `/proc/<pid>/cmdline` yourself — and never `pkill -f "<pattern>"`: `-f` matches the full command line of every process, your own shell's included, so a pattern your own command contains kills the session mid-probe and the worktree's cwd goes with it.
 - Do not conclude from a single boot when the change has a boot-time pass and further triggers (a request, a child exiting): the second look is where repeats, claims and repairs show.
