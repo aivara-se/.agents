@@ -1,6 +1,6 @@
 ---
 name: coding
-description: Code quality rules a formatter cannot enforce — structure, dependencies, scripts, error handling, public surface, what wakes you, and how a change is opened, armed and answered in review.
+description: Code quality rules a formatter cannot enforce — structure, dependencies, scripts, error handling, public surface, and how a change is opened, armed and answered in review.
 when-to-use: Any change to source code, or to the build and CI definitions around it. Read it before writing the first line, not after.
 ---
 
@@ -59,7 +59,7 @@ Style is the language's own business: run the formatter and linter this reposito
 
 ## The pull request
 
-- **One version, one pull request.** When the work is a sequence of decided versions, each version gets its own commit, its own branch based on the one before it, and its own pull request against that branch — a stack, merged bottom-up. Never fold two versions into one change because they share a handler; each diff is compared with its own record, and a stack keeps every review small. The `github` skill's *Stacked pull requests* reference has the commands.
+- **One version, one pull request.** When the work is a sequence of decided versions, each version gets its own commit, its own branch based on the one before it, and its own pull request against that branch — a stack, merged bottom-up. Never fold two versions into one change because they share a handler; each diff is compared with its own record, and a stack keeps every review small.
 - **Request the operator and one peer, chosen by what the change is.** `--reviewer thani-sh` on every pull request, plus **MaMa** where the change carries product or architecture — a document, an ADR, an interface between modules, a trade-off that is expensive to reverse; **MeMe or MiMi** where it is implementation, MeMe for code that has to last and MiMi for a measured change to speed or a new tool earning its place; **MoMo** where it warrants extra scrutiny — untrusted input, shared or concurrent state, a security boundary, a parsing or protocol surface, or a change you are not sure of yourself. A change that is both design and code asks MaMa and one engineer, and the body says in one clause why the peer it names is the right one.
 - **Arm it for auto-merge as you open it.** `gh pr merge <n> --auto --rebase` leaves the approving review as the last act before the change lands. The ruleset still holds the line — branch up to date with the default branch, `validate` green on that head, one approval covering the last push — and arming removes only the wait for the click.
 - **Never arm what must not merge**: a draft, a probe, a spike, a proof of concept, a branch opened to show an idea. Open those as a draft, which cannot be armed, and make the first line of the body say what it is and that it stays out.
