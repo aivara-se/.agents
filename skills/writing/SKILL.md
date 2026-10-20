@@ -23,6 +23,14 @@ Documentation is part of the change, not a follow-up task. A change that makes a
 - The shape of a system document — how it is hosted, built, and kept working offline — is `references/system-doc.md`.
 - Code comments explain **why**. A comment that restates the line beneath it is noise: delete the comment, or delete the line.
 - If the change makes any document untrue — the repository map included — fix that document in the same change.
+- A repository map names what a reader has to find: the documents, and the packages with a job of their own. A root file obvious from the tree — `go.mod`, `.gitignore`, the CI workflow — earns no line; listing it goes stale for no gain.
+
+## ADRs
+
+- An ADR stands alone. It carries the decision, the reasons and the shape it fixes without linking to the product, system, design or README documents: those move, and a decision that points at them rots. Links to other ADRs are fine, which is why they are the one exception to the linking rule above.
+- State the contract in the ADR itself — the fields, the rule, the bound, what must be true. The README carries the concrete example; the ADR carries the schema. Neither restates the other's job: one says what may be configured, the other shows one.
+- A README does not cite ADRs: no inline `(ADR 004)` links and no ADR list under a documentation heading. The README is for the reader who runs the thing; the decision record is for whoever changes it. Point at the product document and stop.
+- A configuration file that names host paths or agents is not committed. The README shows an example of its shape, `.gitignore` refuses the real file so a local one cannot be committed by accident, and a committed instance is deleted in the change that moves it rather than left beside the example.
 
 ## How to write it
 

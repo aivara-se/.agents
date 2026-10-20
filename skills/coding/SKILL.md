@@ -12,6 +12,8 @@ Style is the language's own business: run the formatter and linter this reposito
 
 - Build what the specification says. When two of its numbers cannot both be true — a maximum and a minimum that collide — do what the checkable requirement asks, get as close as you can on the rest, and say in the change what you picked and why.
 - **Never** choose between two readings of a specification in silence. The reviewer sees the code but not the reading you dropped, so the choice belongs in the change.
+- When the operator declares the documents frozen, a contradiction between them is a blocker, not a reading: name the file, the line and the smallest input that would settle it, and ask. Batch every blocker into one question — the answer to one may change which of the others still stand.
+- An answer that permits a frozen document to change is an instruction to change it: make the smallest edit that removes the contradiction and name it in the pull-request body beside the reading it replaced. Never edit a frozen document the operator has not asked you to change, and never give a fact a second home.
 
 ## Structure and size
 

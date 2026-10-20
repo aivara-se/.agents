@@ -16,10 +16,19 @@ when-to-use: Any change that adds or alters behaviour, any bug fix, and any chan
 - Deterministic above all: no wall-clock time, no randomness, no network, no dependence on file ordering or locale. Inject or freeze what you cannot control.
 - Fast and local: mock the network and filesystem boundaries instead of calling them. A suite nobody runs is a suite that rots.
 
+## Testing a spawned process
+
+- Point the launcher at the test binary itself instead of writing a fake executable: configure the path as `os.Args[0]`, and in `TestMain` check an env var plus the first argument, write `os.Args[1:]` to a capture file and exit 0. A script fixture in `t.TempDir()` fails to exec where `TMPDIR` is mounted noexec, and re-exec needs no second toolchain. `flag.Parse` has not run when `TestMain` is called, so inspecting `os.Args` there is safe.
+- Assert the whole argv — element count, each element, and a sentinel planted in every text field of the input that must appear in no element — because a substring check passes on an argument that carries the payload along with the reason.
+- Poll for the capture file under a short bounded deadline; the child is asynchronous, and a fixed sleep is a flaky test.
+- Drive the test through the boundary the process is called on (a signed HTTP request to the handler) and keep the decision function unexported; calling internals proves a branch, not the contract.
+- For booting the finished binary and checking it answers, `references/process-and-server-checks.md` has the recipe.
+
 ## Where they live
 
 - Follow the placement convention the repository already uses; if it has none, put the test next to the code it verifies and say so in the pull request.
 - Test data belongs with the test, named for the case it covers. Do not commit a fixture that another test would silently depend on.
+- When the only copy of a machine-readable shape lives in a document the repository ships — a README example, a spec block — have the test extract and load that document instead of restating it in a fixture: a duplicated fixture keeps passing while the document rots.
 - A harness that is code is code: written in the repository's own language and run with its package manager, not as a shell script of commands.
 
 ## Running them
