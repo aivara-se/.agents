@@ -19,3 +19,16 @@ jobs:
             echo "::error::an unfilled template slot remains"
             exit 1
           fi
+
+      - name: Skill front matter
+        run: |
+          fail=0
+          for f in skills/*/SKILL.md; do
+            dir=$(basename "$(dirname "$f")")
+            [ "$(head -1 "$f")" = "---" ] || { echo "::error file=$f::no front matter"; fail=1; }
+            [ "$(sed -n '2p' "$f" | cut -d: -f1)" = "name" ] || { echo "::error file=$f::the first key is not name"; fail=1; }
+            [ "$(sed -n '2p' "$f" | sed 's/^name: //')" = "$dir" ] || { echo "::error file=$f::name must equal the directory name ($dir)"; fail=1; }
+            [ "$(sed -n '2,4p' "$f" | cut -d: -f1 | tr '\n' ' ')" = "name description when-to-use " ] || { echo "::error file=$f::the keys are name, description, when-to-use"; fail=1; }
+            [ "$(sed -n '5p' "$f")" = "---" ] || { echo "::error file=$f::front matter is not four lines"; fail=1; }
+          done
+          exit $fail
