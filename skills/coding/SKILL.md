@@ -10,7 +10,7 @@ Style is the language's own business: run the formatter and linter this reposito
 
 ## The task and the spec
 
-- When the operator says the design change is already merged and asks only that the implementation match it, the documents outrank the code and are not yours to edit: implement to them, keep the diff to the code and its tests, and say in the change that the documents were left out. A code path that contradicts the merged document is the thing to change, not the document. A design pull request that says a document such as the runbook "lands with the code" has not given you permission to edit it — name the stale lines in the pull-request body instead.
+- When the operator says the design change is already merged and asks only that the implementation match it, the documents outrank the code and are not yours to edit: implement to them, keep the diff to the code and its tests, and say in the change that the documents were left out. A code path that contradicts the merged document is the thing to change, not the document. A design pull request that defers a document to the code has not given you permission to edit it — name the stale lines in the pull-request body instead.
 - **A merged design pull request does not mean the implementation exists.** Its body often names the handler and its tests as the pull request that follows. Confirm the behaviour is absent in the tree — `git log --oneline -- <source dir>` and read the handler the document names — before concluding that another agent already landed it.
 - **Sync the base branch before reading the documents.** A design change merged on the remote is absent from a clone left on an older `main`: `git fetch` and `git pull --ff-only` first, and treat a missing ADR as a stale clone before concluding the decision was never recorded.
 - **Implement in the order the architecture document numbers it.** When it gives a numbered flow, put each new check at the number the document gave it — dedup before a count, a count before matching the login — even when another placement reads more easily in the code. That order is what a reviewer compares the diff against.
@@ -39,7 +39,7 @@ Style is the language's own business: run the formatter and linter this reposito
 
 ## Scripts
 
-- **A development-flow script is a Bun script.** Something that runs commands — a check, a build, a release, a data fix — is written in TypeScript and run with `bun run scripts/<name>.ts`, in the repository's own `scripts/` directory. **Never** Python. Prefer it over a bash shell script: past a handful of lines a shell script has no types, no argument handling and no error handling, and it fails differently on the next machine. A command typed at the prompt is not a script.
+- **A development-flow script is a Bun script.** Something that runs commands — a check, a build, a release, a data fix — is written in TypeScript and run with `bun run scripts/<name>.ts`, in the repository's own `scripts/` directory. **Never** Python. Prefer it over a bash shell script: a shell script has no types, no argument handling and no error handling, and it fails differently on the next machine. A command typed at the prompt is not a script.
 - A script is code and gets the same treatment as the rest of the change: fail loudly when it cannot do its job, no silent fallback, no secret printed, and any argument it needs named where the command is written down.
 - **Never** leave a script that only one run needed. If it was a one-off, it was a command.
 
@@ -52,7 +52,7 @@ Style is the language's own business: run the formatter and linter this reposito
 
 ## Public surface
 
-- Keep the public API as small as it can be: private by default, public where another module genuinely needs it.
+- Keep the public API as small as it can be: private by default, public where another module needs it.
 - Changing an existing public interface is a decision, not an edit. Say who consumes it and why the change cannot be additive.
 - Every function, method, class and constant carries a block comment above it: what it is for, and anything the signature cannot say.
 - **Never** a JSDoc block — no `@param`, `@returns`, `@typedef`. Types are the type system's job: in TypeScript the signature already is the type, and a JSDoc block only repeats it in prose and drifts from it.
