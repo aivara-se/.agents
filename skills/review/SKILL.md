@@ -1,6 +1,6 @@
 ---
 name: review
-description: How to review another agent's change: what to check, the verdict, and the report.
+description: "How to review another agent's change: verdict and report."
 when-to-use: A pull request or a task handoff is waiting on your review. Never for your own work — the author of a branch never reviews it.
 ---
 
@@ -10,9 +10,11 @@ when-to-use: A pull request or a task handoff is waiting on your review. Never f
 
 1. Read the body and the conversation: what was claimed, what the task asked, and what the operator said in the thread. A claim the diff does not support is a finding.
 2. Read the diff twice — once for what it does, once for what it leaves undone: the caller nobody updated, the test that would have caught it, the document it made untrue, the error path that swallows.
-3. Run it. Check out the head, run the checks the repository gates on, and exercise what the change claims to fix. A reviewer who did not run the change is reading, not reviewing.
+3. Run it. Check out the head, run the checks the repository gates on, and exercise what the change claims to fix. A reviewer who did not run the change is reading, not reviewing. **Pin the sha**: record `headRefOid` and review that commit, not the branch — an author fixing findings, or a peer's rebase-merge, moves the head under you, and a review attached to a sha you never read is a finding that may already be gone.
 4. Test the claim: feed the empty input, reproduce the bug on the parent commit, and prove a new test pins the fix — take the fix out under the head's tests and watch them fail.
 5. Look at what the checks cannot see: swallowed errors, a public surface that grew, a dependency that appeared, a gate skipped and reported as passing, a credential or personal data in the diff.
+
+When the change is a decision record, verify its claims against the primary source — the payload schema, the runtime's own source, the CLI's help — not against its prose. A consequence that contradicts a decision bullet (a wake its own actor rule suppresses; a tag that stops hiding a session) is the finding: the record is the specification the code will follow.
 
 **An accepted ADR is immutable.** A change overrides it with a new ADR that names the clauses it replaces; an edit to an accepted record, or a body that claims one, is a finding, and only the operator can sanction an edit in place. PRODUCT, SYSTEMS and README are edited freely.
 
@@ -60,10 +62,11 @@ Post it as a formal review with the report as its body, written to a file and pa
 gh pr review <n> --request-changes --body-file <path>   # or --approve
 ```
 
-Read your own earlier reviews before posting. At an unmoved head a second review is noise unless the verdict changed; at a moved head your last `request changes` still blocks, so post the fresh verdict and name the findings earlier rounds settled.
+Read your own earlier reviews before posting. At an unmoved head a second review is noise unless the verdict changed; at a moved head your last `request changes` still blocks, so post the fresh verdict and name the findings earlier rounds settled. Read `headRefOid` immediately before posting and name it in the body: a push dismisses approvals (`dismiss_stale_reviews_on_push`), so a verdict is only about the head it names, and one posted against a head you did not read blocks on a finding the author may have already fixed.
 
 ## What a review is not
 
 - Not a second opinion on style the formatter enforces.
 - Not a redesign, and not a scope increase: the version acknowledges its gaps, and a shape the documents settled is not the diff's to revise.
 - Not a rewrite: request the small fix, or say what makes the change unsalvageable.
+- Not a security pass over the repository: that reads merged code and returns ranked findings, not one verdict — use `security-audit`.
