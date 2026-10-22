@@ -69,4 +69,4 @@ Read your own earlier reviews before posting. At an unmoved head a second review
 - Not a second opinion on style the formatter enforces.
 - Not a redesign, and not a scope increase: the version acknowledges its gaps, and a shape the documents settled is not the diff's to revise.
 - Not a rewrite: request the small fix, or say what makes the change unsalvageable.
-- Not a security pass over the repository: that reads merged code and returns ranked findings, not one verdict — use `security-audit`.
+- Not a security pass over the repository: that reads merged code and returns ranked findings, not one verdict — a separate pass, not a review of a diff.
