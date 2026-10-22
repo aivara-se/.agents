@@ -21,7 +21,7 @@ when-to-use: A pull request or a task handoff is waiting on your review. Never f
 A request for changes wakes the author and spends a round of a loop, so it clears the same gate as a finding:
 
 - **It is true** — you reproduced it, and the evidence is the command or input and its output.
-- **It is the change's to fix** — the task asked for this and the change misses it.
+- **It is the change's to fix** — the task asked for this and the change misses it. The task is the issue, the card or the operator's request and every criterion it names; a finding about work it never asked for is not a request for changes, however right the idea is — name it to the author as a follow-up and let the operator order it.
 - **It is the smallest fix that settles it** — no new abstraction, script, gate or document for a case nobody has hit, and no rework that costs more than the defect.
 
 ## The verdict
