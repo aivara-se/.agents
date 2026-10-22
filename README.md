@@ -25,7 +25,7 @@ The files under `agents/` are an agent's profile identity: one file per agent, t
 
 1. Create `skills/<skill-name>/SKILL.md`.
 2. Front matter is exactly three keys: `name` (equal to the directory name), `description` (one sentence), `when-to-use` (the trigger in the reader's own words). Keep a skill under about 120 lines; past that it is either two skills or the detail belongs in `references/`.
-3. A skill stands on its own: it names no other file of the convention and points at no other skill. A command it depends on is given where the skill can name it; where only the repository knows it, the skill says how to find it.
+3. A skill owns one concern and never restates another's rule: where another skill owns it, the skill names that skill and the reader follows it there. The reference runs one way — the skill that covers the situation names the one that covers the craft, never the reverse. A command it depends on is given where the skill can name it; where only the repository knows it, the skill says how to find it.
 4. A skill's supporting files live in one of four directories beside its `SKILL.md` — the four the runtime reads: `references/` (a document the skill points at), `templates/` (a file to copy and fill), `scripts/` (code the skill runs), `assets/` (images and other blobs).
 
 ## Checks
