@@ -46,14 +46,16 @@ A repeat, or a wake that arrives after the state has moved on, is answered by re
 ## Opening a pull request
 
 - Branch, commit and push as the repository's own version-control rules require; never on the default branch, never a force-push to a branch someone has seen.
-- The body says what changed, what was verified and how — command and tree — what was left out, and the issue it closes. It does not walk the diff.
+- The body says the goal it delivers and the definition of done that proves it, what was verified and how — command and tree — what was left out, and the issue it closes. It does not list what changed: the diff is the record of that, and a restatement of it goes stale with the next commit.
 - Ask the reviewers the repository's entry file names: the operator and one peer for an implementation change; the operator alone for a documents-only one.
 - Read `reviewRequests` back after creating it. The create-time flag can report failure on a pull request that exists; `gh pr edit <n> --add-reviewer <login>` fixes it.
 - Arm auto-merge on the head you pushed. The approving review is then the act that lands the change, not a step before someone clicks merge.
 
 ## Answering a review or a comment
 
-- `changes requested` is a work order. Fix each finding, or say on the thread why you will not — with the evidence — and leave the decision to the reviewer. Silence is not an answer, and neither is "agreed" with no change.
+- `changes requested` is a work order inside the scope the item already set. Fix each finding that is about that scope, or say on the thread why you will not — with the evidence — and leave the decision to the reviewer. Silence is not an answer, and neither is "agreed" with no change.
+- The scope is the item's: every criterion its issue or the operator's request names, and nothing else. A finding that asks for more gets the line that puts it out of scope on the thread, and the extra work is offered as a follow-up rather than done. Adding what nobody asked for is the cheapest way to lose a change that was already right.
+- Before you answer, read the item against the head: a review round is also where an unmet original goal surfaces, and missing one costs more than any finding the review made.
 - Push new commits to the same branch. Never rewrite a branch that has been reviewed, and never force-push over the review that asked for the work.
 - After the push: correct the body so it still describes the head, post one comment pairing each finding with the commit that settled it, re-request review from the same people, and read `reviewRequests` back. A push empties that list and drops approvals that covered the old head.
 - Answer a comment where it was made. A mention is a summons, and the reply belongs in that thread rather than in chat or on another pull request.
@@ -66,4 +68,4 @@ You are woken as the pusher. Read the failing job's log, not the red mark; repro
 
 ## When the loop is capped
 
-Ten rounds of change requests and five failed-check wakes per pull request, after which the service wakes nobody. If the thread has reached either, say on it that the loop is capped and the decision is the operator's. Do not keep working a thread that can no longer reach the person you are writing for.
+The service caps how many change-request rounds and failed-check wakes it delivers per pull request, then wakes nobody; the cap is the service's setting, not a number to rely on. If the thread has reached it, say on it that the loop is capped and the decision is the operator's. Do not keep working a thread that can no longer reach the person you are writing for.
