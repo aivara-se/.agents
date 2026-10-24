@@ -20,5 +20,5 @@ The product document is the one authoritative place for user-facing behaviour. I
 
 - Do not write the document in the voice of an existing document in the repository. Long-form documents drift past the length this skill allows; write from the rules, not from the neighbour.
 - A constraint the product cannot meet alone is written with the step the user or the platform must take, and the document says the promise holds only then. Do not promise it falsely.
-- A promise tied to a mechanism breaks when the mechanism changes. When a platform step is swapped, re-read every document that named it and restate each promise to what the new mechanism can deliver. Trimming the promise is part of the change, and it touches every document that named the old one, not just the open one.
+- A promise tied to a mechanism breaks when the mechanism changes. When a platform step is swapped, re-read every document that named it and restate each promise to what the new mechanism can deliver. Trimming the promise is part of the change, and it touches every document that named the old one, not only the open one.
 - Every acceptance item must be checkable by someone other than its author: a time, a count, a replayable input trace.
