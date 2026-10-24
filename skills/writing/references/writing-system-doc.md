@@ -14,7 +14,7 @@ The system document is the one authoritative place for how the thing is served a
 
 ## Rules
 
-- Name the choices, not the stack. The language, the host and the serving shape earn a line, because replacing any of them is a decision someone pays for; a package, a version floor and a file layout do not — they are how a choice above is spelled, not a choice of their own.
+- Name the choices, not the stack. The language, the host and the serving shape earn a line: replacing any of them is a decision someone pays for. A package, a version floor and a file layout do not — they spell a choice, they are not one.
 - Write the design, not the status. What the system is and what it must do belongs here; whether it is built, deployed or checked yet belongs in the pull request or the card. "Nothing here is built yet" is not architecture.
 - Do not open by announcing the set. The product document, the design document, the decision records and this one are the repository's pattern; no reader needs any of them to say so. A sentence naming another document earns its place only where a fact needs it, and an opening line that restates the headings below it says nothing.
 - Every mechanism is stated with the requirement it must meet and its fallback; a product promise holds only while the mechanism can deliver it.
