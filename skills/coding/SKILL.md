@@ -19,6 +19,7 @@ Style is the formatter's job: run the one this repository uses and do not argue 
 - Build in the order the architecture document numbers; the reviewer compares against it.
 - An ADR's overrides clause is a deletion list. Read the old ADR beside the new.
 - Reuse the service's vocabulary: a new outcome is a value in the existing field unless the design says otherwise.
+- A restyle naming its elements does not license the rest of the page: change those, leave neighbours as they were, and name the mismatch for the operator to decide.
 
 ## Structure
 
@@ -42,6 +43,7 @@ Style is the formatter's job: run the one this repository uses and do not argue 
 - Validate at the boundary — input, network, filesystem, environment — and trust what is inside.
 - An error names what failed and what was expected, without blaming the reader.
 - Never log, print or commit a secret, a token or personal data, not even truncated or in a fixture.
+- Collapsing data files into one silently drops container-inherited values: bake them onto each item, then replay the old resolution against `git show HEAD:<path>` and count mismatches.
 
 ## Public surface
 
