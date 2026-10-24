@@ -6,35 +6,35 @@ when-to-use: Any change to source code or to the build and CI around it, before 
 
 # Coding
 
-Style is the formatter's job: run the one this repository uses and do not argue with it.
+Style is the formatter's job: run the one this repository uses and do not argue.
 
 ## The task
 
-- Build the smallest thing the task asks for. A gap you can name is a fact about this version: name it in the body.
-- A rare case needing a new concept is not a requirement. Record it, unless an ordinary caller reaches it and it throws or corrupts.
-- A merged design outranks the code: implement to it, and name the documents you left unedited.
+- Build the smallest thing the task asks. A gap you can name is a fact about this version: say it in the body.
+- A rare case needing a new concept is not a requirement: record it, unless an ordinary caller reaches it and it throws or corrupts.
+- A merged design outranks the code: implement to it, and name the documents left unedited.
 - Never choose between two readings in silence: say which you took, and why.
 - Frozen documents: a contradiction is a blocker. Name the file, the line and the input that settles it, in one question.
 - Sync the base branch, and read the tree before assuming another agent landed it.
 - Build in the order the architecture document numbers; the reviewer compares against it.
 - An ADR's overrides clause is a deletion list. Read the old ADR beside the new.
 - Reuse the service's vocabulary: a new outcome is a value in the existing field unless the design says otherwise.
-- A restyle naming its elements does not license the rest of the page: change those, leave neighbours as they were, and name the mismatch for the operator to decide.
+- A change wider than its ask — an unasked restyle, a silent data merge: `references/hidden-scope.md`.
 
 ## Structure
 
 - One responsibility per function, module and file. Return early rather than nest.
 - No dead code, unused export or unnamed TODO. Git is the history.
-- YAGNI before DRY: the third copy earns the abstraction; two blocks differing only in a constant are one function with a parameter.
+- YAGNI before DRY: the third copy earns the abstraction; two blocks differing only in a constant are one parameterised function.
 - A table of contents means splitting; a mid-way comment means extracting.
-- When a new flow joins a handler, walk every piece of state it touches, decide per piece, and pin it with a test.
-- A condition covering a class the switch handles makes later branches dead: fold the old target in first and test each one.
+- When a flow joins a handler, walk every piece of state it touches, decide per piece, and pin it with a test.
+- A condition covering a class the switch handles kills later branches: fold the old target in first, and test each.
 
 ## Dependencies and scripts
 
 - Standard library first. A dependency is a cost: justify it in the body or do not add it.
 - Never a second package manager, lockfile, formatter or test runner.
-- A script that runs commands is TypeScript: `bun run scripts/<name>.ts`. Never Python or shell, and a command at the prompt is not a script.
+- A script that runs commands is TypeScript, run as `bun run scripts/<name>.ts`. Never Python or shell; a prompt command is not a script.
 - A script fails loudly, prints no secret, and names its arguments where the command is written. Delete a one-off.
 
 ## Errors and data
@@ -43,12 +43,11 @@ Style is the formatter's job: run the one this repository uses and do not argue 
 - Validate at the boundary — input, network, filesystem, environment — and trust what is inside.
 - An error names what failed and what was expected, without blaming the reader.
 - Never log, print or commit a secret, a token or personal data, not even truncated or in a fixture.
-- Collapsing data files into one silently drops container-inherited values: bake them onto each item, then replay the old resolution against `git show HEAD:<path>` and count mismatches.
 
 ## Public surface
 
-- Private by default. A public interface that must change is a decision: say who consumes it and why.
-- Every function, class and constant carries a block comment: what it is for, and what the signature cannot say.
+- Private by default. Changing a public interface is a decision: say who consumes it and why.
+- Every function, class and constant carries a block comment: what it is for, what the signature cannot say.
 - Never a JSDoc block. Types are the type system's job.
 
 ## The pull request
@@ -63,7 +62,7 @@ Style is the formatter's job: run the one this repository uses and do not argue 
 
 ## After a review
 
-- A request for changes is a proposal: is it true, in scope, worth more than it costs? If not, answer on the thread.
+- A request for changes is a proposal: is it true, in scope, worth its cost? If not, answer on the thread.
 - When it holds, apply it and ask that reviewer again.
 - A push re-runs the gate and dismisses approvals; rebase as the base moves, then re-request.
 

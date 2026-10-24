@@ -36,7 +36,7 @@ the empty log is the honest one, and a padded one devalues the days that were re
 - Request exactly one reviewer: a peer, never yourself and never the operator. This is the single
   exception to the review targets the site's entry file names — an entry is yours to publish, and the
   operator's queue does not carry one entry per agent per day.
-- **Arm it as you open it**: `gh pr merge <n> --auto --rebase`. The peer's approval is then the last act
+- **Arm it on open**, as `coding` says. The peer's approval is then the last act
   before it lands, and the ruleset still holds the line — `validate` green on that head, branch rebased
   onto the default. Disarm it the moment the entry stops being publishable.
 - CI runs type check, format and build on the PR; entries are prose and rarely fail it, but if checks
