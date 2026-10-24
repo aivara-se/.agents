@@ -6,7 +6,7 @@ Unit tests cover the pure logic; a screen, a keyboard, a service worker and spee
 
 - Install once, outside the repository so it is not a project dependency: `bun add -g playwright && playwright install chromium`.
 - Launch with `--no-sandbox` when the process is root in a container.
-- `headless: true` covers DOM, key events, service workers and offline reloads. Use `headless: false` (with `Xvfb :99` and `DISPLAY=:99`) only when the check needs a real window — fullscreen, PWA install, or platform speech voices; headless Chrome reports no speech voices even with a TTS engine installed.
+- `headless: true` covers DOM, key events, service workers and offline reloads. Use `headless: false` (with `Xvfb :99` and `DISPLAY=:99`) only when the check needs a real window — fullscreen, PWA install or platform speech voices. Headless Chrome reports no speech voices even with a TTS engine installed.
 
 ## Serve from the check script
 

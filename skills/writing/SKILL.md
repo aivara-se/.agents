@@ -1,51 +1,51 @@
 ---
 name: writing
-description: The rules for every document a repository ships — where a fact lives, and how it is written.
-when-to-use: Any markdown, spec, README, doc comment, or anything a human reads in order to understand the code.
+description: How this organisation writes — the length every message and document gets, and the file that shapes each kind.
+when-to-use: Anything a person reads: a chat message, a pull-request body, a review, a document, or a skill.
 ---
 
 # Writing
 
-Documentation is part of the change, not a follow-up task. A change that makes a document wrong has not finished until the document is right.
-
-## Scope and tense
-
-- A document is written for a reader working in this repository: what is here, how to use it, how to check it, what to do next.
-- Leave out what that reader does not need. A path, a pointer or a link earns its place by being needed to act on what the document says; a sentence about another repository's business, or about the organisation's other work, is detail nobody asked for.
-- Present state and future. Say what is true now and what is meant to happen next; what a thing replaced, what an earlier version did, or where it moved from belongs in the commit and the pull request. A decision record (an ADR) is the exception — keeping the decision and what it displaced is the point of it.
-
-## Where a fact lives
-
-- One fact, one home. A repository has one authoritative document per subject — product, design, system — and each of them is the only copy of what it says. Link to them; do not restate their content anywhere else, including here.
-- User-facing behaviour belongs in the product document, serving and checks in the system document, interface and visual decisions in the design document. When a fact could live in two of them, it lives in one and the other links to it.
-- The shape of a product document is `references/product-doc.md`.
-- The shape of a design document — the interface and the values it fixes — is `references/design-doc.md`.
-- The shape of a system document — how it is hosted, built, and kept working offline — is `references/system-doc.md`.
-- Code comments explain **why**. A comment that restates the line beneath it is noise: delete the comment, or delete the line.
-- If the change makes any document untrue — the repository map included — fix that document in the same change.
-- A repository map names the documents and the packages with a job of their own; a root file obvious from the tree earns no line.
-
-## ADRs
-
-- An ADR stands alone. It carries the decision, the reasons and the shape it fixes without linking to the product, system, design or README documents: those move, and a decision that points at them rots. Links to other ADRs are fine, which is why they are the one exception to the linking rule above.
-- A README does not cite ADRs: no inline `(ADR 004)` links and no ADR list under a documentation heading. The README is for the reader who runs the thing; the decision record is for whoever changes it. Point at the product document and stop.
-
-## How to write it
-
-- No stack bloat: **never** list the technologies used ("built with X, Y, Z"). Describe what the thing is for and what it does, not what it is made of.
-- **Never** hard-wrap: one paragraph, one bullet, one line — in every markdown file, this one included. The reader's viewer does the wrapping; a line break inside a sentence shows up in the diff and in the rendered page as an artefact.
-- **Never** write a table wider than 80 characters. A table that scrolls sideways cannot be read in a terminal, a diff, or on a phone, and it costs a reader more than the columns save. Content that repeats — a slot and its meaning, a rule and its reason — is a list, one item per line, or sub-headings with a paragraph under each.
-- Short paragraphs, present tense, imperative for instructions. No marketing adjectives, no "simply", no "just", no exclamation marks.
-- Every command quoted in prose must be the command the repository actually runs; if they differ, the document is wrong.
-- Concrete over abstract: a path, a command and an example beat a paragraph of principles. Delete any sentence that would survive unchanged in a different repository.
+Two things decide whether writing works: it is short enough to finish, and the reader finds what they need first.
 
 ## Length
 
-- Concise and to the point is the rule for every document, in every repository — a product spec, a design note, a README. The reader wants what to do, not prose. A section that can be one line is one line.
-- Write from these rules, not from the file next door. An existing document is not a model for a new one: documents drift, they run far past the length this skill allows, and copying their shape spreads the drift. A verbose neighbour is the reason to follow this skill, not to match it.
+- A chat message, issue comment or pull-request body is 150 words. Past that it is a document: write it to a file and link it.
+- A review is one screen: the verdict and the findings that block.
+- A `SKILL.md` is 700 words, a reference 600, an agent file 260.
+- One rule per bullet, 30 words or less. The reason is a clause; the story belongs to the commit.
+- A section that can be one line is one line. Delete any sentence that would survive unchanged in another repository.
 
-## READMEs
+## Shape
 
-- Every application and every shared library in this repository has a `README.md` at its root.
-- Start from `templates/readme-template.md`, next to this file, rather than from a blank page; fill it in and delete the guidance you did not use.
-- A README answers, in this order: what this is, how to run it locally, how to use it, how to check it. It does not carry history: not where the code came from, not what it replaced, not how an earlier version behaved. That belongs in the commit and the pull request, and in a README it is padding that pushes the useful part further down. Nor does it describe a roadmap or an org chart.
+- The first line is the answer, the verdict or the ask. Nothing before it: no preamble, no restating the request, no recap.
+- Then the evidence, then what you need. Never the other way round.
+- A list repeats; a paragraph argues. A lookup — who reviews what, which command for which case — is a list.
+- Concrete beats abstract: a path, a command, an example.
+
+## Plain language
+
+- Short sentences, present tense, active voice. Imperative for instructions.
+- The short word: use not utilise, help not assist, about not approximately. No "simply", no "just", no "note that".
+- One idea per paragraph. Never hard-wrap. Never a table wider than 80 characters.
+- Explain a specialist term on first use: a reader who knows it is not slowed, and one who does not is lost.
+
+## Where a fact lives
+
+- One fact, one home. A repository has one document per subject — product, design, system — and the others link to it.
+- User-facing behaviour is the product document. Serving and checks are the system document. Interface and visual decisions are the design document.
+- A code comment explains why. A comment that restates the line beneath it is noise: delete the comment, or the line.
+- If the change makes a document untrue, fix that document in the same change.
+
+## Which document
+
+- `references/writing-messages.md` — chat, issue and pull-request comments.
+- `references/writing-reviews.md` — a review verdict.
+- `references/writing-pull-requests.md` — the body of a pull request.
+- `references/writing-skills.md` — a `SKILL.md` and its supporting files.
+- `references/writing-readmes.md` — a README.
+- `references/writing-adr.md` — a decision record.
+- `references/writing-product-doc.md`, `references/writing-design-doc.md`, `references/writing-system-doc.md` — the specs.
+- `templates/readme-template.md` — start here for a new README.
+
+An ADR is the one document that keeps what it displaced.
