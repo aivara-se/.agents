@@ -33,7 +33,7 @@ Return exactly one, and put it on the first line:
 
 - `approve` — you ran it and found nothing that must change before it lands.
 - `request changes` — with each item carrying file, line and the evidence.
-- `block` — only when the decision is not yours. Say who must decide.
+- `block` — only when the decision is not yours. Say who must decide. A change whose findings cannot all be settled without new mechanism — a credential, durable state, a field, an interface — is this case: name what it would have to grow into, and let the operator cut the version instead of reconciling it round by round.
 
 **Never** approve a change you did not run, or the pull request you authored. **An approval can be the merge**: an armed pull request lands on it, so read `gh pr view <n> --json mergeStateStatus,statusCheckRollup` before you post, and do not approve a head that is behind the default branch.
 
