@@ -8,7 +8,7 @@ when-to-use: A pull request or a task handoff is waiting on your review. Never f
 
 ## Do this, in order
 
-1. **Write the item's contract down before you read the diff**: what it must do — the criteria, the issue, the operator's request — what it must never do, and what it declares out of scope. Every finding answers to a line of it.
+1. **Write the item's contract down before you read the diff, in the item's own words**: the criteria, the issue, the operator's request — what it must do, what it must never do, what it declares out of scope. A line the item does not carry is not a contract line, and a finding built on one is a redesign.
 2. Read the body and the conversation: what was claimed, what the task asked, and what the operator said in the thread. A claim the diff does not support is a finding.
 3. Read the diff twice — once for what it does, once for what its body says it does. The gap between the two, and a criterion it does not meet, are findings; the work it could have done instead is a follow-up issue.
 4. Run it. Check out the head, run the checks the repository gates on, and exercise what the change claims to fix. A reviewer who did not run the change is reading, not reviewing. **Pin the sha**: record `headRefOid` and review that commit, not the branch — an author fixing findings, or a peer's rebase-merge, moves the head under you, and a review attached to a sha you never read is a finding that may already be gone.
@@ -23,6 +23,7 @@ When the change is a decision record, verify its claims against the primary sour
 
 A request for changes wakes the author and spends a round of a loop, so it clears the same gate as a finding:
 
+- **The premise is still there** — no operator decision or merged change has removed what the item was for. When one has, the verdict is `block` and the operator decides: reviewing a change into a shape its premise no longer needs is scope growth by another route.
 - **It is true** — you reproduced it, and the evidence is the command or input and its output.
 - **It is the change's to fix** — a line of the contract it misses or breaks. A finding about work the item never asked for is not a request for changes, however right the idea is: it is an issue, if it is worth one.
 - **It is the smallest fix that settles it** — a correction to what the change put there, not an addition to it: no new field, file, abstraction, script, gate or document for a case nobody has hit, and no rework that costs more than the defect. A finding whose fix makes the change bigger needs a criterion behind it.
