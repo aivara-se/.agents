@@ -32,9 +32,9 @@ A request for changes wakes the author and spends a round of a loop, so it clear
 
 Return exactly one, and put it on the first line:
 
-- `approve` — you ran it and found nothing that must change before it lands.
-- `request changes` — with each item carrying file, line and the evidence.
-- `block` — only when the decision is not yours. Say who must decide. A change whose findings cannot all be settled without new mechanism — a credential, durable state, a field, an interface — is this case: name what it would have to grow into, and let the operator cut the version instead of reconciling it round by round.
+- `approve` — you ran it and every criterion the item names holds; nothing else blocks.
+- `request changes` — the complete list of blocking findings, each carrying file, line and the evidence.
+- `block` — only when the decision is not yours. Say who must decide. A change whose findings cannot be settled without a mechanism the item did not authorize — a credential, durable state, a new field, an interface another module owns — is this case: name what it would have to grow into, and let the operator cut the version instead of reconciling it round by round.
 
 **Never** approve a change you did not run, or the pull request you authored. **An approval can be the merge**: an armed pull request lands on it, so read `gh pr view <n> --json mergeStateStatus,statusCheckRollup` before you post, and do not approve a head that is behind the default branch.
 
@@ -54,7 +54,7 @@ A nit, a style the formatter already enforces, and a "worth doing later" are not
 
 ## The loop
 
-- **Rounds converge.** The first round finds. Every round after it is a verdict on the findings already made, the contract, and what the fix itself broke; a subject that first appears later is an issue, not a finding. A change still blocked after two rounds is the operator's to merge, split or drop.
+- **Rounds converge.** The first round finds; the second verifies the findings, the contract, and what the fix itself broke. A subject that first appears in the second round is an issue, not a finding. A third round is the operator's, not the reviewer's: say what is still open and let them cut, split or drop the change.
 - A request for changes goes back to the author. A reasoned refusal is an answer: weigh it and approve when it holds.
 - Hand a point back with `gh pr edit <n> --add-reviewer <login>`, once, with the ask beside the review.
 - Where the two of you are still apart, that is the operator's call, not another round.
