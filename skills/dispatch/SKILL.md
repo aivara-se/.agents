@@ -60,7 +60,7 @@ A repeat, or a wake that arrives after the state moved on, is answered by readin
 
 ## When the operator asks whether there is work
 
-An empty tracker is a finding: answer it from the remote when asked, not from a clone or a listing that printed nothing. Sweep the repository, the boards and the unlanded branches — `references/operator-work-check.md`.
+An empty tracker is a finding: answer from the remote when asked, and sweep the boards and the unlanded branches — `references/operator-work-check.md`.
 
 ## A failed check
 
