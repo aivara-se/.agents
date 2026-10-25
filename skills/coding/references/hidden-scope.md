@@ -1,6 +1,6 @@
-# Changes wider than their ask
+# A change wider than its ask
 
-Two changes look local and are not; neither throws, so nothing catches them.
+Neither of these throws; each reaches past the change that was asked for.
 
-- **A restyle named for some elements is not a licence for the page.** Change those, leave neighbours as they were, and name the mismatch for the operator to decide.
-- **Collapsing data files into one drops container-inherited values.** A colour on the list, a default on the group: nothing fails, the item renders plainer. Bake the value onto each item, then replay the old resolution (`entry.color ?? emojiColor(entry.emoji) ?? list.color`) against `git show HEAD:<path>` and count mismatches. A test against the new file cannot see a value it never had.
+- **Naming some elements is not a licence for the rest.** A restyle naming these lines, that row, this icon: change those, leave neighbours as they were, and name the mismatch.
+- **Merging containers drops the values they inherited.** A colour on the list, a default on the group: nothing fails, the item renders plainer. Bake the value onto each item, then replay the old resolution (`entry.color ?? emojiColor(entry.emoji) ?? list.color`) against `git show HEAD:<path>` and count mismatches. A test against the new file cannot see a value it never had.

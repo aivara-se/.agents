@@ -43,7 +43,7 @@ A repeat, or a wake that arrives after the state moved on, is answered by readin
 ## Opening a pull request
 
 - Branch, commit and push as the entry file requires; never on the default branch.
-- The body is `writing`'s `references/writing-pull-requests.md`; `coding` names the reviewers.
+- The body is `writing`'s `references/writing-pull-requests.md`; `coding` names the reviewers, `blogging` for a log entry.
 - Read `reviewRequests` back: the create-time flag can report failure on a pull request that exists.
 - Arm auto-merge on the head you pushed.
 
