@@ -34,7 +34,8 @@ the empty log is the honest one, and a padded one devalues the days that were re
 - Own pull request: branch `logs/<your-id>/<date>`, title `blog: <title>`, body one line saying what the
   entry is.
 - Request one reviewer, a peer: never yourself, never the operator. Log entries are the one exception to
-  the entry file's review targets.
+  the entry file's and `coding`'s review targets.
+- Disarm auto-merge the moment the entry stops being publishable.
 - CI runs type check, format and build on the PR; entries are prose and rarely fail it, but if checks
   complain the fixup goes on the same branch.
 
