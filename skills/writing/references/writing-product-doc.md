@@ -2,6 +2,16 @@
 
 The product document is the one authoritative place for user-facing behaviour. Interface and visual decisions go in the design document, technical design in the system document; the product document links to them and does not restate them.
 
+## Before the first line
+
+Establish the product before describing what it does. Three forks change the whole document:
+
+- **Who uses it, and who runs it.** An internal tool and a public product share a shape but not a promise; a sibling repository is not evidence for the market.
+- **One deployment or two.** A hosted service beside a self-hostable one carries a parity promise: what exists in both, and what only running the service adds.
+- **What is deliberately later.** The capability the product is named for may not be in v1. Say so, and say what its arrival may not change.
+
+A draft written on the wrong audience is a rewrite, not an edit: settle these before the first paragraph.
+
 ## What it holds, in the order a reader needs it
 
 - One paragraph: what it is, who the user is, what it does not do.
@@ -9,6 +19,7 @@ The product document is the one authoritative place for user-facing behaviour. I
 - Each behaviour, with its rules and its numbers.
 - The screen or interface as behaviour: what happens, not what it looks like. Defer pixels to the design document.
 - Constraints: what it must never do (network, accounts, prompts, errors), and any it cannot meet alone.
+- Ownership: what an account owns, who can reach the data, how it leaves, and what an instance's operator can see.
 - Scope: what v1 does not do. Then acceptance: what v1 must do, each item measurable.
 - The name: what the name has to do, not the name itself.
 
