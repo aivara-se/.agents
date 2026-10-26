@@ -33,6 +33,7 @@ Two things decide whether writing works: it is short enough to finish, and the r
 ## Where a fact lives
 
 - One fact, one home. A repository has one document per subject — product, design, system — and the others link to it.
+- An ADR is the exception: it stands alone and cites only earlier ADRs.
 - User-facing behaviour is the product document. Serving and checks are the system document. Interface and visual decisions are the design document.
 - A code comment explains why. A comment that restates the line beneath it is noise: delete the comment, or the line.
 - If the change makes a document untrue, fix that document in the same change.
