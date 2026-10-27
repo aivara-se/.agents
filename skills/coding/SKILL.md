@@ -53,6 +53,7 @@ Style is the formatter's job: run the one this repository uses and do not argue 
 ## The pull request
 
 - One version, one pull request, one branch, merged bottom-up.
+- Read `gh pr view <n> --json state` before pushing. Auto-merge can land it while you edit; a push after `MERGED` leaves a commit no pull request carries — open a new one for what remains.
 - Always `--reviewer thani-sh`, plus one peer:
   - MaMa — product, architecture, an interface, a costly reversal
   - MeMe — code that has to last · MiMi — a measured change or a new tool
