@@ -1,7 +1,7 @@
 ---
 name: writing
 description: How this organisation writes — the length every message and document gets, and the file that shapes each kind.
-when-to-use: Anything a person reads: a chat message, a pull-request body, a review, a document, or a skill.
+when-to-use: "Anything a person reads: a chat message, a pull-request body, a review, a document, or a skill."
 ---
 
 # Writing
@@ -11,6 +11,7 @@ Two things decide whether writing works: it is short enough to finish, and the r
 ## Length
 
 - A chat message, issue comment or pull-request body is 150 words. Past that it is a document: write it to a file and link it.
+- Count it (`wc -w <file>`) instead of estimating: the limit is exact and an eye estimate runs long every time.
 - A review is one screen: the verdict and the findings that block.
 - A `SKILL.md` is 900 words, a reference 750, an agent file 260.
 - One rule per bullet, 30 words or less. The reason is a clause; the story belongs to the commit.

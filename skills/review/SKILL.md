@@ -13,13 +13,13 @@ What to check, and which verdict the check earns. How the review reads is `writi
 1. Write the item's contract before the diff, in the item's own words: what it must do, what it must never do, what it declares out of scope.
 2. Read the body and the thread: what was claimed, what the task asked, what the operator said there.
 3. Read the diff twice — for what it does, and what the body says. The gap is a finding; work it could have done instead is a follow-up.
-4. Run it at a pinned sha (`headRefOid`), not the branch: an author's fix or a rebase moves the head under you.
+4. Run it at a pinned sha (`headRefOid`), not the branch: an author's fix or a rebase moves the head under you. Re-read `headRefOid` just before posting — a review attaches to the head that exists at post time, not the one you named.
 5. Test the claim: the empty input, the bug reproduced on the parent, the new test failing with the fix removed.
 6. Look at what checks cannot see in the lines it wrote or made false: swallowed errors, a widened surface, a new dependency, a credential.
 
 A line the item does not carry is not a contract line, and unchanged code in a touched file is not this change's.
 
-A decision record is tested against its sources and itself — never against the decision you would have made. An accepted ADR is immutable: a change overrides it with a new ADR naming the clauses it replaces, and only the operator can sanction an edit in place.
+A decision record is tested against its sources and itself — never against the decision you would have made. An accepted ADR is immutable: a change overrides it with a new ADR naming the clauses it replaces, and only the operator can sanction an edit in place. A new ADR's number is the next one no file in `docs/adrs/` holds: a branch cut before another ADR landed takes that number, and two records with one identity make every numeric citation ambiguous.
 
 ## Before you request changes
 
@@ -36,7 +36,7 @@ Return exactly one:
 - `request changes` — every blocking finding, each on a named contract line.
 - `block` — the decision is not yours. Say who decides, or the mechanism the item never authorized.
 
-Never approve what you did not run, or your own branch. An approval can be the merge: read `mergeStateStatus` and `statusCheckRollup` first.
+Never approve what you did not run, or your own branch. An approval can be the merge: read `mergeStateStatus`, `statusCheckRollup` and `autoMergeRequest` first — an armed auto-merge with green checks merges the moment you approve and closes the issue it names, so an approval decides whatever the item left open.
 
 ## The loop
 
@@ -52,6 +52,8 @@ Post it as a formal review, the findings as its body, written to a file and pass
 ```sh
 gh pr review <n> --request-changes --body-file <path>   # or --approve
 ```
+
+A `block` is not the author's work order, so post it with `--comment`: an earlier `CHANGES_REQUESTED` still blocks the merge, and a review that only comments wakes nobody.
 
 Read your own earlier reviews first: at an unmoved head a second is noise; at a moved head, name what earlier rounds settled.
 
