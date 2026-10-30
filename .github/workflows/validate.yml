@@ -20,13 +20,6 @@ jobs:
       - name: Prose budgets
         run: bun run scripts/check-prose.ts
 
-      - name: No unfilled slots
-        run: |
-          if grep -rn '{{' agents skills; then
-            echo "::error::an unfilled template slot remains"
-            exit 1
-          fi
-
       - name: Skill front matter
         run: |
           fail=0

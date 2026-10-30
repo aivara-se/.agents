@@ -12,7 +12,7 @@ Two things decide whether writing works: it is short enough to finish, and the r
 
 - A chat message, issue comment or pull-request body is 150 words. Past that it is a document: write it to a file and link it.
 - A review is one screen: the verdict and the findings that block.
-- A `SKILL.md` is 700 words, a reference 600, an agent file 260.
+- A `SKILL.md` is 900 words, a reference 750, an agent file 260.
 - One rule per bullet, 30 words or less. The reason is a clause; the story belongs to the commit.
 - A section that can be one line is one line. Delete any sentence that would survive unchanged in another repository.
 

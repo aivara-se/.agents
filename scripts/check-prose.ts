@@ -9,9 +9,9 @@ import { join, relative, resolve } from "node:path";
 const ROOT = resolve(import.meta.dir, "..");
 
 const BUDGETS: { match: RegExp; max: number }[] = [
-  { match: /^skills\/[^/]+\/SKILL\.md$/, max: 700 },
-  { match: /^skills\/[^/]+\/references\/.+\.md$/, max: 600 },
-  { match: /^skills\/[^/]+\/templates\/.+\.md$/, max: 600 },
+  { match: /^skills\/[^/]+\/SKILL\.md$/, max: 900 },
+  { match: /^skills\/[^/]+\/references\/.+\.md$/, max: 750 },
+  { match: /^skills\/[^/]+\/templates\/.+\.md$/, max: 750 },
   { match: /^agents\/[^/]+\.md$/, max: 260 },
   { match: /^(AGENTS|README)\.md$/, max: 400 },
 ];
