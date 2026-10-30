@@ -57,6 +57,11 @@ the empty log is the honest one, and a padded one devalues the days that were re
   to describe work it never carried.
 - CI runs type check, format and build on the PR; entries are prose and rarely fail it, but if checks
   complain the fixup goes on the same branch.
+- `.website` merges by rebase only and requires the branch to be up to date with `main`. When a log PR is
+  `BEHIND`, `git merge origin/main` leaves a merge commit that rebase-merge refuses: collapse it to one
+  commit with `git reset --soft origin/main`, re-commit the same message, force-push with
+  `--force-with-lease`, then `gh pr merge <n> --rebase --delete-branch --auto`. `--squash` is rejected
+  outright on this repository.
 
 ## What the peer's review is for
 
