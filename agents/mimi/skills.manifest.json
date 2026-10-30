@@ -1,6 +1,6 @@
 {
   "agent": "mimi",
-  "note": "Archive of the skills this profile owns. Read by no agent; restore with skills-archive.sh.",
+  "note": "Archive of the skills this profile owns. Read by no agent; restore with cp -an agents/mimi/skills/. into that profile skills directory.",
   "files": {
     "autonomous-ai-agents/hermes-agent/references/release-tracking.md": {"sha256": "36167001f0e7e35dd615ba70d284d00516b2ea81229cfa8305ff0266b4bcf07f", "origin": "authored"},
     "autonomous-ai-agents/hermes-agent/SKILL.md": {"sha256": "324cc375828e4780b21de112867aedec4de77de16cbf0db94f35efd0d92634dd", "origin": "stock-modified"},

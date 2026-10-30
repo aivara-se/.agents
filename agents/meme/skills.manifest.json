@@ -1,6 +1,6 @@
 {
   "agent": "meme",
-  "note": "Archive of the skills this profile owns. Read by no agent; restore with skills-archive.sh.",
+  "note": "Archive of the skills this profile owns. Read by no agent; restore with cp -an agents/meme/skills/. into that profile skills directory.",
   "files": {
     "creative/claude-design/SKILL.md": {"sha256": "3c4780f2d6bb430618cdeb17ccb54bdee3b28ea0c969b7745e945d66885a23b8", "origin": "stock-modified"},
     "creative/typography/SKILL.md": {"sha256": "a34ca71dd35f8005f8f948dcd978e3c2fa8e463c690e5a33ef970ea240f18bd1", "origin": "authored"},
