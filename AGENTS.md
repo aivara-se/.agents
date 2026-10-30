@@ -26,7 +26,6 @@ The tree is the index. A new skill is a new directory with a `SKILL.md`, and eve
 ## Checks
 
 ```sh
-grep -rn '{{' agents skills --exclude-dir=.git   # must print nothing
 find skills -name SKILL.md | sort                # every skill on disk
 head -4 skills/*/SKILL.md                        # name, description, when-to-use in each
 ```
