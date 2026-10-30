@@ -4,7 +4,7 @@ Who each agent in this organisation is, and the procedures they all work by. `RE
 
 ## Layout
 
-- `agents/` — one file per agent: the whole of that profile's `SOUL.md`.
+- `agents/` — one file per agent: the whole of that profile's `SOUL.md`. `agents/<name>/skills/` beside it is that profile's own skills, archived and read by no agent.
 - `skills/` — one directory per skill, each holding a `SKILL.md`.
 - `README.md` — what is here, how it is consumed, and how a skill is written.
 
@@ -15,7 +15,7 @@ The tree is the index. A new skill is a new directory with a `SKILL.md`, and eve
 - The entry file a repository adopts is `aivara-se/.template`, never this repository's own `AGENTS.md`.
 - Never leave a slot (`{{...}}`) unfilled in a copy of the template; no slot exists in this repository.
 - Never write a secret, a token, a host path or a personal name into this repository.
-- ALWAYS change a skill here once, rather than copying it into a profile or a repository.
+- ALWAYS change a skill here once, rather than copying it into a profile or a repository. The archive under `agents/<name>/skills/` is the exception: a backup, restored after a rebuild and read by no agent.
 - An agent file is complete on its own: copy it over `SOUL.md` and nothing is lost.
 
 ## Version Control

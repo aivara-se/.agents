@@ -12,6 +12,7 @@ const BUDGETS: { match: RegExp; max: number }[] = [
   { match: /^skills\/[^/]+\/SKILL\.md$/, max: 900 },
   { match: /^skills\/[^/]+\/references\/.+\.md$/, max: 750 },
   { match: /^skills\/[^/]+\/templates\/.+\.md$/, max: 750 },
+  { match: /^agents\/[^/]+\/skills\/.+\.md$/, max: 12000 },
   { match: /^agents\/[^/]+\.md$/, max: 260 },
   { match: /^(AGENTS|README)\.md$/, max: 400 },
 ];
@@ -72,6 +73,11 @@ for (const path of markdown(ROOT)) {
   if (words(body) > budget.max) {
     report(file, null, `${words(body)} words, the budget is ${budget.max}`);
   }
+  // The archive mirrors a profile's own text so a rebuild can put it back. A
+  // rule it breaks is that profile's to fix, not this repository's: policing it
+  // here turns a backup into a red build nobody can satisfy without editing the
+  // archived copy, which the next sync overwrites.
+  if (/^agents\/[^/]+\/skills\//.test(file)) continue;
 
   let inFence = false;
   let inFrontMatter = source.startsWith("---\n");
