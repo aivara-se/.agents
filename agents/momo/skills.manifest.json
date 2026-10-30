@@ -1,0 +1,17 @@
+{
+  "agent": "momo",
+  "note": "Archive of the skills this profile owns. Read by no agent; restore with skills-archive.sh.",
+  "files": {
+    "review/security-audit/references/probe-tests-js.md": {"sha256": "14fc5249490fca83a1d0418ec6945b6eea5f1d1071fcd02f6034552ec9eecf72", "origin": "authored"},
+    "review/security-audit/references/probe-tests.md": {"sha256": "319ec002ab9a40fc16ff3b53882e5b2e2ba4f50aa49c1eb18ba2b24e03db0014", "origin": "authored"},
+    "review/security-audit/SKILL.md": {"sha256": "d19822e0180f2d8625827f1ae283adeec6da2552362ee5b3d993b1b9793ec801", "origin": "authored"},
+    "software-development/github/references/auth.md": {"sha256": "cecb08fcd986ad15f48604eb5c07c2f6636e5f4c52983c3e620ad2c27e05ac45", "origin": "stock-modified"},
+    "software-development/github/references/code-review.md": {"sha256": "a55c8e59059cbf109f738687210a3b4516526f4011e86f828590ca82f4e94e10", "origin": "stock-modified"},
+    "software-development/github/references/pr-workflow.md": {"sha256": "3e5a17550c11d903ed26a10d8eedf1cc4344cbdf50e7d0aa93e9f3b2011cc89f", "origin": "stock-modified"},
+    "software-development/github/references/review-history-audit.md": {"sha256": "229cc78d9cdeb42c61d92bb694de1db4c6800870a793579a332ea0921d5f2908", "origin": "authored"},
+    "software-development/github/SKILL.md": {"sha256": "22d3824d525e255ab1755d90793ada1b6f665b9e0f7555b65618a508535696d8", "origin": "stock-modified"},
+    "software-development/hermes-agent-skill-authoring/SKILL.md": {"sha256": "969102cd66b4999ede0fa25f9523bf5c0e7a53954a2147131c304ffdff1a5922", "origin": "stock-modified"},
+    "software-development/sandbox-provisioning/scripts/relink-toolchains.sh": {"sha256": "b434ff0d71882744f1eca40625fb78328463beb825e14519e542caf0d8d9d39b", "origin": "authored"},
+    "software-development/sandbox-provisioning/SKILL.md": {"sha256": "316a40a4480e8d15c0edae913e7cf409b7078c11209030cea6ace19989fd391d", "origin": "authored"}
+  }
+}
