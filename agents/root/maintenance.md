@@ -32,9 +32,9 @@ Each stage reports `[ok]`, `[act]` (a change it made), `[WARN]` (a decision it w
 ## Running it by hand
 
 ```sh
-bun run agents/root/scripts/maintenance.ts --dry-run     # plan every stage
-bun run agents/root/scripts/maintenance.ts --only=leaks  # one stage
-bun run agents/root/scripts/maintenance.ts --upgrade     # includes the gated upgrade
+bun run agents/root/scripts/maintenance/index.ts --dry-run     # plan every stage
+bun run agents/root/scripts/maintenance/index.ts --only=leaks  # one stage
+bun run agents/root/scripts/maintenance/index.ts --upgrade     # includes the gated upgrade
 ```
 
-Tests sit beside it: `bun test agents/root/scripts/`. Paths come from the environment (`HERMES_HOME`, `HERMES_BACKUP_DIR`, `AGENTS_REPO`), so a rebuilt host maps its own layout without editing the script. A fresh clone lands on `main`, and the sync needs its checkout on `next`: `git switch -c next` before the first pass.
+A step is one module under `maintenance/stages/`, listed in `maintenance/registry.ts`: adding or removing one is that entry. Tests sit beside them: `bun test agents/root/scripts/`. Paths come from the environment (`HERMES_HOME`, `HERMES_BACKUP_DIR`, `AGENTS_REPO`), so a rebuilt host maps its own layout without editing the script. A fresh clone lands on `main`, and the sync needs its checkout on `next`: `git switch -c next` before the first pass.
