@@ -14,7 +14,7 @@
     "software-development/aivara-se-workflow/references/design-decisions.md": {"sha256": "a4cede5234f4a3efbd2d02ff6f0ffc25b93bd4bf41cbc65b860e39852f847cef", "origin": "authored"},
     "software-development/aivara-se-workflow/references/new-project.md": {"sha256": "a02a09c8144282750482a034da31f4dbffba143c07a6914d37bd2f221044b6ef", "origin": "authored"},
     "software-development/aivara-se-workflow/references/skill-audit.md": {"sha256": "a15a6af0a4c8854715c89bf5cb797a2a02a9b50b2ee2c4253553e1af6cf4ac18", "origin": "authored"},
-    "software-development/aivara-se-workflow/SKILL.md": {"sha256": "dd69d53efc8e31e61288a25cc5867ae98faf193050150194312ee539eb183157", "origin": "authored"},
+    "software-development/aivara-se-workflow/SKILL.md": {"sha256": "84c1038b0afe80399a7306742318b614fc72b03db28a16fd95f899fab8d3523e", "origin": "authored"},
     "software-development/aivara-se-workflow/templates/handover-prompt.md": {"sha256": "92fdbf30d0bb939ee54d1a034fa3b075ebc50473db19a6c4db1693462c58effe", "origin": "authored"},
     "software-development/github/references/code-review.md": {"sha256": "f74a333e1ced38ad2527fe57f276a3d866f02438c7be96624f62d2f5483d3f73", "origin": "stock-modified"},
     "software-development/github/references/github-api-cheatsheet.md": {"sha256": "7daf74c51e069d875af58941c538c15cbf90a6be582b66f5f4880884ca362d28", "origin": "stock-modified"},
