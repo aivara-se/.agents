@@ -36,7 +36,7 @@ Two things decide whether writing works: it is short enough to finish, and the r
 - One fact, one home. A repository has one document per subject — product, design, system — and the others link to it.
 - An ADR is the exception: it stands alone and cites only earlier ADRs.
 - User-facing behaviour is the product document. Serving and checks are the system document. Interface and visual decisions are the design document.
-- A shared document describes the pattern, not the instance: a page one agent has gets one generic clause, never a screen, mode or component — the spec grows with the roster.
+- A shared document describes the pattern, not one instance: a page one agent has gets a generic clause, never the screen or mode.
 - A code comment explains why. A comment that restates the line beneath it is noise: delete the comment, or the line.
 - If the change makes a document untrue, fix that document in the same change.
 
