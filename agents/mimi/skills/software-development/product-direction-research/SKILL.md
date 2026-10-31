@@ -47,6 +47,7 @@ The deliverable is a decision package: what the stack covers, the one stage noth
 - Candidates: cost in build cycles, what each unlocks, what it does not. One recommended default, marked.
 - v1 scope, *Done means*, deliberate exclusions.
 - End with the decision, not a summary. No building while it is open.
+- Offer the candidates numbered so a subset can be accepted. He answers with the ones he wants ("all good, skip N"), and each accepted item then becomes its own version with its own ADR.
 
 ## Pitfalls
 
@@ -54,6 +55,7 @@ The deliverable is a decision package: what the stack covers, the one stage noth
 - **Do not recommend measurement you cannot instrument.** Check where the data is produced before pricing the project: an untracked child process has no exit code, no duration and no run id to join on. The instrumentation change belongs in v1's scope, not in a later phase.
 - **Cost per run is not free to obtain.** Model spend lives in the runner's session store on the host, not in the trigger service; if the sandbox cannot see it, v1 measures runs, wall-clock and outcomes and cost becomes v2.
 - **A stale public project list is a signal about the process, not a source.** If the site names a repo that no longer exists, use it as evidence that the published layer lags and read the org instead.
+- **A clone behind origin shows yesterday's roadmap.** `git pull --ff-only` before reading `PRODUCT.md` or `docs/adrs/`; a brainstorm from a stale tree proposes versions the repository has already decided. Read the highest ADR number and the roadmap block first — they are the record of what is already committed to, so sharpen a decided item or propose the version after it, never re-propose it.
 - **A pass rate is not a quality score.** About one in ten passing agent trajectories passes by luck — blind retries, no verification, regressions. A run record must store the process, or it cannot rank runs or models.
 - **One recommendation, not a menu of equals.** Two or three candidates maximum, the default first with its reason, and the condition under which the second becomes right.
 

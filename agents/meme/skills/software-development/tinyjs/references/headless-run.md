@@ -10,7 +10,9 @@
 
 - `xdotool search --name <Title> | tail -1` gives the window id; `xdotool getwindowgeometry <id>` gives its position and size. `search` also matches tooltips and popups that inherit the app's name — pick the id whose geometry is the shipping window, not simply the last one.
 - `xdotool getwindowpid <id>` then `/proc/<pid>/cmdline` names the binary behind the window and the arguments the launcher was given (`… <page> <socket> <title> <WxH> <version>`). Read it before blaming the UI: a stale build left running answers `search` just as readily and shows the old version here.
-- Click with window position + content offset. Prefer keyboard: `xdotool type --delay 20 'text'`, `xdotool key Return`, `xdotool key ctrl+a`.
+- Click with window position + content offset, and read that offset off the capture you just took: a bar, a new toolbar row or a top padding moves every target down, and a click into the gap hits nothing while the page keeps its old focus.
+- Confirm a click by the state it changes — the row that moved, the query that appeared, the row in the database — never by the absence of an error: a click that missed looks exactly like one that worked until the next keystroke goes nowhere.
+- Prefer keyboard: `xdotool type --delay 20 'text'`, `xdotool key Return`, `xdotool key ctrl+a`.
 - After clicking a control, wait ~1 s for the backend round trip before typing.
 
 ## Capture

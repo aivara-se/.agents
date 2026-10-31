@@ -2,30 +2,105 @@
   "agent": "mama",
   "note": "Archive of the skills this profile owns. Read by no agent; restore with cp -an agents/mama/skills/. into that profile skills directory.",
   "files": {
-    "autonomous-ai-agents/hermes-agent/references/cli-reference.md": {"sha256": "f9e80393de20c25235eeed493be2145e9831d9c7f6e229b86795eb590e1ebc7f", "origin": "stock-modified"},
-    "autonomous-ai-agents/hermes-agent/references/configuration.md": {"sha256": "ba075f369ff66e60134d4a472894599b18dd9f8f715840a928a5ff7e818f2455", "origin": "stock-modified"},
-    "autonomous-ai-agents/hermes-agent/references/contributor-guide.md": {"sha256": "097c860be377fcfc0c414d07dffe2ba5470ae33e3805a6536c2956dc6f520087", "origin": "stock-modified"},
-    "autonomous-ai-agents/hermes-agent/references/sessions-and-runs.md": {"sha256": "3611de508dfefb4010ae2f5cbd218e31a06a4b3d1099d151648aad2baba0ddbe", "origin": "authored"},
-    "autonomous-ai-agents/hermes-agent/references/webhooks.md": {"sha256": "3153c38d322903b02241ab4693c6a221438e6862e7fc8fcd495a56a7ebed2ae9", "origin": "stock-modified"},
-    "autonomous-ai-agents/hermes-agent/SKILL.md": {"sha256": "0d4d21a865d0b4da560c013acdeb30dc580574d0f98d550f09427dbd4bbf22d7", "origin": "stock-modified"},
-    "email/himalaya/references/configuration.md": {"sha256": "b55810fee8bb11aab0dabd4f758c753cc68fac30e5aa8694be5d973c9b4d28f0", "origin": "stock-modified"},
-    "email/himalaya/SKILL.md": {"sha256": "ef0632ddeb263ebde6d2c61af51fb9bf5aab04c3c88ad0a91f203175d54e86f3", "origin": "stock-modified"},
-    "software-development/aivara-se-workflow/references/board-project.md": {"sha256": "b854497f6b786f12d91133dfed4f1b647188fcce7857e4bb6c886a03ef2b26d4", "origin": "authored"},
-    "software-development/aivara-se-workflow/references/design-decisions.md": {"sha256": "a4cede5234f4a3efbd2d02ff6f0ffc25b93bd4bf41cbc65b860e39852f847cef", "origin": "authored"},
-    "software-development/aivara-se-workflow/references/new-project.md": {"sha256": "a02a09c8144282750482a034da31f4dbffba143c07a6914d37bd2f221044b6ef", "origin": "authored"},
-    "software-development/aivara-se-workflow/references/skill-audit.md": {"sha256": "a15a6af0a4c8854715c89bf5cb797a2a02a9b50b2ee2c4253553e1af6cf4ac18", "origin": "authored"},
-    "software-development/aivara-se-workflow/SKILL.md": {"sha256": "84c1038b0afe80399a7306742318b614fc72b03db28a16fd95f899fab8d3523e", "origin": "authored"},
-    "software-development/aivara-se-workflow/templates/handover-prompt.md": {"sha256": "92fdbf30d0bb939ee54d1a034fa3b075ebc50473db19a6c4db1693462c58effe", "origin": "authored"},
-    "software-development/github/references/code-review.md": {"sha256": "f74a333e1ced38ad2527fe57f276a3d866f02438c7be96624f62d2f5483d3f73", "origin": "stock-modified"},
-    "software-development/github/references/github-api-cheatsheet.md": {"sha256": "7daf74c51e069d875af58941c538c15cbf90a6be582b66f5f4880884ca362d28", "origin": "stock-modified"},
-    "software-development/github/references/pr-workflow.md": {"sha256": "5d184248540784727f8939942f523caa44812a64d1166851dd0c96935588c1ff", "origin": "stock-modified"},
-    "software-development/github/references/repo-management.md": {"sha256": "e2e37e939a587328c2253e8921b207831321f9927477cdeb63d848c296951685", "origin": "stock-modified"},
-    "software-development/github/references/sub-issues-and-projects.md": {"sha256": "6ff31e0f54da8f51b2079a98607885e5213023f9c0558df0e51b4ba07dad9812", "origin": "authored"},
-    "software-development/github/references/webhook-events-probing.md": {"sha256": "6df4d6b8bc347b57b750c6b83259d2dc09b53144233eb31a0b40266e44ff377a", "origin": "authored"},
-    "software-development/github/SKILL.md": {"sha256": "d54892e2802d7f93a25e68c17c590d42c568bef995a86da73076e348370d560f", "origin": "stock-modified"},
-    "software-development/sandbox-toolchain/SKILL.md": {"sha256": "03f445ccb5ec5f1c72b5504a73a5987e82dc9521a2a8ac284350dd0f328fc937", "origin": "authored"},
-    "software-development/tinyjs-desktop-apps/references/framework.md": {"sha256": "691e1f4515900aaa833521cd13e4d1d2028ebb63fd78cfb0462318c3f3057cab", "origin": "authored"},
-    "software-development/tinyjs-desktop-apps/references/verifying-a-build.md": {"sha256": "916b159ab9059c9e266a884fc6d5833873548672b74ffdcfb254b4298b65eff4", "origin": "authored"},
-    "software-development/tinyjs-desktop-apps/SKILL.md": {"sha256": "a20f752152fdbbc8cc12e466c0f38c07c1c23ed1f157cd999fb34e200efa0eda", "origin": "authored"}
+    "autonomous-ai-agents/hermes-agent/SKILL.md": {
+      "sha256": "0d4d21a865d0b4da560c013acdeb30dc580574d0f98d550f09427dbd4bbf22d7",
+      "origin": "stock-modified"
+    },
+    "autonomous-ai-agents/hermes-agent/references/cli-reference.md": {
+      "sha256": "f9e80393de20c25235eeed493be2145e9831d9c7f6e229b86795eb590e1ebc7f",
+      "origin": "stock-modified"
+    },
+    "autonomous-ai-agents/hermes-agent/references/configuration.md": {
+      "sha256": "ba075f369ff66e60134d4a472894599b18dd9f8f715840a928a5ff7e818f2455",
+      "origin": "stock-modified"
+    },
+    "autonomous-ai-agents/hermes-agent/references/contributor-guide.md": {
+      "sha256": "097c860be377fcfc0c414d07dffe2ba5470ae33e3805a6536c2956dc6f520087",
+      "origin": "stock-modified"
+    },
+    "autonomous-ai-agents/hermes-agent/references/sessions-and-runs.md": {
+      "sha256": "3611de508dfefb4010ae2f5cbd218e31a06a4b3d1099d151648aad2baba0ddbe",
+      "origin": "authored"
+    },
+    "autonomous-ai-agents/hermes-agent/references/webhooks.md": {
+      "sha256": "3153c38d322903b02241ab4693c6a221438e6862e7fc8fcd495a56a7ebed2ae9",
+      "origin": "stock-modified"
+    },
+    "email/himalaya/SKILL.md": {
+      "sha256": "ef0632ddeb263ebde6d2c61af51fb9bf5aab04c3c88ad0a91f203175d54e86f3",
+      "origin": "stock-modified"
+    },
+    "email/himalaya/references/configuration.md": {
+      "sha256": "b55810fee8bb11aab0dabd4f758c753cc68fac30e5aa8694be5d973c9b4d28f0",
+      "origin": "stock-modified"
+    },
+    "software-development/aivara-se-workflow/SKILL.md": {
+      "sha256": "d8bf88e94875bc80a2b2f14714cc0fcc0773e876d2d4b718ea1b78e645893920",
+      "origin": "authored"
+    },
+    "software-development/aivara-se-workflow/references/board-project.md": {
+      "sha256": "b854497f6b786f12d91133dfed4f1b647188fcce7857e4bb6c886a03ef2b26d4",
+      "origin": "authored"
+    },
+    "software-development/aivara-se-workflow/references/design-decisions.md": {
+      "sha256": "3e2574308250234c25ec7b5caf0db6b17171b8109b7097cab26caf8e295a1df8",
+      "origin": "authored"
+    },
+    "software-development/aivara-se-workflow/references/new-project.md": {
+      "sha256": "a02a09c8144282750482a034da31f4dbffba143c07a6914d37bd2f221044b6ef",
+      "origin": "authored"
+    },
+    "software-development/aivara-se-workflow/references/skill-audit.md": {
+      "sha256": "a15a6af0a4c8854715c89bf5cb797a2a02a9b50b2ee2c4253553e1af6cf4ac18",
+      "origin": "authored"
+    },
+    "software-development/aivara-se-workflow/templates/handover-prompt.md": {
+      "sha256": "92fdbf30d0bb939ee54d1a034fa3b075ebc50473db19a6c4db1693462c58effe",
+      "origin": "authored"
+    },
+    "software-development/github/SKILL.md": {
+      "sha256": "d54892e2802d7f93a25e68c17c590d42c568bef995a86da73076e348370d560f",
+      "origin": "stock-modified"
+    },
+    "software-development/github/references/code-review.md": {
+      "sha256": "f74a333e1ced38ad2527fe57f276a3d866f02438c7be96624f62d2f5483d3f73",
+      "origin": "stock-modified"
+    },
+    "software-development/github/references/github-api-cheatsheet.md": {
+      "sha256": "7daf74c51e069d875af58941c538c15cbf90a6be582b66f5f4880884ca362d28",
+      "origin": "stock-modified"
+    },
+    "software-development/github/references/pr-workflow.md": {
+      "sha256": "5d184248540784727f8939942f523caa44812a64d1166851dd0c96935588c1ff",
+      "origin": "stock-modified"
+    },
+    "software-development/github/references/repo-management.md": {
+      "sha256": "e2e37e939a587328c2253e8921b207831321f9927477cdeb63d848c296951685",
+      "origin": "stock-modified"
+    },
+    "software-development/github/references/sub-issues-and-projects.md": {
+      "sha256": "6ff31e0f54da8f51b2079a98607885e5213023f9c0558df0e51b4ba07dad9812",
+      "origin": "authored"
+    },
+    "software-development/github/references/webhook-events-probing.md": {
+      "sha256": "6df4d6b8bc347b57b750c6b83259d2dc09b53144233eb31a0b40266e44ff377a",
+      "origin": "authored"
+    },
+    "software-development/sandbox-toolchain/SKILL.md": {
+      "sha256": "03f445ccb5ec5f1c72b5504a73a5987e82dc9521a2a8ac284350dd0f328fc937",
+      "origin": "authored"
+    },
+    "software-development/tinyjs-desktop-apps/SKILL.md": {
+      "sha256": "a20f752152fdbbc8cc12e466c0f38c07c1c23ed1f157cd999fb34e200efa0eda",
+      "origin": "authored"
+    },
+    "software-development/tinyjs-desktop-apps/references/framework.md": {
+      "sha256": "691e1f4515900aaa833521cd13e4d1d2028ebb63fd78cfb0462318c3f3057cab",
+      "origin": "authored"
+    },
+    "software-development/tinyjs-desktop-apps/references/verifying-a-build.md": {
+      "sha256": "916b159ab9059c9e266a884fc6d5833873548672b74ffdcfb254b4298b65eff4",
+      "origin": "authored"
+    }
   }
 }
