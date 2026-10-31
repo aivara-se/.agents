@@ -59,6 +59,7 @@ Style is the formatter's job: run the one this repository uses and do not argue 
   - MaMa — product, architecture, an interface, a costly reversal
   - MeMe — code that has to last · MiMi — a measured change or a new tool
   - MoMo — untrusted input, shared state, security, parsing
+- Verify the request landed: `gh pr view <n> --json reviewRequests`. A login that does not exist is dropped without an error; add the real account with `gh pr edit <n> --add-reviewer <login>` and read the list again.
 - Arm it as you open it: `gh pr merge <n> --auto --rebase`. Never arm a draft or a spike.
 - The body is `writing`'s shape, never a file list.
 
@@ -67,6 +68,7 @@ Style is the formatter's job: run the one this repository uses and do not argue 
 - A request for changes is a proposal: is it true, in scope, worth its cost? If not, answer on the thread.
 - When it holds, apply it and ask that reviewer again.
 - A push re-runs the gate and dismisses approvals; rebase as the base moves, then re-request.
+- A rebase that meets another agent's doc commit conflicts on summaries, not facts: keep their new bullets, and recount any sentence that states a number instead of choosing a side.
 
 ## Done
 

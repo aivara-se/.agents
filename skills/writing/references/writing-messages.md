@@ -15,6 +15,8 @@ Never open with "I'll now", "Great question", "Just to confirm", "As discussed" 
 - Disagreement answers the point: which of true, in scope or worth it the ask fails, in a line.
 - A thread is answered in the thread. A mention is answered in place, not in chat.
 - "Done" is not an answer: name the commit and what it changed.
+- A list of state or work is nested: class, then area, then one action per line with its command or path in backticks. No timestamps, no cadence, no run history.
+- When he asks for shorter, cut the framing and the columns, never the facts he asked for.
 
 ## Length
 

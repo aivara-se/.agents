@@ -27,6 +27,12 @@ A draft written on the wrong audience is a rewrite, not an edit: settle these be
 
 - A number that cannot be measured yet gets a provisional value, marked provisional, and the thing that will freeze it — a measured session, a spike. Never invent a number and mark it decided.
 
+## Shipping a version
+
+- Grep the product and system documents for the previous version number before writing the changelog: the acceptance line ("vN keeps every one"), "the binary is vN", and any promise scoped to it ("in vN the app makes no request") all go stale in the same edit.
+- Check the "what it does not do" list for the item this version built, and the roadmap for the line it shipped: a capability still listed as absent is the loudest stale sentence in the document.
+- Add one changelog line in the voice of the feature, not a file list, and leave the older lines alone.
+
 ## Pitfalls
 
 - Do not write the document in the voice of an existing document in the repository. Long-form documents drift past the length this skill allows; write from the rules, not from the neighbour.
