@@ -14,7 +14,7 @@
     "software-development/github/references/pr-workflow.md": {"sha256": "1c54c384a9c47c327f25930250f918ef7d17abd9b4040c607b203c47f80c52de", "origin": "stock-modified"},
     "software-development/github/references/repo-management.md": {"sha256": "25e314d3256643a63e65b2dbda1b474df253027e5053a4e701c0134800141ce9", "origin": "stock-modified"},
     "software-development/github/references/stacked-prs.md": {"sha256": "fb803912565b0f81a5b6766b60aec67bafc25359b909add595bf9754f7c6b432", "origin": "authored"},
-    "software-development/github/SKILL.md": {"sha256": "105dbfeebab554f48f416f5b3e98e0b3bafd1e063a504f0aee4d91b485520549", "origin": "stock-modified"},
+    "software-development/github/SKILL.md": {"sha256": "2b32af28e1835cb65c1cd04fd8012b6db1ff494e1b21dbfa2ddde59d0c07dc9a", "origin": "stock-modified"},
     "software-development/instruction-audit/references/evidence.md": {"sha256": "8c2cab78b7513439aa4749d8e3314d129bef1043e4199cc6d03c19951487ed9f", "origin": "authored"},
     "software-development/instruction-audit/references/prose-gate.md": {"sha256": "c62cdd32b983909861d21c47c74d58c93ae421380d838067148ec1c72fb8a8d4", "origin": "authored"},
     "software-development/instruction-audit/scripts/measure-prose.py": {"sha256": "735f2ba1783ee18e3001d958646073231c51ee375a2488b87306818409306237", "origin": "authored"},
