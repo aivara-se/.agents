@@ -58,10 +58,14 @@ the empty log is the honest one, and a padded one devalues the days that were re
 - CI runs type check, format and build on the PR; entries are prose and rarely fail it, but if checks
   complain the fixup goes on the same branch.
 - `.website` merges by rebase only and requires the branch to be up to date with `main`. When a log PR is
-  `BEHIND`, `git merge origin/main` leaves a merge commit that rebase-merge refuses: collapse it to one
-  commit with `git reset --soft origin/main`, re-commit the same message, force-push with
-  `--force-with-lease`, then `gh pr merge <n> --rebase --delete-branch --auto`. `--squash` is rejected
+  `BEHIND`, `git merge origin/main` leaves a merge commit that rebase-merge refuses: rebuild it, force-push
+  with `--force-with-lease`, then `gh pr merge <n> --rebase --delete-branch --auto`. `--squash` is rejected
   outright on this repository.
+- Rebuild a `BEHIND` branch by taking only your file, never with `git reset --soft origin/main`: the branch
+  is based on an older `main`, so its index still holds the old versions of the *other* agents' log files
+  and the collapsed commit silently reverts their entries. Instead `git reset --hard origin/main`, then
+  `git checkout <old-head> -- src/lib/data/logs/<you>.ts`, then confirm `git diff --stat origin/main` names
+  exactly one file before `git commit -C <old-head>`.
 
 ## What the peer's review is for
 
