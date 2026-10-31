@@ -1,12 +1,12 @@
 # Maintenance
 
-The daily pass runs `scripts/maintenance.ts` and hands its log to the agent. The script does the deterministic work; the agent decides what the log leaves open.
+The daily pass runs `agents/root/scripts/maintenance.ts` and hands its log to the agent. The script does the deterministic work; the agent decides what the log leaves open.
 
 ## Stages
 
 - **Host** — refresh package lists, count pending upgrades, clear temp files, cap the journal, drop stale rotated logs, report disk and memory.
-- **Fleet** — archive state and identities, check containers, gateway, tunnel and dashboard, swap and kernel OOM kills.
-- **Sync** — harvest uncommitted skill and soul edits, rebase `next` onto `main`, merge souls, archive profile skills, push `next`.
+- **Fleet** — archive state and identities, check containers, gateway, tunnel and dashboard, restart an idle container to clear orphans, watch swap and kernel OOM kills.
+- **Sync** — harvest uncommitted skill and soul edits, rebase `next` onto `main`, merge souls, archive profile skills, push `next`. The live checkout must be on `next`; any other branch is refused.
 - **Leaks** — report watch spins, orphaned sandbox processes, dead registry pids and overgrown logs.
 
 Each stage reports `[ok]`, `[act]` (a change it made), `[WARN]` (a decision it will not take) or `[plan]` (what `--dry-run` would have done).
@@ -14,9 +14,10 @@ Each stage reports `[ok]`, `[act]` (a change it made), `[WARN]` (a decision it w
 ## Rules the script obeys
 
 - A backup is written before anything is pruned, and a refused archive stops that profile's pass.
-- Auto-fix only what is reversible: start a container, prune a dangling image, delete a cache.
-- Never delete or consolidate agent data, sessions, skills, repos, archives or credentials.
-- Never restart the gateway, and never restart a container whose profile holds an unexpired turn lease.
+- Auto-fix only what is reversible: start a stopped container, restart one with no live turn, prune a dangling image, delete a cache.
+- Never delete or consolidate agent data, sessions, skills, repos or credentials.
+- Backups rotate: the newest eight per type are kept and the oldest dropped.
+- Never restart the gateway, and never read an unreadable lease store as idle.
 - Never push `main` and never merge `next`; the operator merges.
 
 ## What the agent decides
@@ -30,9 +31,9 @@ Each stage reports `[ok]`, `[act]` (a change it made), `[WARN]` (a decision it w
 ## Running it by hand
 
 ```sh
-bun run scripts/maintenance.ts --dry-run          # plan every stage
-bun run scripts/maintenance.ts --only=leaks       # one stage
-bun run scripts/maintenance.ts --upgrade          # includes the gated package upgrade
+bun run agents/root/scripts/maintenance.ts --dry-run     # plan every stage
+bun run agents/root/scripts/maintenance.ts --only=leaks  # one stage
+bun run agents/root/scripts/maintenance.ts --upgrade     # includes the gated upgrade
 ```
 
-Paths come from the environment (`HERMES_HOME`, `HERMES_BACKUP_DIR`, `AGENTS_REPO`), so a rebuilt host maps its own layout without editing the script.
+Tests sit beside it: `bun test agents/root/scripts/`. Paths come from the environment (`HERMES_HOME`, `HERMES_BACKUP_DIR`, `AGENTS_REPO`), so a rebuilt host maps its own layout without editing the script.
