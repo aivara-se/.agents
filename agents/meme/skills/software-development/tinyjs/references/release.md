@@ -31,6 +31,13 @@
 - Identify the artifacts before calling the release good: `file` on each binary (Mach-O arm64 and x86_64, PE32+ x86-64, ELF x86-64), and the macOS bundle version from `Contents/Info.plist` with `python3 -c "import plistlib; print(plistlib.load(open('Pereda.app/Contents/Info.plist','rb'))['CFBundleShortVersionString'])"` — `plutil` does not exist on Linux.
 - Run the Linux archive under Xvfb: `xdotool getwindowpid <id>`, then `/proc/<pid>/cmdline` prints `launcher … <title> <WxH> <version>`. That is the released build, title and version, checked without an About panel.
 
+## A test build on a pull request
+
+- Build the `.app` for both architectures in the validation workflow, gated on the test job and only on `pull_request`: `publish` already builds on `main`, so a push to the default branch skips it.
+- Name the zip with the number — `<name>-pr-<n>-macos-<arch>.zip`. A test build that carries only the version looks like the release in a Downloads folder.
+- No signing secret in a pull-request workflow: the bundle is ad-hoc, so the first open is right click → Open, or `xattr -dr com.apple.quarantine <app>.app`. Say which one when handing it over.
+- Prove the artifact came from the branch, not a stale run: download it, `file` the binary for the architecture, read `CFBundleShortVersionString`, and grep the embedded `Resources/app/frontend/` for a string only the branch adds. A fast run and a matching version are not proof.
+
 ## Signing
 
 - macOS signing is absent by default: without `TINYJS_SIGN_IDENTITY` the build is ad-hoc and Gatekeeper blocks it on another Mac. Notarization needs the signing certificate plus `notarytool` credentials. Document the secrets in the repository, never in the workflow.
