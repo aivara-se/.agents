@@ -25,11 +25,13 @@ when-to-use: Any change to a tinyjs app — its backend, page, tinyjs.json, buil
 - `tjs:sqlite` is synchronous: `exec`, `prepare(...).all/run`, `transaction`. Set `journal_mode = WAL` and `synchronous = FULL` for a committed save; keep the schema version in `PRAGMA user_version`.
 - Keep the SQL in a module that takes the open handle, so `bun test` can pass `bun:sqlite` and run the same statements. `tjs:*` cannot be imported under bun.
 - Named operations only; never `query(sql)`. The page can call every exported name.
+- Search is FTS5 in the same file, not a second store: a `notes_fts` table filled by triggers, derived from `notes` and joined back to it, with every user word quoted as a prefix term so it is never FTS5 syntax. `references/sqlite-store.md` has the schema, the v1→v2 migration and the escaping.
 
 ## A live editor
 
 - One save in flight (per entry when the page is a log); a newer body replaces the pending one; the whole body goes every time with a page counter. The store applies `excluded.seq > notes.seq`; a tombstone (empty body) keeps its counter, so a late save cannot undo a clear.
 - A log is many editors: each entry keeps its own counter and runner, flushes on its own blur, and the page is the one scroll container. Auto-size each textarea to `scrollHeight`; a textarea with `flex: 1` in a flex row ignores `max-width` and `margin: auto` and fills the row — put it in a block container instead.
+- Measure a textarea only while its container is laid out: an entry built into a `hidden` log reports `scrollHeight` 0 and keeps a one-line box, and the caret then shows only its last line. Unhide the list before rendering into it, not after.
 - Page a log by `day < the oldest loaded`, never by offset: today first, then thirty at a time. Include today's row even when it is empty or a tombstone, and start its counter from that row's seq; a placeholder at seq 0 loses the comparison and every save reports a stale write.
 - Keep save failures and page failures in separate slots, and let the save failure win the status line; a page error that returns first otherwise hides "not saved" while the text sits on screen.
 - Compare the body as well as the counter before reporting success: two windows at the same counter otherwise both say "Saved" while one write lost.
@@ -67,6 +69,6 @@ when-to-use: Any change to a tinyjs app — its backend, page, tinyjs.json, buil
 
 - `references/headless-run.md` — Xvfb, xdotool, window capture, process cleanup, SQLite check.
 - `references/window-chrome.md` — frameless and translucent windows: config, page shape, in-page controls, proving the alpha.
-- `references/sqlite-store.md` — schema, WAL, counter upserts, tombstone, tests under bun.
+- `references/sqlite-store.md` — schema, WAL, counter upserts, tombstone, FTS5 search with quoted prefix terms and triggers, the version migration, tests under bun.
 - `references/bundled-fonts.md` — fetch an OFL font, ship it, prove it is embedded.
-- `references/release.md` — the version-in-the-file gate, artifact shapes per OS, checking the run and the artifacts after the merge, the token and signing caveats.
+- `references/release.md` — the version-in-the-file gate, artifact shapes per OS, the test `.app` a pull request leaves, checking the run and the artifacts after the merge, the token and signing caveats.
