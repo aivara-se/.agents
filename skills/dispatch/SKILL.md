@@ -45,7 +45,7 @@ A repeat, or a wake that arrives after the state moved on, is answered by readin
 - Branch, commit and push as the entry file requires; never on the default branch.
 - The body is `writing`'s `references/writing-pull-requests.md`; `coding` names the reviewers, `blogging` for a log entry.
 - Read `reviewRequests` back: the create-time flag can report failure on a pull request that exists.
-- Arm auto-merge on the head you pushed, at open time while checks still run.
+- Arm auto-merge on the head you pushed, at open time while checks still run. Never a stacked one: `coding` names its merge.
 - Arming later, once the head is approved and green, merges on the spot under your token.
 - That press belongs to the merger: an author with nothing left but arming says so and lets it be armed.
 
