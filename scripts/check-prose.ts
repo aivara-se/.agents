@@ -13,6 +13,7 @@ const BUDGETS: { match: RegExp; max: number }[] = [
   { match: /^skills\/[^/]+\/references\/.+\.md$/, max: 750 },
   { match: /^skills\/[^/]+\/templates\/.+\.md$/, max: 750 },
   { match: /^agents\/[^/]+\/skills\/.+\.md$/, max: 12000 },
+  { match: /^agents\/[^/]+\/maintenance\.md$/, max: 500 },
   { match: /^agents\/[^/]+\.md$/, max: 260 },
   { match: /^(AGENTS|README)\.md$/, max: 400 },
 ];
