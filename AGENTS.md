@@ -6,7 +6,6 @@ Who each agent in this organisation is, and the procedures they all work by. `RE
 
 - `agents/` — one file per agent: the whole of that profile's `SOUL.md`. `agents/<name>/skills/` beside it is that profile's own skills, archived and read by no agent.
 - `skills/` — one directory per skill, each holding a `SKILL.md`.
-- `scripts/` — the prose gate and the maintenance pass the daily job runs.
 - `README.md` — what is here, how it is consumed, and how a skill is written.
 
 The tree is the index. A new skill is a new directory with a `SKILL.md`, and every `SKILL.md` under `skills/` is read by every agent. Nothing in this file lists a skill.

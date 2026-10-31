@@ -856,7 +856,7 @@ function syncStage(dry: boolean): boolean {
   }
 
   say("");
-  say("4. SOULS (repo agents/<name>.md <-> profile SOUL.md)");
+  say("3a. SOULS (repo agents/<name>.md <-> profile SOUL.md)");
   for (const name of profiles()) {
     if (dry) {
       plan(`${name}: would three-way merge its soul`);
@@ -885,7 +885,7 @@ function syncStage(dry: boolean): boolean {
   }
 
   say("");
-  say("4b. SKILLS (profile skills -> agents/<name>/skills, archive only)");
+  say("3b. SKILLS (profile skills -> agents/<name>/skills, archive only)");
   for (const result of archiveSkills({ dry })) {
     const label = `${result.profile}: ${result.files} file(s), was ${result.previous}`;
     if (result.status === "archived") ok(`${label} archived`);
@@ -907,7 +907,7 @@ function syncStage(dry: boolean): boolean {
   } else if (!dry) ok("skill archive unchanged");
 
   say("");
-  say("5. PUSH " + CFG.branch);
+  say("3c. PUSH " + CFG.branch);
   // Compare shas, not rev-list counts: a deleted remote branch leaves no tracking ref.
   const local = run(["git", "-C", CFG.repo, "rev-parse", CFG.branch]).out.trim();
   const remote = run(["git", "-C", CFG.repo, "rev-parse", "--verify", "--quiet", `refs/remotes/origin/${CFG.branch}`]).out.trim();
@@ -923,7 +923,7 @@ function syncStage(dry: boolean): boolean {
   } else ok(`origin/${CFG.branch} already at ${local.slice(0, 7)} — nothing to push`);
 
   say("");
-  say("6. STATE");
+  say("3d. STATE");
   const ahead = run(["git", "-C", CFG.repo, "rev-list", "--count", "origin/main..HEAD"]).out.trim();
   const behind = run(["git", "-C", CFG.repo, "rev-list", "--count", "HEAD..origin/main"]).out.trim();
   info(`${CFG.branch} is ${ahead} commit(s) ahead of origin/main, ${behind} behind`);

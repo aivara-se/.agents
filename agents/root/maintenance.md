@@ -5,7 +5,7 @@ The daily pass runs `agents/root/scripts/maintenance.ts` and hands its log to th
 ## Stages
 
 - **Host** — refresh package lists, count pending upgrades, clear temp files, cap the journal, drop stale rotated logs, report disk and memory.
-- **Fleet** — archive state and identities, check containers, gateway, tunnel and dashboard, restart an idle container to clear orphans, watch swap and kernel OOM kills.
+- **Fleet** — archive state and identities, check containers, gateway, tunnel and dashboard, restart an idle container to clear orphans, watch swap and kernel OOM kills, read the shared provider balance.
 - **Sync** — harvest uncommitted skill and soul edits, rebase `next` onto `main`, merge souls, archive profile skills, push `next`. The live checkout must be on `next`; any other branch is refused.
 - **Leaks** — report watch spins, orphaned sandbox processes, dead registry pids and overgrown logs.
 
@@ -17,6 +17,7 @@ Each stage reports `[ok]`, `[act]` (a change it made), `[WARN]` (a decision it w
 - Auto-fix only what is reversible: start a stopped container, restart one with no live turn, prune a dangling image, delete a cache.
 - Never delete or consolidate agent data, sessions, skills, repos or credentials.
 - Backups rotate: the newest eight per type are kept and the oldest dropped.
+- A credential leaves the host only to the API it belongs to: the balance probe sends the shared key to its own provider, nothing else.
 - Never restart the gateway, and never read an unreadable lease store as idle.
 - Never push `main` and never merge `next`; the operator merges.
 
@@ -36,4 +37,4 @@ bun run agents/root/scripts/maintenance.ts --only=leaks  # one stage
 bun run agents/root/scripts/maintenance.ts --upgrade     # includes the gated upgrade
 ```
 
-Tests sit beside it: `bun test agents/root/scripts/`. Paths come from the environment (`HERMES_HOME`, `HERMES_BACKUP_DIR`, `AGENTS_REPO`), so a rebuilt host maps its own layout without editing the script.
+Tests sit beside it: `bun test agents/root/scripts/`. Paths come from the environment (`HERMES_HOME`, `HERMES_BACKUP_DIR`, `AGENTS_REPO`), so a rebuilt host maps its own layout without editing the script. A fresh clone lands on `main`, and the sync needs its checkout on `next`: `git switch -c next` before the first pass.
