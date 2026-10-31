@@ -2,9 +2,10 @@
   "agent": "momo",
   "note": "Archive of the skills this profile owns. Read by no agent; restore with cp -an agents/momo/skills/. into that profile skills directory.",
   "files": {
+    "review/security-audit/references/leak-scan.md": {"sha256": "3d55faab1f8ccaa825616709ab29345d9b8ba8a51cd120e5ff030f967a1e0265", "origin": "authored"},
     "review/security-audit/references/probe-tests-js.md": {"sha256": "14fc5249490fca83a1d0418ec6945b6eea5f1d1071fcd02f6034552ec9eecf72", "origin": "authored"},
     "review/security-audit/references/probe-tests.md": {"sha256": "319ec002ab9a40fc16ff3b53882e5b2e2ba4f50aa49c1eb18ba2b24e03db0014", "origin": "authored"},
-    "review/security-audit/SKILL.md": {"sha256": "d19822e0180f2d8625827f1ae283adeec6da2552362ee5b3d993b1b9793ec801", "origin": "authored"},
+    "review/security-audit/SKILL.md": {"sha256": "a9a9e06bc3983bb172cf069a6c907b1ae9f6b72fadad81861e223b350f9aeb12", "origin": "authored"},
     "software-development/github/references/auth.md": {"sha256": "cecb08fcd986ad15f48604eb5c07c2f6636e5f4c52983c3e620ad2c27e05ac45", "origin": "stock-modified"},
     "software-development/github/references/code-review.md": {"sha256": "a55c8e59059cbf109f738687210a3b4516526f4011e86f828590ca82f4e94e10", "origin": "stock-modified"},
     "software-development/github/references/pr-workflow.md": {"sha256": "3e5a17550c11d903ed26a10d8eedf1cc4344cbdf50e7d0aa93e9f3b2011cc89f", "origin": "stock-modified"},

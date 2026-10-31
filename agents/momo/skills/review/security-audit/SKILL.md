@@ -1,8 +1,8 @@
 ---
 name: security-audit
 description: "Use when attacking a repo: security pass with proof."
-when-to-use: The ask is a security pass, a vulnerability hunt or "attack this" on a repo or service — not a verdict on one pull request (that is `review`).
-version: 1.0.0
+when-to-use: The ask is a security pass, a vulnerability hunt, "attack this", or "does this change leak anything" — not a verdict on one pull request (that is `review`).
+version: 1.1.0
 author: MoMo (Aivara)
 license: MIT
 metadata:
@@ -19,6 +19,7 @@ A pass is a set of proven findings, not a list of suspicions. Every line that re
 
 - The operator asks for a security pass, a vulnerability hunt, or to attack a repository or service.
 - You are reading merged code, not a diff, and the output is a ranked list of findings rather than one verdict.
+- The ask is "does this PR or commit leak anything": the same pass with the change as scope — one verdict and what held, never a ranked hunt.
 - Not for a pull request waiting on a verdict — that is `review`; not for scanning your own uncommitted diff — that is `requesting-code-review`.
 
 ## Do this, in order
@@ -31,6 +32,18 @@ A pass is a set of proven findings, not a list of suspicions. Every line that re
 6. **Prove each finding.** Run the probe against the real packages, not a paraphrase, and keep the probe that shows the thing held — "what held" is part of the report. Then apply the smallest fix in the scratch copy and re-run the same probe: a fix that was not re-run is a suggestion.
 7. **Rank by what an attacker gains**, not by how interesting the bug is: what it reaches (a secret, the rest of the fleet, availability), what it needs (network only, a member, a compromised agent), and how cheap the fix is.
 8. **Report**, then offer the next action: the issues to file, or the PR with the smallest fix.
+
+## A pass scoped to a diff
+
+A leak ask is the same pass with a narrower tree: one verdict carried by a scanner and a read, plus what held.
+
+1. **Pin the change.** `git fetch origin '+refs/pull/<N>/head:refs/remotes/pr/<N>'`, record that head sha and `origin/main`, and diff into scratch. Never scan the working tree of a clone parked on some other branch.
+2. **Scan the commits, not only the final tree.** A secret committed and deleted in a later commit is still on the pull request page and lands with a merge commit; a tree scan sees neither. Run both.
+3. **Check the repository's own visibility first.** It sets the severity of every line after it.
+4. **Answer the second half.** No credential is not "nothing sensitive": a private repository's name, an internal identifier, a host path, a home directory and contact data are what a public repository leaks without any key. Resolve each one — a name's `visibility`, an id's `public` flag — instead of calling it suspicious or safe.
+5. **Verify the guard the change claims.** A body that says something refuses a secret names code: find it. A guard outside the repository, or not wired into the workflow that runs on every push, is unverifiable — say so and say what CI actually runs.
+
+Commands, the pattern set, the false-positive filters and the hash-manifest trap are in `references/leak-scan.md`.
 
 ## What to attack
 
@@ -60,6 +73,7 @@ Trust boundaries first — they outrank the business logic:
 - **Measure the claim, not just its code.** "Costs a header check" is disproved by counting allocations (`runtime.ReadMemStats`) for one unauthenticated request, not by reading the handler.
 - **A write verified by reading the value back is defeated by any value the store normalises.** Lone surrogates, `char(n)` padding, case-folded collation and re-ordered JSON all come back different, so a committed write is reported as a failed one. Probe the encodings the store cannot hold, and keep a control for each one it can.
 - **A partial failure reported as total** is a finding: a loop that starts several things and keeps only the first error reports that nothing started when something did.
+- **A verification loop that fails on every entry is the parser, not the data.** A manifest shaped `{"path": {"sha256": …, "origin": …}}` compared against the hex string reports a 100% mismatch on a clean tree; print one entry, check it by hand with `sha256sum`, then trust the loop. The positive count is the evidence — "117 entries, 0 mismatch".
 - **Do not widen the pass into a redesign.** Name the smallest fix; where the fix is a design decision (a secret reachable by a shared uid), say so and say whose call it is.
 
-Probe recipes for a Go service — child environment, leaked-key forgery, unauthenticated cost, unbounded state — are in `references/probe-tests.md`. For a JavaScript backend on a local runtime (a tinyjs desktop app): the harness that runs the real handlers, and the store, string-round-trip and corrupt-file probes, are in `references/probe-tests-js.md`.
+Probe recipes for a Go service — child environment, leaked-key forgery, unauthenticated cost, unbounded state — are in `references/probe-tests.md`. For a JavaScript backend on a local runtime (a tinyjs desktop app): the harness that runs the real handlers, and the store, string-round-trip and corrupt-file probes, are in `references/probe-tests-js.md`. For a leak pass over a diff: `references/leak-scan.md`.
