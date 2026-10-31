@@ -39,6 +39,8 @@ Return exactly one:
 
 Never approve what you did not run, or your own branch. An approval can be the merge: read `mergeStateStatus`, `statusCheckRollup` and `autoMergeRequest` first. An armed auto-merge with green checks merges the moment you approve, so the approval decides whatever the item left open.
 
+An approval is one commit's, and a force-push can drop that commit: re-read `headRefOid` after you post, and review the head that replaced it.
+
 ## The loop
 
 - Rounds converge: the first finds, the second verifies the findings and what the fix broke. A subject new in round two is an issue; a third is the operator's.
