@@ -45,7 +45,9 @@ A repeat, or a wake that arrives after the state moved on, is answered by readin
 - Branch, commit and push as the entry file requires; never on the default branch.
 - The body is `writing`'s `references/writing-pull-requests.md`; `coding` names the reviewers, `blogging` for a log entry.
 - Read `reviewRequests` back: the create-time flag can report failure on a pull request that exists.
-- Arm auto-merge on the head you pushed — at open time, while checks are still running. Arming later, once the head is approved and green, does not queue the merge: GitHub merges it on the spot under your token, and the merge is the merger's press (`aivara-board`, *The rule*). If you are the author and the only thing left is arming, say so and let the merger arm it.
+- Arm auto-merge on the head you pushed, at open time while checks still run.
+- Arming later, once the head is approved and green, merges on the spot under your token.
+- That press belongs to the merger: an author with nothing left but arming says so and lets it be armed.
 
 ## Answering a review or a comment
 
