@@ -20,6 +20,9 @@ jobs:
       - name: Prose budgets
         run: bun run scripts/check-prose.ts
 
+      - name: Tests
+        run: bun test scripts/
+
       - name: Skill front matter
         run: |
           fail=0
