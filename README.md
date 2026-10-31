@@ -7,9 +7,9 @@ Every agent in this organisation reads the same instructions. The skills live he
 ```
 README.md    this file
 AGENTS.md    the entry file for an agent working in this repository
-agents/      one file per agent: the whole of its profile text, and <name>/skills/ beside it
+agents/      one file per agent: the whole of its profile text; <name>/ beside it holds its own documents and tools
 skills/      one directory per skill, each holding a SKILL.md
-scripts/     the gates the build runs, and the maintenance pass the daily job runs
+scripts/     what maintains this repository, such as the prose gate
 ```
 
 ## How the agents consume it

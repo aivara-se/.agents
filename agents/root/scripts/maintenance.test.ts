@@ -2,14 +2,15 @@
 /**
  * Tests for the maintenance script's judgement-free core: which skill files are
  * the agent's own, what the archive refuses, and that a dry run writes nothing.
- * Run: bun test scripts/maintenance.test.ts
+ * Run: bun test agents/root/scripts/
  */
 import { describe, expect, test } from "bun:test";
+import { Database } from "bun:sqlite";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { archiveSkills, collectSkills, parseArgs } from "./maintenance";
+import { archiveSkills, collectSkills, leaseCount, parseArgs } from "./maintenance";
 
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), "maintenance-test-"));
@@ -78,11 +79,41 @@ describe("archiveSkills", () => {
     expect(existsSync(join(repo, "agents", "mama", "skills", "extra-0", "SKILL.md"))).toBe(true);
   });
 
+  test("an empty profile is reported, not archived", () => {
+    const { home, repo, stock } = fixture();
+    const results = archiveSkills({ home, repo, stock, profiles: ["momo"] });
+    expect(results[0].status).toBe("empty");
+    expect(existsSync(join(repo, "agents", "momo"))).toBe(false);
+  });
+
   test("a dry run writes nothing", () => {
     const { home, repo, stock } = fixture();
     const results = archiveSkills({ home, repo, stock, profiles: ["mama"], dry: true });
     expect(results[0].status).toBe("planned");
     expect(existsSync(join(repo, "agents"))).toBe(false);
+  });
+});
+
+describe("leaseCount", () => {
+  test("an unreadable store is null, never zero", () => {
+    const { root } = fixture();
+    const home = join(root, "hermes");
+    mkdirSync(join(home, "profiles", "leaky"), { recursive: true });
+    writeFileSync(join(home, "profiles", "leaky", "state.db"), "not a database");
+    expect(leaseCount("leaky", home)).toBeNull();
+  });
+
+  test("counts only unexpired leases", () => {
+    const { root } = fixture();
+    const home = join(root, "hermes");
+    const dir = join(home, "profiles", "mama");
+    mkdirSync(dir, { recursive: true });
+    const db = new Database(join(dir, "state.db"));
+    db.exec("create table session_turn_leases (expires_at integer)");
+    db.exec(`insert into session_turn_leases values (${Math.floor(Date.now() / 1000) + 600})`);
+    db.exec("insert into session_turn_leases values (1)");
+    db.close();
+    expect(leaseCount("mama", home)).toBe(1);
   });
 });
 

@@ -122,8 +122,10 @@ export function homeOf(profile: string, home = CFG.home): string | null {
   return match ? join(docker, match, "home") : null;
 }
 
-/** Turn leases that have not expired — the one signal that a turn is live in a profile. */
-export function leaseCount(profile: string, home = CFG.home): number {
+/** Turn leases that have not expired — the one signal that a turn is live in a profile.
+ *  `null` means the store could not be read: an unreadable store is never evidence of
+ *  idleness, so every caller treats it as a live turn. */
+export function leaseCount(profile: string, home = CFG.home): number | null {
   const db = join(profileDir(profile, home), "state.db");
   if (!existsSync(db)) return 0;
   try {
@@ -132,11 +134,11 @@ export function leaseCount(profile: string, home = CFG.home): number {
     conn.close();
     return row?.n ?? 0;
   } catch {
-    return 0;
+    return null;
   }
 }
 
-const liveTurns = () => profiles().reduce((sum, profile) => sum + leaseCount(profile), 0);
+const liveTurns = () => profiles().reduce((sum, profile) => sum + (leaseCount(profile) ?? 1), 0);
 
 // ---------------------------------------------------------------- filesystem help
 
@@ -240,9 +242,10 @@ function stageHost(dry: boolean) {
   }
 
   // The backup store is the fleet stage's to retain. Loose archives here are the
-  // only copy of a past host: report their age, never delete them.
-  if (!existsSync(CFG.backups)) mkdirSync(CFG.backups, { recursive: true, mode: 0o700 });
-  const entries = readdirSync(CFG.backups);
+  // only copy of a past host: report their age, never delete them. A dry run
+  // creates nothing, so a probe against a clean host leaves no trace.
+  if (!dry && !existsSync(CFG.backups)) mkdirSync(CFG.backups, { recursive: true, mode: 0o700 });
+  const entries = existsSync(CFG.backups) ? readdirSync(CFG.backups) : [];
   info(`backup store ${CFG.backups}: ${human(entries.length ? entries.reduce((sum, name) => sum + statSync(join(CFG.backups, name)).size, 0) : 0)} in ${entries.length} entr(y/ies)`);
   for (const name of entries) {
     if (!/\.(zip|tar\.zst)$/.test(name)) continue;
@@ -291,7 +294,7 @@ function archive(src: string, dest: string, excludes: string[]): { bytes: number
 
 function backupStage(dry: boolean) {
   const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-  mkdirSync(CFG.backups, { recursive: true, mode: 0o700 });
+  if (!dry) mkdirSync(CFG.backups, { recursive: true, mode: 0o700 });
 
   for (const profile of profiles()) {
     const src = profileDir(profile);
@@ -328,8 +331,9 @@ function backupStage(dry: boolean) {
     else ok(`${profile} sandbox identity: ${human(made.bytes)} (${made.members.length} entries, .secrets present)`);
   }
 
+  const archives = existsSync(CFG.backups) ? readdirSync(CFG.backups) : [];
   for (const type of ["state", "identity", "sandbox"]) {
-    const held = readdirSync(CFG.backups)
+    const held = archives
       .filter((name) => name.startsWith(`${type}-`) && name.endsWith(".tar.zst"))
       .map((name) => ({ name, mtime: statSync(join(CFG.backups, name)).mtimeMs }))
       .sort((a, b) => b.mtime - a.mtime);
@@ -343,9 +347,9 @@ function backupStage(dry: boolean) {
   }
 
   info(
-    `archives held: state=${readdirSync(CFG.backups).filter((n) => n.startsWith("state-")).length} ` +
-      `identity=${readdirSync(CFG.backups).filter((n) => n.startsWith("identity-")).length} ` +
-      `sandbox=${readdirSync(CFG.backups).filter((n) => n.startsWith("sandbox-")).length}`,
+    `archives held: state=${archives.filter((n) => n.startsWith("state-")).length} ` +
+      `identity=${archives.filter((n) => n.startsWith("identity-")).length} ` +
+      `sandbox=${archives.filter((n) => n.startsWith("sandbox-")).length}`,
   );
 
   // Unpushed work is the one thing a tarball does not protect.
@@ -441,6 +445,10 @@ function healthStage(dry: boolean) {
     // One restart per pass, gated on this profile's own live turns: the restart
     // kills every process inside, and clearing orphans is not worth a live turn.
     const leases = leaseCount(profile);
+    if (leases === null) {
+      warn(`${profile}: turn-lease store unreadable — container left running rather than risk a live turn`);
+      continue;
+    }
     if (leases > 0) {
       info(`${profile}: container left running — ${leases} live turn lease(s)`);
       continue;
@@ -822,10 +830,17 @@ function syncStage(dry: boolean): boolean {
 
   const dirty = lines(run(["git", "-C", CFG.repo, "status", "--porcelain"]).out);
   if (dirty.length === 0) ok("working tree clean — nothing to harvest");
-  else if (dry) plan(`harvest: would commit ${dirty.length} path(s) edited in the live checkout`);
-  else if (run(["git", "-C", CFG.repo, "add", "-A"]).code === 0 && run(["git", "-C", CFG.repo, "commit", "-q", "-m", "sync: harvest uncommitted local agents/skills changes"]).code === 0)
-    ok(`committed ${run(["git", "-C", CFG.repo, "log", "--oneline", "-1"]).out.trim()}`);
-  else warn("harvest commit failed");
+  else if (dry) plan(`harvest: would commit skill and soul edits among ${dirty.length} changed path(s)`);
+  else {
+    // Only the two trees the sync owns. Another session may be mid-write in the
+    // same checkout, and anything else would ride a force-push onto `next`.
+    run(["git", "-C", CFG.repo, "add", "--", "agents/", "skills/"]);
+    const staged = lines(run(["git", "-C", CFG.repo, "diff", "--cached", "--name-only"]).out);
+    if (staged.length === 0) info(`no skill or soul edit to harvest — ${dirty.length} other path(s) left in the tree`);
+    else if (run(["git", "-C", CFG.repo, "commit", "-q", "-m", "sync: harvest uncommitted local agents/skills changes"]).code === 0)
+      ok(`harvested ${staged.length} path(s): ${staged.slice(0, 6).join(", ")}${staged.length > 6 ? " …" : ""}`);
+    else warn("harvest commit failed");
+  }
 
   const containsMain = run(["git", "-C", CFG.repo, "merge-base", "--is-ancestor", "origin/main", "HEAD"]).code === 0;
   if (containsMain) ok(`${CFG.branch} already contains origin/main (${run(["git", "-C", CFG.repo, "rev-list", "--count", "origin/main..HEAD"]).out.trim()} commit(s) on top)`);
@@ -1040,7 +1055,7 @@ function leaksStage() {
 
 function upgradeStage(dry: boolean) {
   say("");
-  say("7. UPGRADE");
+  say("5. UPGRADE");
   const live = liveTurns();
   if (live > 0) {
     warn(`upgrade skipped — ${live} live turn lease(s); a dockerd restart would kill them`);
@@ -1090,7 +1105,7 @@ function main() {
   if (args.stages.includes("sync")) conflict = syncStage(args.dry);
   if (args.stages.includes("leaks")) {
     say("");
-    say("3. LEAKS");
+    say("4. LEAKS");
     leaksStage();
   }
   if (explicitUpgrade) upgradeStage(args.dry);
