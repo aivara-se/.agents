@@ -60,6 +60,7 @@ Style is the formatter's job: run the one this repository uses and do not argue 
   - MeMe — code that has to last · MiMi — a measured change or a new tool
   - MoMo — untrusted input, shared state, security, parsing
 - Arm it as you open it: `gh pr merge <n> --auto --rebase`. Never arm a draft or a spike.
+- A stacked pull request is never armed: `--auto` is refused. Merge it with `gh api -X PUT repos/<owner>/<repo>/pulls/<n>/merge-async -f sha=<head> -f merge_method=rebase`, which lands those below it.
 - The body is `writing`'s shape, never a file list.
 
 ## After a review
