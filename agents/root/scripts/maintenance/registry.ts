@@ -29,6 +29,8 @@ export const stepNames = (): string[] => STEPS.map((step) => step.name);
 /** `--only` keeps the named steps in run order, whatever order it was typed in,
  *  and drops an optional step whose flag is absent. */
 export function selectSteps(only: string[] | undefined, ctx: Ctx): Step[] {
-  const chosen = only ? STEPS.filter((step) => only.includes(step.name)) : STEPS;
+  const chosen = only
+    ? STEPS.filter((step) => only.includes(step.name))
+    : STEPS;
   return chosen.filter((step) => !step.enabled || step.enabled(ctx));
 }

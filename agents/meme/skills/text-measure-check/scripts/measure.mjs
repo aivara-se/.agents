@@ -5,25 +5,42 @@
 //     <repo> <font.woff2> <family> <weight> <prose.md> 640 544
 import { createRequire } from "node:module";
 import { readFileSync } from "node:fs";
-const { chromium } = createRequire("/usr/local/lib/node_modules/")("playwright");
+const { chromium } = createRequire("/usr/local/lib/node_modules/")(
+  "playwright",
+);
 
-const [repo, fontFile, family, weight, prosePath, ...widths] = process.argv.slice(2);
-const font = readFileSync(`${repo}/src/frontend/fonts/${fontFile}`).toString("base64");
+const [repo, fontFile, family, weight, prosePath, ...widths] =
+  process.argv.slice(2);
+const font = readFileSync(`${repo}/src/frontend/fonts/${fontFile}`).toString(
+  "base64",
+);
 
 // Prose only: drop headings, join a paragraph's lines, drop the markers.
 const paragraphs = readFileSync(prosePath, "utf8")
   .split(/\n\s*\n/)
-  .map((p) => p.split("\n").filter((l) => l.trim()).join(" "))
+  .map((p) =>
+    p
+      .split("\n")
+      .filter((l) => l.trim())
+      .join(" "),
+  )
   .filter((p) => p && !p.startsWith("#"))
-  .map((p) => p.replace(/\*\*/g, "").replace(/^-\s+/, "").replace(/\s+/g, " ").trim());
+  .map((p) =>
+    p.replace(/\*\*/g, "").replace(/^-\s+/, "").replace(/\s+/g, " ").trim(),
+  );
 
 const divs = paragraphs
-  .map((p) => `<div class="note">${p.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</div>`)
+  .map(
+    (p) =>
+      `<div class="note">${p.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</div>`,
+  )
   .join("\n");
 
 const browser = await chromium.launch({ args: ["--no-sandbox"] });
 for (const px of widths.map(Number)) {
-  const page = await browser.newPage({ viewport: { width: 1600, height: 4000 } });
+  const page = await browser.newPage({
+    viewport: { width: 1600, height: 4000 },
+  });
   await page.setContent(`<!doctype html><meta charset="utf-8"><style>
 @font-face{font-family:"${family}";src:url(data:font/woff2;base64,${font}) format("woff2");font-weight:400 700;font-style:normal;font-display:block}
 body{margin:0}
@@ -50,7 +67,12 @@ body{margin:0}
       counts.push(...lines.slice(0, -1).map((l) => l.trimEnd().length));
     }
     counts.sort((a, b) => a - b);
-    return { counts, loaded: [...document.fonts].map((f) => `${f.family}:${f.status}`).join(" ") };
+    return {
+      counts,
+      loaded: [...document.fonts]
+        .map((f) => `${f.family}:${f.status}`)
+        .join(" "),
+    };
   });
   const c = result.counts;
   console.log(

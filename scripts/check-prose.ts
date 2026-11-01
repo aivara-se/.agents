@@ -95,16 +95,27 @@ for (const path of markdown(ROOT)) {
     if (inFence || !line.trim() || line.startsWith("#")) return;
 
     if (isSkill && /^\s*(-|\d+\.)\s/.test(line) && words(line) > RULE_WORDS) {
-      report(file, index + 1, `${words(line)} words in a rule, the limit is ${RULE_WORDS}`);
+      report(
+        file,
+        index + 1,
+        `${words(line)} words in a rule, the limit is ${RULE_WORDS}`,
+      );
     }
 
     for (const sentence of line.split(/(?<=[.!?])\s+/)) {
       if (words(sentence) > SENTENCE_WORDS) {
-        report(file, index + 1, `${words(sentence)} words in a sentence, the limit is ${SENTENCE_WORDS}`);
+        report(
+          file,
+          index + 1,
+          `${words(sentence)} words in a sentence, the limit is ${SENTENCE_WORDS}`,
+        );
       }
     }
 
-    const plain = line.replace(/`[^`]*`/g, " ").replace(/"[^"]*"/g, " ").toLowerCase();
+    const plain = line
+      .replace(/`[^`]*`/g, " ")
+      .replace(/"[^"]*"/g, " ")
+      .toLowerCase();
     for (const banned of BANNED) {
       if (new RegExp(`\\b${banned}\\b`).test(plain)) {
         report(file, index + 1, `"${banned}" is filler: cut it`);
@@ -130,7 +141,11 @@ for (const path of markdown(ROOT)) {
 
 for (const [sentence, files] of seen) {
   if (files.length > 1) {
-    report(files.join(" and "), null, `the same sentence appears twice: "${sentence.slice(0, 70)}"`);
+    report(
+      files.join(" and "),
+      null,
+      `the same sentence appears twice: "${sentence.slice(0, 70)}"`,
+    );
   }
 }
 

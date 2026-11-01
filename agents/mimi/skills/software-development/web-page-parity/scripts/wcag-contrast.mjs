@@ -12,73 +12,89 @@
 const args = process.argv.slice(2);
 
 const toRgb = (hex) => {
-	const clean = hex.trim().replace('#', '');
-	const full = clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean;
-	return [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
+  const clean = hex.trim().replace("#", "");
+  const full =
+    clean.length === 3
+      ? clean
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : clean;
+  return [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
 };
 
 const parseRgba = (value) => {
-	const match = value.match(/rgba?\(([^)]+)\)/i);
-	if (match) {
-		const parts = match[1].split(',').map((p) => Number(p.trim()));
-		return { rgb: parts.slice(0, 3), alpha: parts.length > 3 ? parts[3] : 1 };
-	}
-	return { rgb: toRgb(value), alpha: 1 };
+  const match = value.match(/rgba?\(([^)]+)\)/i);
+  if (match) {
+    const parts = match[1].split(",").map((p) => Number(p.trim()));
+    return { rgb: parts.slice(0, 3), alpha: parts.length > 3 ? parts[3] : 1 };
+  }
+  return { rgb: toRgb(value), alpha: 1 };
 };
 
 const channel = (c) => {
-	const v = c / 255;
-	return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  const v = c / 255;
+  return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
 };
 
-const luminance = ([r, g, b]) => 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+const luminance = ([r, g, b]) =>
+  0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
 
 const ratio = (a, b) => {
-	const la = luminance(a);
-	const lb = luminance(b);
-	return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+  const la = luminance(a);
+  const lb = luminance(b);
+  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
 };
 
 const hex = ([r, g, b]) =>
-	'#' + [r, g, b].map((c) => Math.round(c).toString(16).padStart(2, '0')).join('');
+  "#" +
+  [r, g, b].map((c) => Math.round(c).toString(16).padStart(2, "0")).join("");
 
-const flatten = ({ rgb, alpha }, surface) => rgb.map((c, i) => c * alpha + surface[i] * (1 - alpha));
+const flatten = ({ rgb, alpha }, surface) =>
+  rgb.map((c, i) => c * alpha + surface[i] * (1 - alpha));
 
-const verdict = (r) => (r >= 7 ? 'AAA' : r >= 4.5 ? 'AA' : r >= 3 ? 'AA-large only' : 'fails AA');
+const verdict = (r) =>
+  r >= 7 ? "AAA" : r >= 4.5 ? "AA" : r >= 3 ? "AA-large only" : "fails AA";
 
-const list = (value) => (value ?? '').split(',').map((v) => v.trim()).filter(Boolean);
+const list = (value) =>
+  (value ?? "")
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
 
-const compositeAt = args.indexOf('--composite');
+const compositeAt = args.indexOf("--composite");
 
 if (compositeAt !== -1) {
-	const panel = parseRgba(args[compositeAt + 1]);
-	const surfaces = list(args[compositeAt + 2]).map(toRgb);
-	const foregrounds = list(args[compositeAt + 3] ?? args[0]).map(toRgb);
-	for (const surface of surfaces) {
-		const flat = flatten(panel, surface);
-		console.log(`panel ${args[compositeAt + 1]} over ${hex(surface)} composites to ${hex(flat)}`);
-		for (const fg of foregrounds) {
-			const r = ratio(fg, flat);
-			console.log(`  ${hex(fg)}: ${r.toFixed(2)}:1  ${verdict(r)}`);
-		}
-	}
-	process.exit(0);
+  const panel = parseRgba(args[compositeAt + 1]);
+  const surfaces = list(args[compositeAt + 2]).map(toRgb);
+  const foregrounds = list(args[compositeAt + 3] ?? args[0]).map(toRgb);
+  for (const surface of surfaces) {
+    const flat = flatten(panel, surface);
+    console.log(
+      `panel ${args[compositeAt + 1]} over ${hex(surface)} composites to ${hex(flat)}`,
+    );
+    for (const fg of foregrounds) {
+      const r = ratio(fg, flat);
+      console.log(`  ${hex(fg)}: ${r.toFixed(2)}:1  ${verdict(r)}`);
+    }
+  }
+  process.exit(0);
 }
 
 if (args.length < 2) {
-	console.error(
-		"usage: wcag-contrast.mjs '<surfaces>' '<fg,fg>' | wcag-contrast.mjs --composite 'rgba(...)' '<surface>' '<fg,fg>'"
-	);
-	process.exit(2);
+  console.error(
+    "usage: wcag-contrast.mjs '<surfaces>' '<fg,fg>' | wcag-contrast.mjs --composite 'rgba(...)' '<surface>' '<fg,fg>'",
+  );
+  process.exit(2);
 }
 
 const surfaces = list(args[0]).map(toRgb);
 const foregrounds = args.slice(1).flatMap(list).map(toRgb);
 
 for (const surface of surfaces) {
-	console.log(`${hex(surface)}:`);
-	for (const fg of foregrounds) {
-		const r = ratio(fg, surface);
-		console.log(`  ${hex(fg)}: ${r.toFixed(2)}:1  ${verdict(r)}`);
-	}
+  console.log(`${hex(surface)}:`);
+  for (const fg of foregrounds) {
+    const r = ratio(fg, surface);
+    console.log(`  ${hex(fg)}: ${r.toFixed(2)}:1  ${verdict(r)}`);
+  }
 }

@@ -17,8 +17,8 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Markdown format
-        run: bunx prettier@3.6.2 --check "**/*.md"
+      - name: Format
+        run: bun x prettier@3.9.10 --check .
 
       - name: Prose budgets
         run: bun run scripts/check-prose.ts
