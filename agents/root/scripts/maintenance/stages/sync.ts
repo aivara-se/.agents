@@ -1,5 +1,5 @@
 /** Stage 3: git and the org config. The script prepares one reviewable diff —
- *  souls merged, archives written — and stops there. The agent rebases, rewrites
+ *  souls merged — and stops there. The agent rebases, rewrites
  *  the harvested skills to house standard, commits, pushes `next` and refreshes
  *  the `next -> main` pull request. Nothing here commits, rebases or pushes: one
  *  owner for the rewrite means it cannot be left half-done.
@@ -10,7 +10,6 @@ import type { Ctx } from "../context";
 import { profiles } from "../profile";
 import { info, ok, plan, say, warn } from "../report";
 import { lines, run } from "../shell";
-import { archiveSkills } from "./sync/archive";
 import { mergeSoul, seedBases } from "./sync/souls";
 
 /** What the agent does with each group the pass leaves in the tree. */
@@ -69,32 +68,16 @@ export function sync(ctx: Ctx): boolean {
   }
 
   say("");
-  say("3b. SKILLS (profile skills -> agents/<name>/skills, archive only)");
-  for (const result of archiveSkills({ dry })) {
-    const label = `${result.profile}: ${result.files} file(s), was ${result.previous}`;
-    if (result.status === "archived") ok(`${label} archived`);
-    else if (result.status === "planned") plan(`${label} — would archive`);
-    else if (result.status === "empty") warn(`${result.profile}: nothing to archive — skipped, nothing pruned`);
-    else if (result.status === "refused-prune") {
-      warn(`${result.profile}: advice REFUSED — ${result.files} files against ${result.previous} archived; raise the archive by hand if the drop is real`);
-      conflict = true;
-    } else {
-      warn(`${result.profile}: REFUSED — a secret-shaped string in ${result.detail}`);
-      conflict = true;
-    }
-  }
-
-  say("");
   say("3c. REVIEW QUEUE (the script commits nothing)");
   if (dry) {
     plan("review: would list every path the agent must rewrite or commit");
   } else {
-    const groups: Record<"skills" | "souls" | "archive" | "other", string[]> = { skills: [], souls: [], archive: [], other: [] };
+    const groups: Record<"skills" | "souls" | "agentSkills" | "other", string[]> = { skills: [], souls: [], agentSkills: [], other: [] };
     for (const raw of lines(run(["git", "-C", CFG.repo, "status", "--porcelain"]).out)) {
       const path = raw.slice(3).trim().replace(/^"|"$/g, "");
       if (path.startsWith("skills/")) groups.skills.push(path);
       else if (/^agents\/[^/]+\.md$/.test(path)) groups.souls.push(path);
-      else if (/^agents\/[^/]+\/skills(\.manifest\.json|\/)/.test(path)) groups.archive.push(path);
+      else if (/^agents\/[^/]+\/skills(\.manifest\.json|\/)/.test(path)) groups.agentSkills.push(path);
       else groups.other.push(path);
     }
     if (groups.skills.length === 0) ok("no harvested skill edit to review");
@@ -104,7 +87,7 @@ export function sync(ctx: Ctx): boolean {
       if (groups.skills.length > 12) say(`       … ${groups.skills.length - 12} more`);
     }
     if (groups.souls.length) info(`${groups.souls.length} soul path(s) to ${VERBATIM}: ${groups.souls.join(" ")}`);
-    if (groups.archive.length) info(`${groups.archive.length} archive path(s) to ${VERBATIM}`);
+    if (groups.agentSkills.length) info(`${groups.agentSkills.length} agent-skill path(s) to ${VERBATIM}`);
     if (groups.other.length) info(`${groups.other.length} path(s) outside agents/ and skills/ left untouched: ${groups.other.slice(0, 6).join(" ")}`);
   }
 
@@ -112,8 +95,8 @@ export function sync(ctx: Ctx): boolean {
   say("3d. HAND-OFF (the run's contract — anything short of it is a failed run)");
   say(`  base: ${base || "(no remote branch)"}`);
   say("  1. rebase next onto origin/main; a conflict is resolved by rewriting both sides to writing/coding, never by taking one");
-  say("  2. rewrite the review queue to house standard and fold it, with the souls and the archive, into one commit");
-  say(`     archives and souls verbatim; the message says what changed and why`);
+  say("  2. rewrite the review queue to house standard and fold it, with the souls and the agents' own skills, into one commit");
+  say(`     agent skills and souls verbatim; the message says what changed and why`);
   if (base) say(`  3. git push --force-with-lease=${CFG.branch}:${base} origin ${CFG.branch}`);
   else say(`  3. git push -u origin ${CFG.branch}   (no remote branch yet — plain create)`);
   say("  4. verify: next == origin/next, HEAD..origin/main = 0, origin/main..next > 0");

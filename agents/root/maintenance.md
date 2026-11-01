@@ -6,7 +6,7 @@ The daily pass runs `agents/root/scripts/maintenance/` (entry `index.ts`, deploy
 
 - **Host** — refresh package lists, count pending upgrades, clear temp files, cap the journal, drop stale rotated logs, report disk and memory.
 - **Fleet** — archive state and identities, check containers, gateway, tunnel and dashboard, restart an idle container to clear orphans, watch swap and kernel OOM kills, read the shared provider balance.
-- **Sync** — fetch, three-way merge the souls, write the skill archive, then hand the agent one reviewable diff: the paths it must rewrite or commit verbatim. The script never commits, rebases or pushes. The agent does all four and refreshes the `next -> main` pull request. The checkout must be on `next`; any other branch is refused.
+- **Sync** — fetch, three-way merge the souls, then hand the agent one reviewable diff: the paths it must rewrite or commit verbatim. The script never commits, rebases or pushes. The agent does all four and refreshes the `next -> main` pull request. The checkout must be on `next`; any other branch is refused.
 - **Leaks** — report watch spins, orphaned sandbox processes, dead registry pids and overgrown logs.
 - **Upgrade** — only with `--upgrade`, and skipped while any profile holds a live turn lease: the dockerd restart would kill a live turn.
 
@@ -14,7 +14,7 @@ Each stage reports `[ok]`, `[act]` (a change it made), `[WARN]` (a decision it w
 
 ## Rules the script obeys
 
-- A backup is written before anything is pruned, and a refused archive stops that profile's pass.
+- A backup is written before anything is pruned.
 - Auto-fix only what is reversible: start a stopped container, restart one with no live turn, prune a dangling image, delete a cache.
 - Never delete or consolidate agent data, sessions, skills, repos or credentials.
 - Backups rotate: the newest eight per type are kept and the oldest dropped.
