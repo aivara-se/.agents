@@ -6,7 +6,7 @@ The daily pass runs `agents/root/scripts/maintenance/` (entry `index.ts`, deploy
 
 - **Host** — refresh package lists, count pending upgrades, clear temp files, cap the journal, drop stale rotated logs, report disk and memory.
 - **Fleet** — archive state and identities, check containers, gateway, tunnel and dashboard, restart an idle container to clear orphans, watch swap and kernel OOM kills, read the shared provider balance.
-- **Sync** — harvest uncommitted skill and soul edits, rebase `next` onto `main`, merge souls, archive profile skills, push `next`. The live checkout must be on `next`; any other branch is refused.
+- **Sync** — fetch, three-way merge the souls, write the skill archive, then hand the agent one reviewable diff: the paths it must rewrite or commit verbatim. The script never commits, rebases or pushes; the agent does all four, and refreshes the `next -> main` pull request. The checkout must be on `next`; any other branch is refused.
 - **Leaks** — report watch spins, orphaned sandbox processes, dead registry pids and overgrown logs.
 - **Upgrade** — only with `--upgrade`: the package upgrade, skipped while any profile holds a live turn lease. It is not in the timed pass because the dockerd restart would kill a live turn.
 
@@ -21,12 +21,13 @@ Each stage reports `[ok]`, `[act]` (a change it made), `[WARN]` (a decision it w
 - A credential leaves the host only to the API it belongs to: the balance probe sends the shared key to its own provider, nothing else.
 - Never restart the gateway, and never read an unreadable lease store as idle.
 - Never push `main` and never merge `next`; the operator merges.
+- The script never commits or pushes: the rebase, the reviewed commit, the push and the pull request have one owner, the agent.
 
 ## What the agent decides
 
 - Every `[WARN]`: fix it, or state what it costs to leave it, in one line.
 - The package upgrade: run it only when no profile holds a live turn lease.
-- A conflict the script left untouched: a rebase of `next`, or a soul whose two sides disagree.
+- The whole sync hand-off: rebase, a conflict resolved by rewriting both sides, the review and rewrite of the queue, the commit, the lease-guarded push, and the `next -> main` pull request.
 - Skill content and prose: a rule naming a job, script, path or cadence that no longer exists.
 - Anything destructive, irreversible or outside the host: the operator's call, with the cost.
 
