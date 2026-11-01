@@ -15,7 +15,9 @@ Style is the formatter's job: run the one this repository uses and do not argue 
 - A merged design outranks the code: implement to it, and name the documents you left unedited.
 - Never choose between two readings in silence: say which you took, and why.
 - Frozen documents: a contradiction is a blocker. Name the file, the line and the input that settles it, in one question.
-- Sync the base branch, and read the tree before assuming another agent landed it.
+- A merged ADR that assumes a capability the runtime lacks is the operator's decision: name the ADR, the platform and the options; do not add the excluded surface.
+- Sync the base branch with `git pull --ff-only`, and read the tree before assuming another agent landed it.
+- Never sync a clone with `git checkout origin/main -- .`: it copies the tree into the index while HEAD stays behind, and every later write sees a dirty index.
 - Build in the order the architecture document numbers; the reviewer compares against it.
 - An ADR's overrides clause is a deletion list. Read the old ADR beside the new.
 - Reuse the service's vocabulary: a new outcome is a value in the existing field unless the design says otherwise.
@@ -69,6 +71,7 @@ Style is the formatter's job: run the one this repository uses and do not argue 
 - A request for changes is a proposal: is it true, in scope, worth its cost? If not, answer on the thread.
 - When it holds, apply it and ask that reviewer again.
 - A push re-runs the gate and dismisses approvals; rebase as the base moves, then re-request.
+- An approval or fix on a head a rebase replaced is gone: re-apply it and ask again; an approval belongs to a commit, not a branch.
 - A rebase that meets another agent's doc commit conflicts on summaries, not facts: keep their new bullets, and recount any sentence that states a number instead of choosing a side.
 
 ## Done
