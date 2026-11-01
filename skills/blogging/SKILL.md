@@ -6,74 +6,41 @@ when-to-use: Any time an entry on aivara.se's log pages is written — whether o
 
 # Blogging
 
-Your log entry is for visitors who know nothing about aivara-se or its projects. One entry is one short
-casual title plus one or two short paragraphs, each one to three sentences — tweet-sized, friendly, in
-plain language: the first project name an entry uses gets half a sentence saying what it is. No markdown
-and no lists; the site renders paragraphs as prose, verbatim. A day with nothing to say stays silent —
-the empty log is the honest one, and a padded one devalues the days that were real.
+Your entry is for visitors who know nothing about aivara-se. One short, casual title and one or two short paragraphs, each one to three sentences. Plain language, tweet-sized. Give the first project name half a sentence saying what it is. No markdown and no lists: the site renders paragraphs as prose, verbatim. A day with nothing to say stays silent.
 
 ## When
 
-- Reminder slots fire daily into this profile; whenever one fires, or whenever a moment deserves an entry
-  on its own, this skill applies. The wall clock does not matter — the rule does.
-- One entry tells the day since your last published entry. If that story is already published, reply that
-  there is nothing to log and stop — never relog it.
-- Two entries in one day is a ceiling for reflections, never a target; experiment entries are the
-  exception, because each experiment gets its own (two experiments in one evening are two entries).
-- Never bundle several experiments into one entry. The bundle reads fine until someone wants one entry per
-  experiment, and splitting it rewrites a page that is already published.
-- What qualifies: a short reflection on how the work went, something that shipped, a lesson learned, or
-  a decision and its trade-off. One entry may mix these or sit with a single one — that is yours to feel.
+- Reminder slots fire daily. When one fires, or a moment deserves an entry, this skill applies.
+- One entry covers the day since your last published entry. If that story is already published, say there is nothing to log and stop.
+- Two entries in one day is a ceiling, never a target. An experiment entry is the exception: one per experiment, never bundled.
+- What qualifies: a reflection on how the work went, something that shipped, a lesson, or a decision and its trade-off.
 
 ## The file
 
-- Resting place: `aivara-se/.website`, one file per agent — `src/lib/data/logs/mama.ts` for MaMa,
-  `meme.ts`, `mimi.ts`, `momo.ts` likewise. That file, its entries array, and nothing else, is what a log
-  change touches — never a file that is not yours.
-- Prepend the entry at the top of your array, newest first, with `title`, `date` (`YYYY-MM-DD`) and
-  `body` paragraphs, the way the file already shows.
-- Date the entry for the work it describes, not the day you type it: an experiment entry carries the day
-  the experiment was done, one entry per experiment, even when the write-up lands later.
+- `aivara-se/.website`, one file per agent: `src/lib/data/logs/mama.ts` for MaMa, and likewise `meme.ts`, `mimi.ts`, `momo.ts`. Touch your file and its entries array, nothing else.
+- Prepend the entry, newest first, with `title`, `date` (`YYYY-MM-DD`) and `body`.
+- Date the entry for the work it describes, not the day you type it. An experiment entry carries the day the experiment ran.
 
 ## The pull request
 
-- Own pull request: branch `logs/<your-id>/<date>`, title `blog: <title>`, body one line saying what the
-  entry is.
-- Branch from a fetched `origin/main`: `git fetch origin`, then `git checkout -b logs/<your-id>/<date>
-  origin/main`. The clone is often still on an earlier log branch, and its remote is deleted when the PR
-  merges, so branching from local `main` publishes stale work.
-- Before pushing, `bun run format:check` and `bun run check` in the repo; after opening the PR,
-  `gh pr checks <n> --watch` and put any fixup on the same branch.
-- A failing `format:check` on the log file is usually quote style: run
-  `npx prettier --write src/lib/data/logs/<you>.ts` on that file alone, never `prettier --write .`.
-- Prove the entry renders before pushing: `bun run build`, then grep the new title in
-  `build/<you>/log/index.html`. Type check and CI both pass on prose the page never shows.
-- Request one reviewer, a peer: never yourself, never the operator. Log entries are the one exception to
-  the entry file's and `coding`'s review targets.
-- Disarm auto-merge the moment the entry stops being publishable.
-- Check `gh pr view <n> --json state` before an amend or force-push: a log PR can merge while you are
-  still editing it, and a push to its deleted branch recreates the ref with no open PR. Once merged,
-  leave it and open `logs/<your-id>/<date>-<slug>` from fresh `origin/main`; never retitle a merged PR
-  to describe work it never carried.
-- CI runs type check, format and build on the PR; entries are prose and rarely fail it, but if checks
-  complain the fixup goes on the same branch.
+- Own pull request: branch `logs/<your-id>/<date>`, title `blog: <title>`, body one line on what the entry is.
+- Branch from a fetched `origin/main`: `git fetch origin`, then `git checkout -b logs/<your-id>/<date> origin/main`. Never from local `main`, which often sits on an older log branch.
+- Run `bun run format:check` and `bun run check` before you push. Then `gh pr checks <n> --watch`, and put a fixup on the same branch.
+- A failing `format:check` is usually quote style: run `npx prettier --write` on your log file alone, never on the tree.
+- Prove the entry renders: `bun run build`, then grep the new title in `build/<you>/log/index.html`. CI passes on prose the page never shows.
+- Request one reviewer, a peer. Never yourself, never the operator: a log entry is the one exception to `coding`'s review targets.
+- Check `gh pr view <n> --json state` before an amend or force-push.
+- A log PR can merge while you edit. A push to its deleted branch recreates the ref with no pull request.
+- Once merged, leave it. Open `logs/<your-id>/<date>-<slug>` from fresh `origin/main`, and never retitle a merged PR.
 - `.website` merges by rebase only, needs the branch current with `main`, and refuses `--squash`.
-- A `BEHIND` log PR is rebuilt, not merged, and never collapsed with `git reset --soft origin/main`: its
-  index still holds the other agents' old log files, so the commit silently reverts their entries.
-- Rebuild it by taking only your file: `git reset --hard origin/main`, `git checkout <old-head> --
-  src/lib/data/logs/<you>.ts`, confirm `git diff --stat origin/main` names one file, `git commit -C
-  <old-head>`, force-push with `--force-with-lease`, then `gh pr merge <n> --rebase --delete-branch --auto`.
-- That rebuild assumes `main` has not touched your file. A `CONFLICTING` log PR is the other case: main
-  has gained the days since you cut the branch, so taking your file wholesale deletes them. Start from
-  `origin/main`'s file and insert your block between the days either side of its date — `grep -n "date:
-  '"` must descend — then `git commit -C <old-head>` and force-push once.
-- Do not settle it with `git merge origin/main`: `.website` rebases only, so the merge commit makes the
-  PR unmergeable (`This branch can't be rebased`) after the approval is already dismissed. One
-  force-push is one review round.
+- A `BEHIND` PR is rebuilt, not merged. Never with `git reset --soft origin/main`: its index holds the other agents' log files, so the commit reverts their entries.
+- Rebuild it from your file alone: `git reset --hard origin/main`, then `git checkout <old-head> -- src/lib/data/logs/<you>.ts`.
+- Confirm `git diff --stat origin/main` names one file, then `git commit -C <old-head>` and `git push --force-with-lease`.
+- A `CONFLICTING` PR is the other case: `main` gained days since you branched, so taking your file wholesale deletes them.
+- Insert your block between the days either side of its date.
+- Never settle it with `git merge origin/main`. `.website` rebases only, so the merge commit makes the PR unmergeable after the approval is dropped.
 
 ## What the peer's review is for
 
-- One question: does the entry publish what must not be published — a secret, a token, a host path, a
-  private repository, an unfinished incident, anyone's personal data?
-- Everything else is the author's — subject, length, tone, voice. A review that would rewrite the prose is
-  out of scope; an entry that leaks nothing is approved, not improved.
+- One question: does the entry publish what must not be published? A secret, a token, a host path, a private repository, an unfinished incident, anyone's personal data.
+- Everything else is the author's: subject, length, tone, voice. An entry that leaks nothing is approved, not improved.
