@@ -14,10 +14,10 @@ One row per local day. A cleared day keeps its row with an empty body; every rea
 
 ## Open
 
-- `import { Database } from 'tjs:sqlite'`; `new Database(path)` is synchronous, so `await` only the folder.
+- `import { Database } from 'tjs:sqlite'`; `new Database(path)` is synchronous, so await only the folder.
 - `PRAGMA journal_mode = WAL`, then `PRAGMA synchronous = FULL`.
 - `PRAGMA integrity_check` must return `ok`; a failure refuses the app and names the file, it never recreates it.
-- `PRAGMA user_version` is the schema version. Create the table and set the version in one `BEGIN; …; COMMIT;`, so a crash cannot leave a version-0 file with the table present.
+- `PRAGMA user_version` is the schema version. Create the table and set the version in one `BEGIN; …; COMMIT;`, or a crash leaves a version-0 file holding the table.
 
 ## Write
 
@@ -28,7 +28,7 @@ WHERE excluded.seq > notes.seq
 ```
 
 - `stmt.run` returns nothing; read the row back and report `applied` only when `row.seq === seq && row.body === body`.
-- That body comparison is what catches a second window writing at the same counter and reporting a save it did not make.
+- That body comparison catches a second window writing at the same counter and reporting a save it did not make.
 
 ## Search over the bodies
 
@@ -52,20 +52,20 @@ CREATE TRIGGER notes_delete AFTER DELETE ON notes BEGIN
 END;
 ```
 
-- `remove_diacritics 0` keeps å, ä and ö as their own letters while still folding case in every script; `LIKE` and `lower()` fold only A–Z, so "Äpple" is missed by "äpple".
-- No external-content mode: `notes` is `WITHOUT ROWID`, and FTS5 maps external rows by rowid. The index is a copy, about a third of the file for ordinary notes.
-- Lift an older file in one transaction: create the table and triggers, `INSERT INTO notes_fts (day, body) SELECT day, body FROM notes;`, then set `user_version`. Creating and filling in separate transactions leaves a file whose index is short of its notes.
+- `remove_diacritics 0` keeps å, ä and ö as their own letters while folding case everywhere; `LIKE` and `lower()` fold only A–Z, so "Äpple" is missed by "äpple".
+- No external-content mode: `notes` is `WITHOUT ROWID`, and FTS5 maps external rows by rowid. The index is a copy.
+- Lift an older file in one transaction: create the table and triggers, `INSERT INTO notes_fts (day, body) SELECT day, body FROM notes;`, then set `user_version`. Separate transactions leave an index short of its notes.
 
 ## A query is words
 
-- Build the MATCH expression by quoting each word and appending `*`: `"appl"*` is a prefix phrase, and doubling any `"` inside the word (`word.replaceAll('"', '""')`) keeps it literal. Joining with a space ANDs the words in any order.
-- Drop a word with no letter or number (`/[\p{L}\p{N}]/u`): a phrase of only punctuation is a syntax error, and nothing would match it anyway.
-- Never interpolate the person's text into SQL or into the query language; the quoting above is the whole defence.
+- Quote each word and append `*`: `"appl"*` is a prefix phrase, and doubling any `"` in the word (`word.replaceAll('"', '""')`) keeps it literal. A space ANDs the words in any order.
+- Drop a word with no letter or number (`/[\p{L}\p{N}]/u`): a phrase of only punctuation is a syntax error.
+- Never interpolate the person's text into SQL or the query language; the quoting above is the whole defence.
 - `SELECT notes.day, snippet(notes_fts, 1, '', '', '…', 12) FROM notes_fts JOIN notes ON notes.day = notes_fts.day WHERE notes_fts MATCH ? ORDER BY notes.day DESC LIMIT ?` — the row is read from `notes`, so a stale index cannot invent a day.
 
 ## Test under bun
 
 - Keep the store in a module that takes the open handle: `openStore(path, (p) => new Database(p))`.
 - `bun:sqlite` implements the same API: `openStore(':memory:', (p) => new Database(p))` runs the real statements.
-- Prove the triggers by saving through the store, never by inserting into `notes_fts` yourself: the insert you write is not the one the app performs.
-- Pin: insert, update, stale counter, same-counter different body, tombstone kept, no resurrection, schema version, corrupt file untouched; then a folded non-ASCII match both ways (`äpp` and `ÄPP`), a near miss (`hjart` does not find `hjärta`), prefix, two words in either order, an update and a clear removing the old text, the result cap, and an older file lifted with its notes searchable.
+- Prove the triggers by saving through the store, never by inserting into `notes_fts` yourself.
+- Pin: insert, update, stale counter, same-counter different body, tombstone kept, no resurrection, schema version, corrupt file untouched; a folded non-ASCII match both ways (`äpp`, `ÄPP`), a near miss (`hjart` misses `hjärta`), prefix, two words either order, an update and a clear removing old text, the result cap, an older file lifted with its notes searchable.

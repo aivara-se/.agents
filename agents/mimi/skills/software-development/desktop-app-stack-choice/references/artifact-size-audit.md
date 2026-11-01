@@ -11,8 +11,7 @@ zip -9 -r b.zip App.app                 # compare: often no better
 ls -l a.zip b.zip
 ```
 
-Compress the directory with `tar -cJf app.tar.xz App.app` when the zip is too big to send; an
-xz tarball is typically 30–40% smaller than a `ditto` zip.
+When the zip is too big to send, `tar -cJf app.tar.xz App.app` is typically 30–40% smaller.
 
 ## 2. Break a macOS binary into segments
 
@@ -33,8 +32,7 @@ for _ in range(ncmds):
     off += size
 ```
 
-Read it as: `__TEXT` = executable code (the runtime, if one is embedded), `__BUN` = Bun's
-appended payload (the native addon), `__LINKEDIT` small, `__DATA` small.
+Read it as: `__TEXT` = executable code (the runtime, if one is embedded), `__BUN` = Bun's appended payload (the native addon), `__LINKEDIT` and `__DATA` small.
 
 ## 3. Isolate the fixed cost
 
@@ -44,13 +42,8 @@ bun build --compile hello.ts --outfile hello
 ls -l hello
 ```
 
-A bare Bun compile is ~109 MB on Linux x64. If the app's binary is close to that, the app code
-is not the problem and no amount of trimming will fix it.
+A bare Bun compile is large on its own. If the app's binary is close to that, the app code is not the problem and no amount of trimming will fix it.
 
 ## 4. Compare like with like
 
-- tinyjs Pereda: 8.2 MB `.app` (5.9 MB runtime + 1.7 MB launcher + assets), 3.5 MB zip.
-- gpuix Pereda: 114.8 MB `.app` (82.2 MB `__TEXT` + 24.2 MB `__BUN`), 51 MB zip, 32.5 MB xz.
-
-Quote directory bytes and name the engine that accounts for them; "native" and "small" are
-independent properties.
+Quote directory bytes and name the engine that accounts for them; "native" and "small" are independent properties. Set the framework artifact beside the incumbent app built for the same OS, and use the bare compile above to separate runtime cost from app code.

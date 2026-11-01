@@ -1,24 +1,11 @@
 # Webhook Subscriptions
 
-Create dynamic webhook subscriptions so external services (GitHub, GitLab, Stripe, CI/CD, IoT sensors, monitoring tools) can trigger Hermes agent runs by POSTing events to a URL.
+An external service (GitHub, GitLab, Stripe, CI, an IoT sensor, a monitor) starts a Hermes run by POSTing an event to a URL.
 
-## Setup (Required First)
+## Setup (required first)
 
-The webhook platform must be enabled before subscriptions can be created. Check with:
-```bash
-hermes webhook list
-```
+The webhook platform must be enabled. `hermes webhook list` reports when it is not; then run `hermes gateway setup` (wizard: enable webhooks, port, global HMAC secret), or add to `~/.hermes/config.yaml`:
 
-If it says "Webhook platform is not enabled", set it up:
-
-### Option 1: Setup wizard
-```bash
-hermes gateway setup
-```
-Follow the prompts to enable webhooks, set the port, and set a global HMAC secret.
-
-### Option 2: Manual config
-Add to `~/.hermes/config.yaml`:
 ```yaml
 platforms:
   webhook:
@@ -28,34 +15,21 @@ platforms:
       secret: "your-webhook-secret-here"
 ```
 
-Omitting `host` uses the dual-stack default and listens on both IPv4 and IPv6.
-Set a specific address only when you intentionally want to restrict the bind.
+Omitting `host` listens on both IPv4 and IPv6 through the dual-stack default. Set an address only to restrict the bind. `WEBHOOK_ENABLED`, `WEBHOOK_PORT` and `WEBHOOK_SECRET` also set these values.
 
-### Option 3: Environment variables
-Add to `${HERMES_HOME:-~/.hermes}/.env`:
-```bash
-WEBHOOK_ENABLED=true
-WEBHOOK_PORT=8644
-WEBHOOK_SECRET=your-webhook-secret-here
-```
+Then start or restart the gateway and check it:
 
-After configuration, start (or restart) the gateway:
 ```bash
 hermes gateway run
 # Or if using systemd:
 systemctl --user restart hermes-gateway
-```
-
-Verify it's running:
-```bash
 curl http://localhost:8644/health
 ```
 
 ## Commands
 
-All management is via the `hermes webhook` CLI command:
-
 ### Create a subscription
+
 ```bash
 hermes webhook subscribe <name> \
   --prompt "Prompt template with {payload.fields}" \
@@ -67,11 +41,11 @@ hermes webhook subscribe <name> \
   --secret "optional-custom-secret"
 ```
 
-Returns the webhook URL and HMAC secret. The user configures their service to POST to that URL.
+It returns the webhook URL and HMAC secret; the user configures their service to POST there.
 
-### Bind a route to a profile (multi-profile routing)
+### Bind a route to a profile
 
-With `gateway.multiplex_profiles` enabled, a route carries a `profile` field and is served under `/p/<profile>/webhooks/<route>`. The route's HMAC secret is bound to that profile, and a valid signature whose `/p/<profile>/` prefix does not match the route binding is still rejected. A route with no `profile` is default-profile-only.
+With `gateway.multiplex_profiles` enabled, a route carries a `profile` field and is served under `/p/<profile>/webhooks/<route>`. The route's HMAC secret binds to that profile, and a valid signature whose `/p/<profile>/` prefix does not match the binding is still rejected. A route with no `profile` is default-profile-only.
 
 ```yaml
 platforms:
@@ -82,16 +56,16 @@ platforms:
           profile: coder
 ```
 
-Rebinding an existing route to another profile (dynamic subscriptions: `--route-profile`) rotates its HMAC secret automatically — the old profile's secret stops authenticating — so update the caller's copy in the same change.
+Rebinding an existing route to another profile (`--route-profile` on a dynamic subscription) **rotates its HMAC secret** — the old profile's secret stops authenticating — so update the caller's copy in the same change.
 
-This is the supported way to make an external service start a run **as a named profile** without shelling out to `hermes` on the host, which is what a service that currently spawns the binary needs if it is ever moved off the host.
+This is the supported way to make an external service start a run **as a named profile** without shelling out to `hermes` on the host.
 
 ### Filter or transform payloads before the agent runs
 
-Two mechanisms narrow broad event streams (e.g. Todoist/GitHub fire on every update) so only relevant payloads wake the agent:
+Broad streams (Todoist, GitHub) fire on every update. Two mechanisms narrow them:
 
-- **Declarative `filters`** (config.yaml routes only): list of conditions on payload fields, event type, or headers — operators `equals`, `not_equals`, `contains`, `exists`, `missing`, `in`, `in_file`, `regex`, with `all`/`any`/`not` grouping. Non-matching events are ignored with HTTP 200.
-- **Route scripts** (`--script` on subscribe, or `script:` on a config route): a script under `~/.hermes/scripts/` receives the payload as JSON on stdin. JSON stdout replaces the payload before prompt templating; empty stdout, `[SILENT]`, or a nonzero exit ignores the webhook. `.sh`/`.bash` run with bash, everything else with Python. Scripts cannot live outside `~/.hermes/scripts/` (path traversal is blocked).
+- **Declarative `filters`** (config.yaml routes only): conditions on payload fields, event type or headers — `equals`, `not_equals`, `contains`, `exists`, `missing`, `in`, `in_file`, `regex`, grouped with `all`/`any`/`not`. A non-match is ignored with HTTP 200.
+- **Route scripts** (`--script`, or `script:` on a config route): a script under `~/.hermes/scripts/` gets the payload as JSON on stdin. JSON stdout replaces the payload before templating; empty stdout, `[SILENT]` or a nonzero exit ignores the webhook. `.sh`/`.bash` run with bash, anything else with Python. Scripts cannot live outside `~/.hermes/scripts/` (path traversal is blocked).
 
 ```bash
 hermes webhook subscribe todoist-hermes \
@@ -102,36 +76,23 @@ hermes webhook subscribe todoist-hermes \
 
 Full filter syntax: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/webhooks#payload-filters
 
-### List subscriptions
+### Inspect, remove, test
+
 ```bash
 hermes webhook list
-```
-
-### Remove a subscription
-```bash
 hermes webhook remove <name>
-```
-
-### Test a subscription
-```bash
 hermes webhook test <name>
 hermes webhook test <name> --payload '{"key": "value"}'
 ```
 
-## Prompt Templates
+## Prompt templates
 
-Prompts support `{dot.notation}` for accessing nested payload fields:
+Prompts take `{dot.notation}` for nested fields: `{issue.title}`, `{pull_request.user.login}`, `{data.object.amount}`, `{sensor.temperature}`. With no `--prompt`, the whole JSON payload goes into the agent prompt.
 
-- `{issue.title}` — GitHub issue title
-- `{pull_request.user.login}` — PR author
-- `{data.object.amount}` — Stripe payment amount
-- `{sensor.temperature}` — IoT sensor reading
+## Common patterns
 
-If no prompt is specified, the full JSON payload is dumped into the agent prompt.
+GitHub issues, delivering to a chat:
 
-## Common Patterns
-
-### GitHub: new issues
 ```bash
 hermes webhook subscribe github-issues \
   --events "issues" \
@@ -140,55 +101,13 @@ hermes webhook subscribe github-issues \
   --deliver-chat-id "-100123456789"
 ```
 
-Then in GitHub repo Settings → Webhooks → Add webhook:
-- Payload URL: the returned webhook_url
-- Content type: application/json
-- Secret: the returned secret
-- Events: "Issues"
+Then in the repo: Settings → Webhooks → Add webhook. Payload URL is the returned `webhook_url`, content type `application/json`, secret is the returned secret, events "Issues".
 
-### GitHub: PR reviews
-```bash
-hermes webhook subscribe github-prs \
-  --events "pull_request" \
-  --prompt "PR #{pull_request.number} {action}: {pull_request.title}\nBy: {pull_request.user.login}\nBranch: {pull_request.head.ref}\n\n{pull_request.body}" \
-  --skills "github-code-review" \
-  --deliver github_comment
-```
+The same shape covers any source: swap `--events`, `--prompt` and `--deliver` (`github_comment` with `--skills "github-code-review"` for PR review, `discord` for CI, `origin` for a monitor).
 
-### Stripe: payment events
-```bash
-hermes webhook subscribe stripe-payments \
-  --events "payment_intent.succeeded,payment_intent.payment_failed" \
-  --prompt "Payment {data.object.status}: {data.object.amount} cents from {data.object.receipt_email}" \
-  --deliver telegram \
-  --deliver-chat-id "-100123456789"
-```
+### Direct delivery (no agent, no LLM cost)
 
-### CI/CD: build notifications
-```bash
-hermes webhook subscribe ci-builds \
-  --events "pipeline" \
-  --prompt "Build {object_attributes.status} on {project.name} branch {object_attributes.ref}\nCommit: {commit.message}" \
-  --deliver discord \
-  --deliver-chat-id "1234567890"
-```
-
-### Generic monitoring alert
-```bash
-hermes webhook subscribe alerts \
-  --prompt "Alert: {alert.name}\nSeverity: {alert.severity}\nMessage: {alert.message}\n\nPlease investigate and suggest remediation." \
-  --deliver origin
-```
-
-### Direct delivery (no agent, zero LLM cost)
-
-For use cases where you just want to push a notification through to a user's chat — no reasoning, no agent loop — add `--deliver-only`. The rendered `--prompt` template becomes the literal message body and is dispatched directly to the target adapter.
-
-Use this for:
-- External service push notifications (Supabase/Firebase webhooks → Telegram)
-- Monitoring alerts that should forward verbatim
-- Inter-agent pings where one agent is telling another agent's user something
-- Any webhook where an LLM round trip would be wasted effort
+Add `--deliver-only` to skip the agent loop: the rendered `--prompt` template becomes the message body and goes straight to the adapter.
 
 ```bash
 hermes webhook subscribe antenna-matches \
@@ -199,35 +118,24 @@ hermes webhook subscribe antenna-matches \
   --description "Antenna match notifications"
 ```
 
-The POST returns `200 OK` on successful delivery, `502` on target failure — so upstream services can retry intelligently. HMAC auth, rate limits, and idempotency still apply.
-
-Requires `--deliver` to be a real target (telegram, discord, slack, github_comment, etc.) — `--deliver log` is rejected because log-only direct delivery is pointless.
+Use it for push notifications (Supabase/Firebase → Telegram), alerts that forward verbatim, and agent-to-agent pings where an LLM round trip is waste. The POST returns `200 OK` on delivery and `502` on target failure, so upstream services can retry. HMAC auth, rate limits and idempotency still apply, and `--deliver` must be a real target — `--deliver log` is rejected.
 
 ### Let the user reply to a delivery
 
-Each event runs in its own session, so by default the agent in the target chat has no record of what a route delivered ("what are you referring to?"). Add `--mirror-to-session` and each delivered message is also written into that chat's session as `[Webhook delivery: <route>]` + the text. Off by default: the text enters the conversation as if the user had sent it (on `--deliver-only` routes it is the raw payload), so only use it for sources the user trusts. Skipped when the chat has no session yet.
+Each event runs in its own session, so by default the agent in the target chat has no record of what a route delivered ("what are you referring to?"). Add `--mirror-to-session` and each delivered message is also written into that chat's session as `[Webhook delivery: <route>]` plus the text. Off by default: the text enters the conversation as if the user had sent it (on `--deliver-only` routes, as the raw payload), so use it only for sources the user trusts. It is skipped when the chat has no session yet.
 
 ## Security
 
-- Each subscription gets an auto-generated HMAC-SHA256 secret (or provide your own with `--secret`)
-- The webhook adapter validates signatures on every incoming POST
-- Static routes from config.yaml cannot be overwritten by dynamic subscriptions
-- Subscriptions persist to `~/.hermes/webhook_subscriptions.json`
+- Each subscription gets an auto-generated HMAC-SHA256 secret, or your own with `--secret`; the adapter validates it on every POST. Static config.yaml routes cannot be overwritten by a dynamic subscription. Subscriptions persist to `~/.hermes/webhook_subscriptions.json`.
 
-## How It Works
+## How it works
 
-1. `hermes webhook subscribe` writes to `~/.hermes/webhook_subscriptions.json`
-2. The webhook adapter hot-reloads this file on each incoming request (mtime-gated, negligible overhead)
-3. When a POST arrives matching a route, the adapter formats the prompt and triggers an agent run
-4. The agent's response is delivered to the configured target (Telegram, Discord, GitHub comment, etc.)
+`hermes webhook subscribe` writes that JSON file, and the adapter hot-reloads it per request (mtime-gated). A POST that matches a route formats the prompt, runs the agent, and delivers the reply to the configured target.
 
 ## Troubleshooting
 
-If webhooks aren't working:
-
-1. **Is the gateway running?** Check with `systemctl --user status hermes-gateway` or `ps aux | grep gateway`
-2. **Is the webhook server listening?** `curl http://localhost:8644/health` should return `{"status": "ok"}`
-3. **Check gateway logs:** `grep webhook ~/.hermes/logs/gateway.log | tail -20`
-4. **Signature mismatch?** Verify the secret in your service matches the one from `hermes webhook list`. GitHub sends `X-Hub-Signature-256`, GitLab sends `X-Gitlab-Token`.
-5. **Firewall/NAT?** The webhook URL must be reachable from the service. For local development, use a tunnel (ngrok, cloudflared).
-6. **Wrong event type?** Check `--events` filter matches what the service sends. Use `hermes webhook test <name>` to verify the route works.
+1. **Gateway running?** `systemctl --user status hermes-gateway`; **listening?** `curl http://localhost:8644/health` returns `{"status": "ok"}`.
+2. **Logs:** `grep webhook ~/.hermes/logs/gateway.log | tail -20`.
+3. **Signature mismatch?** Compare the service's secret with `hermes webhook list`. GitHub sends `X-Hub-Signature-256`, GitLab sends `X-Gitlab-Token`.
+4. **Firewall/NAT?** The URL must be reachable from the service; for local work use a tunnel (ngrok, cloudflared).
+5. **Wrong event type?** Check `--events` against what the service sends, and confirm with `hermes webhook test <name>`.
