@@ -56,7 +56,7 @@ A "what should vN+1, vN+2 carry" request is not a decision to record: answer wit
 - **Shape the documents from the previous version's docs-ahead pull request.** `gh pr view <n> --json commits`, `git fetch origin pull/<n>/head:pr<n>`, then `git show pr<n>:docs/PRODUCT.md` — copy the shape, replace the decision. When none exists, `git log --all --oneline -- PRODUCT.md` finds a commit that carried it.
 - **A new product's first product document may carry a candidate list.** A `Roadmap` led by _Candidates, not commitments_: one line per version, no ADR, only the version being specified decided.
 
-- **A plan for a surface the running binary does not have keeps the product document describing the binary.** The roadmap line says decided and not built, the system document's _Planned, not built_ section names the mechanisms, and the interface the surface introduces goes in its own file under `docs/`, linked from that section. `PRODUCT.md`'s present-tense rules and acceptance stay true until the surface ships; a spec that widens the product document early puts an acceptance list on a binary that cannot meet it.
+- **A plan for an unbuilt surface keeps the product document describing the binary.** The roadmap line says decided and not built. The system document's _Planned, not built_ section names the mechanisms. The new interface goes in its own file under `docs/`, linked from that section. `PRODUCT.md`'s present-tense rules and acceptance stay true until the surface ships. A spec that widens the product document early puts an acceptance list on a binary that cannot meet it.
 
 ## Sizing a decided-but-unbuilt change
 
