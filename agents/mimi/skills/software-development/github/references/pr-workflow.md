@@ -141,7 +141,7 @@ gh run view <run-id> --json headSha,conclusion   # is this run even on my commit
 gh run list --branch main --limit 5             # does main fail the same job?
 ```
 
-Compare `headSha` with `git rev-parse --short HEAD` before quoting any run. A job red on the default branch is not this change's finding — report it as pre-existing with the run you compared, and **never silence it with a repo-wide formatter** (`prettier --write .` rewrites approval-gated files such as `AGENTS.md` without prompting). Run formatters on explicit paths.
+Compare `headSha` with `git rev-parse --short HEAD` before quoting any run. A job red on the default branch is not this change's finding — report it as pre-existing with the run you compared, and **never silence it with a repo-wide formatter** (`bun fmt .` rewrites approval-gated files such as `AGENTS.md` without prompting). Run formatters on explicit paths.
 
 ### Feedback lives on three endpoints, and the loud one can be empty
 
