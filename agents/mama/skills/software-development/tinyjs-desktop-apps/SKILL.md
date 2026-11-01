@@ -62,7 +62,7 @@ Not for a web app, a Tauri app, or a general Electron question.
 ## Pitfalls
 
 - **A menu item is not cross-platform on a frameless or transparent window.** Windows draws no menu bar for one, so `menu.set` succeeds and nothing is visible. Give Windows a page-drawn control, or record the gap in the product document — never write "everywhere".
-- **An unavailable feature must leave a trace, or it reads as unimplemented.** A menu that returns `[]` when `availability()` says `'unsupported'` removes every hint, so a person on the wrong OS version reports it as broken rather than absent. Keep a disabled item that names the state ("needs macOS 26"), and feature-detect `app.macos?.ai` first: the surface can be `undefined` on a launcher built without the FoundationModels shim.
+- **An unavailable feature must leave a trace, or it reads as unimplemented.** A menu that returns `[]` when `availability()` says `'unsupported'` removes every hint. A person on the wrong OS version then reports it as broken, not absent. Keep a disabled item that names the state ("needs macOS 26"), and feature-detect `app.macos?.ai` first: the surface can be `undefined` on a launcher built without the FoundationModels shim.
 - No `node:*` modules and no package that needs them; txiki.js is not Node. A TypeScript backend bundles npm packages with esbuild only when they avoid Node's built-ins.
 - `import.meta.url` throws in a built app. Find shipped files through `app.paths().resources` and `executables`.
 - A hidden or covered webview throttles timers. Do continuous work in the backend and push events to the page.
