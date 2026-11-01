@@ -406,6 +406,37 @@ git branch -d $BRANCH
 
 Merge methods: `"merge"` (merge commit), `"squash"`, `"rebase"`
 
+### A conflicted branch in a rebase-only repo
+
+`gh pr merge --rebase` failing with `GraphQL: This branch can't be rebased (mergePullRequest)` means the
+branch carries a merge commit — usually one added to settle a conflict — and the ruleset allows rebase
+only. Read the enforced method before choosing how to resolve, because every push that moves the head
+dismisses the approval, and a resolution that cannot land costs a second review round:
+
+```bash
+gh api repos/{owner}/{repo}/rulesets          # branch protection 404s when rulesets carry the rules
+gh api repos/{owner}/{repo}/rulesets/<id> --jq '.rules[] | select(.type=="pull_request")'
+```
+
+Rebuild a linear branch on the current base, proving the content is unchanged:
+
+```bash
+git rev-parse HEAD^{tree}                     # the tree you already verified
+# resolve the conflict first: keep the base's file, re-apply only your hunk
+git checkout -B <branch> origin/main
+git checkout <verified-commit> -- <the files your change owns>   # resolved content, base's history
+git commit -C <old-head>
+git rev-parse HEAD^{tree}                     # must equal the tree above
+```
+
+- Do not try `git rebase --onto origin/main <old-base>` on a branch that already contains a merge
+  commit: the replayed range includes the merge's other side, so git re-applies the base's own commits
+  and conflicts on files your change never touched. Rebuilding from `origin/main` is the way.
+- When the conflict is a file both sides appended to, take the base's version and re-apply your hunk at
+  its correct position. Taking your branch's copy wholesale deletes what the base added.
+- Push once with `--force-with-lease=<branch>:<old-head>`, then re-request the reviewer: the push
+  dismissed the approval, and `require_last_push_approval` wants a verdict at the new head.
+
 ### Enable Auto-Merge (curl)
 
 ```bash

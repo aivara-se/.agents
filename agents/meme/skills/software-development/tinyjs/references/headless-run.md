@@ -11,6 +11,7 @@
 - `xdotool search --name <Title> | tail -1` gives the window id; `xdotool getwindowgeometry <id>` gives its position and size. `search` also matches tooltips and popups that inherit the app's name — pick the id whose geometry is the shipping window, not simply the last one.
 - `xdotool getwindowpid <id>` then `/proc/<pid>/cmdline` names the binary behind the window and the arguments the launcher was given (`… <page> <socket> <title> <WxH> <version>`). Read it before blaming the UI: a stale build left running answers `search` just as readily and shows the old version here.
 - Click with window position + content offset, and read that offset off the capture you just took: a bar, a new toolbar row or a top padding moves every target down, and a click into the gap hits nothing while the page keeps its old focus.
+- On Linux the runtime's menu bar is inside the window geometry: a 720 px page reports 745, and `xdotool --window` coordinates include that bar. Add its height when translating a page position, and crop it out of a page screenshot.
 - Confirm a click by the state it changes — the row that moved, the query that appeared, the row in the database — never by the absence of an error: a click that missed looks exactly like one that worked until the next keystroke goes nowhere.
 - Prefer keyboard: `xdotool type --delay 20 'text'`, `xdotool key Return`, `xdotool key ctrl+a`.
 - After clicking a control, wait ~1 s for the backend round trip before typing.
@@ -22,6 +23,7 @@
 - A native dialog (`confirm`, `alert`, a folder picker) is a separate window, so `import -window <app>` misses it. Capture `-window root` when a dialog is expected, and wrap `import` in `timeout 5`; a stale id can hang the X connection.
 - Look at the capture. A serif read as sans, or a black strip, means the crop or the window is wrong, not the UI.
 - For a README image, stop the app, back up the data folder, seed a fresh database with three or four short notes, relaunch, click the page background to drop the caret, then capture the window and save it as `docs/screenshot.png`.
+- For a page-only image, set the root to a paper-like colour (`xsetroot -solid '#e9e5dd'`) before the capture so the 80% paper composites as it does over a desktop, and crop `pageW x pageH + windowX + (windowY + menu)` to leave the native menu out.
 - The overlay scroll indicator outlives a capture taken right after a scroll or a click: wait about five seconds with no input, then capture. A page that always scrolls shows it as a 3 px column of `rgb(236,235,232)` two pixels in from the right edge, so scan the saved file's columns, not the screen — it reads as plain margin to the eye.
 
 ## Read the state

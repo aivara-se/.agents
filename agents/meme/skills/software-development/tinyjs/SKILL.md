@@ -43,6 +43,13 @@ when-to-use: Any change to a tinyjs app — its backend, page, tinyjs.json, buil
 - Chrome that is not the system's belongs in `chrome` in `tinyjs.json` — `frame: false`, `windowControls: false`, `transparent`, a vibrancy material — so the first paint is already frameless; `setChrome()` afterwards flashes the default title bar. `references/window-chrome.md` has the page shape, the controls, and the headless proof of the alpha.
 - The page takes over the two promises the frame kept: the window stays closable and a close loses nothing. An in-page close flushes the pending saves before `tiny.win.close()`, and an error state that hides the app is inset below the bar rather than over it.
 - A drag region is `data-tiny-drag` on the bar; everything interactive inside it keeps working, so controls and the drag area share one element without `data-tiny-nodrag`.
+- A menu bar is not drawn on Windows when the window is frameless or transparent; accelerators still fire, but a menu-only command is unreachable there.
+
+## A global hotkey
+
+- Register it in `init(app)` with `app.hotkey.register(id, combo)`, not in the page: on macOS the window closes and the process keeps running, and the press must still work. The id and combo belong in `src/shared/` because the page hears the same id.
+- Keep the registration promise and answer a page's api call with it: `false` means the system has no global hotkeys or gave the combo to someone else, and that is a notice once, not an error.
+- `onHotkey(id, app)` in the backend shows the window (`app.win.show()`); the page's `tiny.hotkey.on` runs the app's own path, so the shortcut has one behaviour. `references/hotkeys.md` has the wiring and how to prove both outcomes with no desktop.
 
 ## Fonts and assets
 
@@ -51,9 +58,12 @@ when-to-use: Any change to a tinyjs app — its backend, page, tinyjs.json, buil
 
 ## Build and check
 
-- `bun test` for the backend modules; `tinyjs build` for this OS. The build is a self-contained binary plus `launcher` and `icon.png`.
+- `bun test` for the shared and store modules; `tinyjs build` for this OS. The build is a self-contained binary plus `launcher` and `icon.png`.
+- A `main.js` handler is invisible to a menu-only test: stub every `tjs:*` module `main.js` imports — a new top-level import breaks every test that loads it — then call `api.<name>` with a fake `app` (`references/backend-handlers.md`).
+- Declare module-level flags at the top of the module. A flag assigned but never declared is a `ReferenceError` under a module, and only a handler test sees it.
 - Shipping is a release pull request, not a push: the Baseline ruleset refuses a push to `main` and the workflow token cannot approve. The version in `tinyjs.json` is the trigger and is raised in the change that earns it; `references/release.md` has the gate, the artifacts, the post-merge check of the run and the signing secrets.
 - Run the built app under Xvfb and drive it with xdotool; capture with `import -window <id>`; read the SQLite file after typing. `references/headless-run.md` has the recipe.
+- For page behaviour — modes, focus, layout, opacity — serve `src/frontend` and fake only the `tiny` bridge in Chromium, then assert computed style and geometry (`references/page-harness.md`). It is faster than driving the built app and still uses the real page.
 - Check the window at the size it ships and read the pixels back; no screenshot means no proof.
 
 ## Pitfalls
@@ -64,11 +74,17 @@ when-to-use: Any change to a tinyjs app — its backend, page, tinyjs.json, buil
 - A native folder dialog is the one part Xvfb cannot drive; verify the backend call directly and hand-check the dialog on a desktop.
 - Never name an `api` function after a tinyjs built-in (`log`, `ping`, `notify`, `fetch`, `quit`): the built-in wins, so the call resolves with its empty result and the page sees `null` rather than an unknown-name error. Name the operation (`openLog`), not the noun.
 - Build the blank template beside the app before blaming the app for its size; the framework runtime dominates.
+- A control drawn only while an editable has focus is styled with `:focus-within`, never hidden by a blur handler: clicking the control takes focus from the editable first, and a hidden button never receives the click.
+- Take a debounced request's token before the await that precedes it; taken after a flush, a query the field already replaced still lands and repaints old results.
+- A caret-driven effect also tests `document.hasFocus()`: a textarea keeps `activeElement` while the window is behind another app, so the effect would stay on.
 
 ## References
 
 - `references/headless-run.md` — Xvfb, xdotool, window capture, process cleanup, SQLite check.
 - `references/window-chrome.md` — frameless and translucent windows: config, page shape, in-page controls, proving the alpha.
 - `references/sqlite-store.md` — schema, WAL, counter upserts, tombstone, FTS5 search with quoted prefix terms and triggers, the version migration, tests under bun.
+- `references/backend-handlers.md` — load `main.js` under bun, stub `tjs:sqlite`, fake the `app` handle, and test the handler's branches.
+- `references/page-harness.md` — serve `src/frontend` with a stubbed `tiny` bridge; assert mode, geometry and paint in Chromium.
 - `references/bundled-fonts.md` — fetch an OFL font, ship it, prove it is embedded.
+- `references/hotkeys.md` — register one hotkey, and prove the press and the refusal under Xvfb.
 - `references/release.md` — the version-in-the-file gate, artifact shapes per OS, the test `.app` a pull request leaves, checking the run and the artifacts after the merge, the token and signing caveats.

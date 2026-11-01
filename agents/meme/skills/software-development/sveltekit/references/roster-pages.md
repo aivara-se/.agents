@@ -9,7 +9,7 @@
 3. **The copy.** `src/lib/i18n/en.ts` — `project.<slug>` with `summary`, `headline`, `description`, four `facts`, three `benefits`, `principle`, six `promises`, `why`. Mirror the shipped page's parts; a missing key is a type error rather than a blank.
 4. **The route.** `src/routes/<slug>/`: `+layout.ts` calling `projectBySlug('<slug>')` — the only place the slug is written — `+layout.svelte` wrapping the shared shell, and `+page.svelte` rendering the shared page with `data.project`.
 5. **The roster test.** `projects.test.ts` hardcodes `toHaveLength(n)` and the slug array; widen both before running the suite.
-6. **The spec.** `PRODUCT.md`'s constraint sentence names every project path, and `DESIGN.md` owns how a part of the page is framed — a shot earns its line there the day it is added. A page or a part the documents do not describe makes them untrue.
+6. **The spec.** `PRODUCT.md`'s constraint sentence names every project path, and `DESIGN.md` owns how a part of the page is framed — a shot earns its line there the day it is added. A page or a part the documents do not describe makes them untrue. The same holds for a part added later to an existing page: edit `DESIGN.md`'s project-page sentence and, where the mode's list of parts changed, `PRODUCT.md`'s, in the same pull request.
 
 ## The copy
 
@@ -20,6 +20,8 @@
 ## One page, not two copies
 
 Only the copy differs between projects, so the body is one component (`ProjectPage.svelte`) and each route passes `project`. Prove the older route is untouched by diffing its built HTML before and after the extraction: hashed asset names and scoped class ids are the only lines allowed to move.
+
+A part only some projects have is a prop with a default, not a branch on the slug: `ProjectPage` takes `downloads = []` and prints the block only when it has rows, so a project without one passes nothing and its page is unchanged. Where that part's content comes from outside the repo, see `remote-data.md`.
 
 ## The picture
 

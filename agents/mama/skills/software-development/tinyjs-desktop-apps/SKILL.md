@@ -59,6 +59,7 @@ Not for a web app, a Tauri app, or a general Electron question.
 
 ## Pitfalls
 
+- A menu item is not cross-platform on a frameless or transparent window: Windows draws no menu bar for one ("frameless and transparent windows can't show a menu bar", tinyjs.app/docs/menus), so `menu.set` succeeds and nothing is visible. Give Windows a page-drawn control, or record the gap in the product document — never write "everywhere".
 - No `node:*` modules and no package that needs them; txiki.js is not Node. A TypeScript backend bundles npm packages with esbuild only when they avoid Node's built-ins.
 - `import.meta.url` throws in a built app; find shipped files through `app.paths().resources` and `executables`, not the module path.
 - A hidden or covered webview throttles timers; do continuous work in the backend and push events to the page.

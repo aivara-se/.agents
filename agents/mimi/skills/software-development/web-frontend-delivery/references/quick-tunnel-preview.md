@@ -37,6 +37,35 @@ the tunnel URL — computed font families, the framework's hydration global, a c
 zero console errors. A prerendered export loads its `_app/` assets by relative URL, so a wrong `base`
 passes on localhost and breaks on the tunnel hostname; that pass is the check for it.
 
+**Give it seconds, and poll for the node, not for `readyState`.** The edge fetches every module of a
+dev-server page separately, so a drive that starts ~1s after `document.readyState === 'complete'` sees
+the title and the dock but no content, and reads as a broken build. Wait until the rows the check is
+about exist (with a deadline), then settle; a run whose only failures are content counts is early, not
+broken.
+
+## When the app has server routes
+
+A static `build/` cannot answer an app whose pages are rendered per request or whose `/api/*` is a
+proxy to a separate Worker. Building it produces a directory that 404s the routes the change is about.
+Run the **real dev server** instead, and treat the tunnel as what it is: a public door onto a
+throwaway local stack.
+
+- Start the API (`wrangler dev --local`) and the site (`bun run dev`) first, and point the proxy at the
+  local API (`API_ORIGIN`, or a `dev ?` default in the proxy route).
+- Vite refuses the tunnel hostname on a dev server too (`server.allowedHosts`). Set
+  `server: { allowedHosts: true }` **temporarily**, confirm it, and `git checkout --` the file before any
+  commit — the tunnel is a demo, the config change must not outlive it.
+- The database behind it is local and disposable, and **anyone with the link can register**. Say both in
+  the message with the link, and keep every fixture account's password one you intended to publish.
+- Verify through the tunnel, not on loopback: register a throwaway account over the tunnel URL, then
+  `GET /api/v2/me` with its cookie must be 200. That one pair proves the proxy, the `Set-Cookie` rewrite
+  and the first-party cookie all survived HTTPS in front of a local http origin.
+
+**Seed the first screen.** A brand-new account lands on an empty app, and an empty app proves nothing.
+Create a second account with a few days of plausible data — a friend whose week is partial, so the quiet
+state and its action are visible — and give the operator its handle and password so one tap fills the
+screen. Say which of the two accounts is theirs.
+
 ## Pitfalls
 
 - **A preview that "does not show the change" is usually a cached document, not a stale server.** Before
@@ -53,11 +82,18 @@ passes on localhost and breaks on the tunnel hostname; that pass is the check fo
   `index.html`, bare path → `301`), or run a real dev/serve command that has no host allowlist. Cloudflare
   caches the 403 on that hostname, so after switching servers start a **new** tunnel rather than reusing
   the URL: the same hostname keeps answering the cached refusal with `cf-cache-status: DYNAMIC`.
+  A **dev** server has the same guard (`server.allowedHosts`, not `preview.allowedHosts`), which is why
+  the temporary config change above is part of the dev-server path rather than an optional nicety.
 - **Killing the background wrapper leaves the server holding the port.** `bun run preview` execs a child
   (`node …/vite preview`); killing the session pid kills the wrapper, the child keeps `:4173`, and the next
   server's `Bun.serve` fails to bind while the tool still reports "started". After every swap, request the
   port and check the body is the new server's, or `ps -eo pid,args | grep -E "vit[e]|serve"` and `kill` the
   child by pid.
+- **Closing the tunnel means killing `cloudflared` itself.** The session id the background launch returns is
+  the wrapper, and it can report `already_exited`/`backend_lost` while the real process still holds the
+  connection. Resolve it with `pgrep -a cloudflared`, `kill <pid>`, then assert the URL answers **530** — the
+  edge's "tunnel unavailable" — before telling the operator it is closed. Stop the app servers in the same
+  pass: they existed only to feed the tunnel, and a dev server left behind serves the next run's confusion.
 - **`ss` and `fuser` are not installed here.** Use `curl -o /dev/null -w '%{http_code}'` as the liveness
   check; `ps` for the pids.
 
@@ -65,8 +101,10 @@ passes on localhost and breaks on the tunnel hostname; that pass is the check fo
   its mode already reads `755`. Put `cloudflared` under `$HOME` and run it from there.
 - **The hostname is random and changes every run.** It is not the site's address: never write it into a
   document, a canonical tag or a repository file, and do not imply it will outlive the process.
-- **A quick tunnel is public.** Anyone with the link reaches the port: tunnel the built static artifact,
-  never a dev server, a directory listing of the repository root, or anything holding secrets.
+- **A quick tunnel is public.** Anyone with the link reaches the port. Tunnel the built static artifact
+  whenever a static artifact can serve the change; a dev server is acceptable only when the app has server
+  routes (see above), and then only over a disposable local database. Never a directory listing of the
+  repository root, and never anything holding real secrets.
 - **It dies with the process and with the sandbox.** Say that in the same message as the link, and name
   the port so the operator can stop it.
 - **A running process is not a working route.** Confirm the tunnel answers with `curl` and read the
