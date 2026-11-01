@@ -1,6 +1,6 @@
 # Maintenance
 
-The daily pass runs `agents/root/scripts/maintenance.ts` and hands its log to the agent. The script does the deterministic work; the agent decides what the log leaves open.
+The daily pass runs `agents/root/scripts/maintenance/` (entry `index.ts`, deployed at `/usr/local/lib/maintenance/`) and hands its log to the agent. The script does the deterministic work; the agent decides what the log leaves open.
 
 ## Stages
 
@@ -8,6 +8,7 @@ The daily pass runs `agents/root/scripts/maintenance.ts` and hands its log to th
 - **Fleet** — archive state and identities, check containers, gateway, tunnel and dashboard, restart an idle container to clear orphans, watch swap and kernel OOM kills, read the shared provider balance.
 - **Sync** — harvest uncommitted skill and soul edits, rebase `next` onto `main`, merge souls, archive profile skills, push `next`. The live checkout must be on `next`; any other branch is refused.
 - **Leaks** — report watch spins, orphaned sandbox processes, dead registry pids and overgrown logs.
+- **Upgrade** — only with `--upgrade`: the package upgrade, skipped while any profile holds a live turn lease. It is not in the timed pass because the dockerd restart would kill a live turn.
 
 Each stage reports `[ok]`, `[act]` (a change it made), `[WARN]` (a decision it will not take) or `[plan]` (what `--dry-run` would have done).
 
