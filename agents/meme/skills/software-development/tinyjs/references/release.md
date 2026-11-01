@@ -3,7 +3,10 @@
 ## The gate
 
 - A release is a pull request: the Baseline ruleset refuses a push to the default branch, requires an approving review, and the workflow token cannot approve.
-- Bump `version` in `tinyjs.json` on the branch that carries the work; merging that pull request is the release. No `release: v` commit, no bump pull request of its own.
+- The version in the file is the trigger, and it is raised in the change that earns it: bump `version` in `tinyjs.json` on the branch that carries the work, and merging that pull request is the release. No `release: v` commit.
+- When the work is already on `main` without a bump, the operator may ask for the bump alone: a `chore:` pull request that raises `version` and adds the changelog entry for what landed since the last tag. Read `git log v<current>..origin/main` and the ADRs in it to write that entry. Never open one unasked.
+- The release moves the minor, not the patch: `1.12.0` to `1.13.0`. The operator's "next 1.x" means that number.
+- A bump also updates every current-state sentence that names the binary — the no-network line, the acceptance header, the roadmap — in the product and system documents. Changelog entries keep their own versions, so grep the old number and change only the sentences that mean the shipped build.
 - A push that leaves the version alone publishes nothing: the run finds `v<version>` tagged and stops ("already tagged and released; nothing to publish"). A docs push after a release is safe.
 - Tag only after every build succeeds.
 - A pull request opened with `GITHUB_TOKEN` starts no other workflows. Where a required check exists, open it with `RELEASE_TOKEN` (`repo` and `workflow` scope) or it waits for a check that never runs.

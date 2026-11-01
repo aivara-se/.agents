@@ -1,7 +1,7 @@
 ---
 name: tinyjs-desktop-apps
 description: Use when building a tinyjs desktop app.
-when-to-use: A repository with a `tinyjs.json` at its root, or a task deciding whether a desktop app should be built on tinyjs.
+when-to-use: A repository with a `tinyjs.json` at its root, a task deciding whether a desktop app should be built on tinyjs, or a local-first app gaining an account-backed destination.
 version: 0.1.0
 author: MaMa
 license: MIT
@@ -13,46 +13,57 @@ metadata:
 
 # tinyjs desktop apps
 
-tinyjs is a desktop shell: a JavaScript backend on txiki.js and a native launcher showing the page in the OS webview, talking over a private socket — no HTTP server, no port. The backend has files, processes and SQLite; the page has none and reaches them through named `api` calls.
+tinyjs is a desktop shell: a JavaScript backend on txiki.js and a native launcher that shows the page in the OS webview. They talk over a private socket in a temp folder — no HTTP server, no port. The backend has files, processes and SQLite. The page has none, and reaches them through named `api` calls. `references/framework.md` maps the API, the config keys, the build and the gotchas.
 
-Use it for a repo with `tinyjs.json` at its root, for a decision about building a desktop app on tinyjs, or for a review of a tinyjs app's data, packaging or no-network promise. Not for a web app, a Tauri app, or a general Electron question.
+## When to Use
 
-`references/framework.md` maps the API, config keys, build and gotchas; read it before the first line of code, and read the docs for the installed version.
+- A repository carries `tinyjs.json` at its root.
+- A task decides whether a desktop app should use tinyjs.
+- A review checks a tinyjs app's data, packaging or no-network promise.
+- A local-first app gains an account-backed cloud destination.
+
+Not for a web app, a Tauri app, or a general Electron question.
 
 ## Ground first
 
-- Read `tinyjs.json`, the product document and the version's docs. `https://tinyjs.app/llms.txt` indexes every page; `llms-full.txt` is all of them.
-- Pin `minTinyjsVersion`; a tinyjs upgrade is a reviewed change, not a `latest` tag.
-- Choose the app `id` before release. It names the data folder, the OS identity and single-instance detection, so changing it starts every user empty.
+- Read `tinyjs.json`, the product document and the docs for the installed version. `https://tinyjs.app/llms.txt` indexes every page.
+- Pin `minTinyjsVersion`. A tinyjs upgrade is a reviewed change, not a `latest` tag.
+- Choose the app `id` before release. It names the data folder, the OS identity and single-instance detection. Changing it starts every user empty.
 
 ## Shape
 
-- Plain template: `src/backend/main.js` (or `.ts`), `src/frontend/` with an `index.html` plus JS and CSS, an icon, and `tinyjs.json`. The Vite templates add a frontend build and a framework — take one only when the page needs it.
-- The page is a real `file://` document with no `tjs`. Every page the app loads can call anything in `api`, so expose named operations only; never a general `exec` or `query`. A page from a site you do not control makes the app a site wrapper, and only then is the `api` gate in `tinyjs.json` mandatory.
+- The plain template is `src/backend/main.js` (or `.ts`), `src/frontend/` with `index.html`, JS and CSS, an icon, and `tinyjs.json`. Take a Vite template only when the page needs a framework: it grows the size and the dependency surface.
+- The page is a real `file://` document and has no `tjs`. Never hand it a general `exec` or `query` call: every page the app loads can call anything in `api`. Expose named operations only.
+- A page from a site you do not control makes the app a site wrapper. Only then is the `api` gate in `tinyjs.json` mandatory. Do not load one in a local-first app.
 
 ## Data
 
-- Durable data goes in `(await app.paths()).data`. Never a relative path: `./` is the process working directory, often `/` in a built app. `paths()` creates the folder.
-- SQLite is built in (`tjs:sqlite`) and synchronous; `tjs.*` file calls are async. Await `makeDir` before opening a database.
-- Autosave a whole document with a monotonic sequence: never delete the row; write an empty body as a tombstone, and make the upsert conditional on the incoming sequence being greater than the stored one. A late write then cannot resurrect a cleared document, and a delete keeps the sequence that makes that true. Test the stale sequence explicitly.
-- WAL plus `synchronous=FULL` is what lets a committed save survive a power loss, at one flush per save. Keep the debounce in the system document and never promise a keystroke the debounce can lose.
+- Durable data goes in `(await app.paths()).data`. Never a relative path: `./` is the working directory, often `/` in a built app. `paths()` creates the folder.
+- SQLite is built in (`tjs:sqlite`) and synchronous. `tjs.*` file calls are async, so await `makeDir` before opening a database.
+- Autosave a whole document with a monotonic sequence: never delete the row. Write an empty body as a tombstone, and make the upsert conditional on the incoming sequence being greater than the stored one. A late write then cannot resurrect a cleared document. Test the stale sequence.
+- WAL and `synchronous=FULL` let a committed save survive a power loss, at one flush per save. Keep the debounce in the system document, and promise nothing the debounce can lose.
 
 ## Local-only promises
 
-- "No network" rules out the auto-update check: `update.url` and `tinyjs publish` fetch a manifest. Omit the `update` block and ship downloads; adding a check later is a new decision with a new exception.
+- "No network" rules out the auto-update check: `update.url` and `tinyjs publish` fetch a manifest. Omit the `update` block and ship downloads. A check added later is a new decision.
 - Prove it with the network off on the built app. A green build says nothing about a request.
-- Dialogs are page-only (`tiny.dialog.pickFolder`, `saveFile`); reading and writing the chosen path is the backend's.
-- "Real-time" in a local app means save-as-you-type on this machine, not another device seeing it. Cross-device live needs a sync service — scope it later or leave it out of v1.
+- Dialogs are page-only (`tiny.dialog.pickFolder`, `saveFile`). Reading and writing the chosen path is the backend's.
+- A local app's "real-time" means save-as-you-type on this machine, not another device. Cross-device live means a sync service: scope it later or leave it out.
+- An opt-in cloud destination is a new version and a new ADR, never a flag. `references/oauth-and-cloud-destinations.md` covers one-way vs two-way, PKCE, the loopback redirect, `app.secrets` and per-item remote ids.
 
 ## Ship
 
-- `tinyjs build` builds for the OS it runs on; three OSes need three runners. A macOS first install needs a Developer ID signature and notarization; `--dmg` packages the app. Windows and Linux signing is a separate certificate decision.
-- `tinyjs dev` hot-reloads the page and restarts the backend; `tinyjs doctor` diagnoses a setup that will not run.
-- Test pure logic with `bun test`; test the store with `bun:sqlite` against the same SQL, injecting the `Database`. Then `mock.module('tjs:sqlite', () => ({ Database }))` imports `src/backend/main.js` under `bun test`, so the `api` calls run against a real store — walk a paging loop over a hundred days and count duplicates and gaps. A stub `document`, `window` and `tiny` around `src/frontend/app.js` drives the page handlers and reproduces a wrong status line without a webview.
-- Check the webview, native dialogs, real data folder and signed bundle by hand on each release — headless, with `references/verifying-a-build.md`.
+- `tinyjs build` builds for the OS it runs on, so macOS, Windows and Linux need three runners. macOS first install needs a Developer ID signature and notarization; `--dmg` packages the app. Windows and Linux signing is a separate certificate decision.
+- `tinyjs dev` hot-reloads the page and restarts the backend. `tinyjs doctor` diagnoses a setup that will not run.
+- Test pure logic with `bun test`. Test the store against the same SQL, injecting the `Database` so the backend opens `tjs:sqlite`. The webview, native dialogs, the data folder and the signed bundle are checked by hand each release, headless, with `references/verifying-a-build.md`.
+- `mock.module('tjs:sqlite', () => ({ Database }))` imports `src/backend/main.js` under `bun test`, so the `api` calls run against a real store. Walk a paging loop over a hundred days and count duplicates and gaps.
+- The page is reachable too: a stub `document`, `window` and `tiny` around `src/frontend/app.js` drives its handlers, which reproduces a wrong status line without a webview.
 
 ## Pitfalls
 
-- **A menu item is not cross-platform on a frameless or transparent window.** Windows draws no menu bar for one ("frameless and transparent windows can't show a menu bar", tinyjs.app/docs/menus), so `menu.set` succeeds and nothing is visible. Give Windows a page-drawn control, or record the gap in the product document — never write "everywhere".
-- **txiki.js is not Node.** No `node:*` modules, and `import.meta.url` throws in a built app — find shipped files through `app.paths().resources` and `executables`.
-- **A hidden or covered webview throttles timers.** Do continuous work in the backend and push events to the page. The full gotcha list is in `references/framework.md`.
+- **A menu item is not cross-platform on a frameless or transparent window.** Windows draws no menu bar for one, so `menu.set` succeeds and nothing is visible. Give Windows a page-drawn control, or record the gap in the product document — never write "everywhere".
+- **An unavailable feature must leave a trace, or it reads as unimplemented.** A menu that returns `[]` when `availability()` says `'unsupported'` removes every hint, so a person on the wrong OS version reports it as broken rather than absent. Keep a disabled item that names the state ("needs macOS 26"), and feature-detect `app.macos?.ai` first: the surface can be `undefined` on a launcher built without the FoundationModels shim.
+- No `node:*` modules and no package that needs them; txiki.js is not Node. A TypeScript backend bundles npm packages with esbuild only when they avoid Node's built-ins.
+- `import.meta.url` throws in a built app. Find shipped files through `app.paths().resources` and `executables`.
+- A hidden or covered webview throttles timers. Do continuous work in the backend and push events to the page.
+- `tinyjs build` empties `dist/` first. Never keep an artifact you need there.

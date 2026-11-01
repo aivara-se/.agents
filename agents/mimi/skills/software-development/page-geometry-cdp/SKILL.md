@@ -51,6 +51,8 @@ Readiness, in a separate call (`sleep 4` first):
 curl -s --max-time 5 http://127.0.0.1:9222/json/version
 ```
 
+**The browser endpoint has no `Page` domain.** Connecting to `/json/version`'s `webSocketDebuggerUrl` answers `Page.enable wasn't found`, and the run dies on its first call. Create a page first — `PUT /json/new?about:blank` — and connect to that target's `webSocketDebuggerUrl`.
+
 ### 2. Measure
 
 `scripts/measure.mjs` takes `url [width] [height] [expression-file]` and prints one JSON line:
@@ -105,6 +107,7 @@ Project down to a small object — never dump the DOM:
 - Link colours as `rgb(...)`, so an accent token is checked rather than assumed.
 - **The ground may be on `html`, not `body`.** `html { background }` leaves `body`'s `backgroundColor` at `rgba(0, 0, 0, 0)`, which reads as "no background" when the page is painted correctly. Read both before calling a surface missing.
 - **A distribution claim** is the container's `justify-content` plus the two edge gaps: compare `first.x - row.x` with `row.right - last.right`. Equal and non-zero is `space-around`; zero on both sides is `space-between`. Quote both numbers.
+- **A glyph can match in box and still read heavier.** Size is what `getBoundingClientRect` gives; weight is ink. At `deviceScaleFactor: 2`, crop each button and compare ink mass (`sum(255 - luminance)`) against the parent commit: a 19 px box beside 13.5 px neighbours measures ~40% more ink, and a shrunken `svg` also thins its stroke (1.6 × 14/24 = 0.93 px against 1.27), which the numbers have to clear or name.
 - **Presence and absence are measurements too.** Geometry never says whether the nodes you expected are there: a page rendered without its header measures as cleanly as one with it. Count what the change is about, and when it _removed_ something assert the count is zero **in the served artifact** (`document.querySelectorAll('.pill').length === 0`).
 
 ## Pitfalls

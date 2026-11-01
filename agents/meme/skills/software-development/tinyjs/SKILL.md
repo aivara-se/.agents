@@ -37,6 +37,9 @@ when-to-use: Any change to a tinyjs app — backend, page, tinyjs.json, build, b
 - Compare the body as well as the counter before reporting success: two windows at the same counter both say "Saved" while one write lost.
 - Release the runner after assigning it: `runner = run().then(ok => { runner = null; return ok; }, err => { runner = null; throw err; })`. A `finally` inside `run` clears it before the assignment, and every later flush reuses a dead promise.
 - Flush on a short debounce, on blur, when the window hides and before a day switch. A failed flush blocks the switch, so text never lands on another date.
+- A note that is read-only until edited keeps its textarea and sets `readOnly`; `disabled` drops it from focus, selection and the action row. Edit clears `readOnly`, focuses and puts the caret at the end; blur sets it again.
+- An overlay that replaces the log blurs the editor before its trigger's click handler runs: read whether the note was being written on the trigger's `mousedown` and restore it on close, or the note comes back read-only.
+- Key a window-wide fade on `:focus-within` and the body class that says a writable note has the caret, not on a persistent `today`/`editing` class: today carries that class while another entry is written and would stay bright.
 
 ## The window
 
@@ -44,6 +47,7 @@ when-to-use: Any change to a tinyjs app — backend, page, tinyjs.json, build, b
 - The page takes over the frame's two promises: the window stays closable and a close loses nothing. An in-page close flushes pending saves before `tiny.win.close()`; an error state is inset below the bar.
 - `data-tiny-drag` on the bar makes a drag region; interactive children still work, so controls need no `data-tiny-nodrag`.
 - Windows draws no menu bar on a frameless or transparent window, so a menu-only command is unreachable there; accelerators still fire.
+- Removing a menu group leaves the launch call behind: `app.menu.set` sat inside the group's builder, so rebuild the menu from the groups that remain. Delete the builder with the group and the surviving File menu is never set.
 
 ## A global hotkey
 
@@ -63,7 +67,8 @@ when-to-use: Any change to a tinyjs app — backend, page, tinyjs.json, build, b
 - Declare module-level flags at the top of the module: an assigned but undeclared flag is a `ReferenceError`, and only a handler test sees it.
 - Shipping is a release pull request, not a push: raise the version in `tinyjs.json` in the change that earns it (`references/release.md`).
 - Run the built app under Xvfb, drive it with xdotool, capture with `import -window <id>`, then read the SQLite file (`references/headless-run.md`).
-- For page behaviour — modes, focus, layout, opacity — serve `src/frontend`, fake only the `tiny` bridge in Chromium, and assert computed style and geometry (`references/page-harness.md`).
+- For page behaviour — modes, focus, layout, opacity — serve the app's `src` root (the entry is `/frontend/index.html`, so `../shared/` imports resolve) and fake only the `tiny` bridge in Chromium, then assert computed style and geometry (`references/page-harness.md`). It is faster than driving the built app and still uses the real page.
+- In a workspace, `tinyjs` resolves the app from the directory it runs in: keep `tinyjs.json`, `src/`, `assets/`, `test/`, `types/` and `jsconfig.json` together in the package and run `tinyjs build` there. Root scripts `cd` into it, `bun test` at the root finds the nested tests, and a build at the workspace root finds no `tinyjs.json` and fails.
 - Check the window at its shipping size and read the pixels back; no screenshot, no proof.
 
 ## Pitfalls
@@ -74,6 +79,6 @@ when-to-use: Any change to a tinyjs app — backend, page, tinyjs.json, build, b
 - Xvfb cannot drive a native folder dialog; verify the backend call and hand-check on a desktop.
 - Never name an `api` function after a built-in (`log`, `ping`, `notify`, `fetch`, `quit`): the built-in wins and the page gets `null`, not an unknown-name error. Name the operation (`openLog`).
 - Build the blank template beside the app before blaming the app for its size; the runtime dominates.
-- Show a focus-only control with `:focus-within`, never a blur handler: the click takes focus from the editable first.
+- A control drawn only while an editable has focus is styled with `:focus-within, :hover`, never hidden by a blur handler: mousedown moves focus from the editable first, and a row that vanishes on that blur can lose the click.
 - Take a debounced request's token before the await, or a replaced query still lands and repaints old results.
 - A caret effect also tests `document.hasFocus()`: a textarea keeps `activeElement` in a background window.

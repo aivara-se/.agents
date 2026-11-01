@@ -31,6 +31,7 @@ metadata:
 ## Pitfalls
 
 - Setting `input.value = 'x'` in `Runtime.evaluate` fires no `input` event. Dispatch `new Event('input', { bubbles: true })`, or the debounced search and the pending save never start.
+- The scratch copy has no `fonts/` or `favicon.ico`, so the server answers 404 for them and `Log.entryAdded` records three errors the built app never has. Copy both, or read the 404s' paths before calling a page error a bug — the same 404s appear on the base, which proves them the harness's.
 - Focusing a note near the bottom fires the scroll handler, which runs `loadOlder()`: a day-key walk on a long log loads each page by itself. Measure it before reporting a dead key at the page boundary.
 - Clearing `window.calls` after focusing another field wipes the blur-flush evidence. Filter, focus last, or read the count before.
 - A forced push after you probed rewrites the head. Re-read `headRefOid` before posting, and hash the files you ran against it so "at this head" stays true.
