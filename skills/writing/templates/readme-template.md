@@ -5,10 +5,10 @@
 ## Run it locally
 
 ```sh
-<the shortest sequence that gets it running — the commands this repository already uses, not a longer alternative>
+<the shortest sequence that gets it running — the commands this repository already uses>
 ```
 
-<Anything that must be true first: a runtime version, a file to create, a service to be reachable. Delete this line if nothing applies.>
+<Anything that must be true first: a runtime version, a file to create, a service to reach. Delete this line if nothing applies.>
 
 ## Usage
 
@@ -20,4 +20,4 @@
 <the command this repository gates on>
 ```
 
-<Which parts of the change this covers, and which it does not. Delete the section if the repository has no gate.>
+<Which parts of the change this covers, and which it does not. Delete the section if there is no gate.>

@@ -1,81 +1,76 @@
 ---
 name: coding
-description: Code rules a formatter cannot enforce — the spec, structure, dependencies, errors, the public surface, and the pull request.
+description: The decisions a formatter cannot enforce — the spec, dependencies, the public surface, and the pull request.
 when-to-use: Any change to source code or to the build and CI around it, before the first line.
 ---
 
 # Coding
 
-Style is the formatter's job: run the one this repository uses and do not argue with it.
+Run the repository's formatter and accept its output.
 
 ## The task
 
-- Build the smallest thing the task asks for. A gap you can name is a fact about this version: name it in the body.
-- A rare case needing a new concept is not a requirement. Record it, unless an ordinary caller reaches it and it throws or corrupts.
-- A merged design outranks the code: implement to it, and name the documents you left unedited.
-- Never choose between two readings in silence: say which you took, and why.
-- Frozen documents: a contradiction is a blocker. Name the file, the line and the input that settles it, in one question.
-- A merged ADR that assumes a capability the runtime lacks is the operator's decision: name the ADR, the platform and the options; do not add the excluded surface.
-- Sync the base branch with `git pull --ff-only`, and read the tree before assuming another agent landed it.
-- Never sync a clone with `git checkout origin/main -- .`: it copies the tree into the index while HEAD stays behind, and every later write sees a dirty index.
-- Build in the order the architecture document numbers; the reviewer compares against it.
-- An ADR's overrides clause is a deletion list. Read the old ADR beside the new.
-- Reuse the service's vocabulary: a new outcome is a value in the existing field unless the design says otherwise.
+- Build the smallest thing the task asks for. Name a gap you leave in the body.
+- A rare case that needs a new concept is not a requirement. Record it, unless a normal caller hits it and it throws.
+- A merged design outranks the code: implement it, and name the documents you left unedited.
+- Never pick between two readings in silence. Say which you took, and why.
+- A frozen document that contradicts the task is a blocker. Name the file, the line and the input, in one question.
+- A merged ADR that assumes a missing capability is the operator's call. Name the ADR, the platform and the options; do not build the surface.
+- Sync the base branch with `git pull --ff-only`, then read the tree before you assume another agent landed it.
+- Cut the work branch from `origin/main` in a fresh worktree. An existing clone may sit on another agent's branch with unlanded work.
+- Never run `git checkout origin/main -- .`: it dirties the index while HEAD stays behind.
+- Build in the order the architecture document numbers. The reviewer compares against it.
+- Reuse the service's vocabulary. A new outcome is a value in the existing field unless the design says otherwise.
 - A change wider than its ask: `references/hidden-scope.md`.
 
 ## Structure
 
-- One responsibility per function, module and file. Return early rather than nest.
-- No dead code, unused export or unnamed TODO. Git is the history.
-- YAGNI before DRY: the third copy earns the abstraction; two blocks differing only in a constant are one function with a parameter.
-- A table of contents means splitting; a mid-way comment means extracting.
+- YAGNI before DRY. The third copy earns the abstraction; two blocks that differ in one constant are one function with a parameter.
 - When a new flow joins a handler, walk every piece of state it touches, decide per piece, and pin it with a test.
-- A condition covering a class the switch handles makes later branches dead: fold the old target in first and test each one.
+- A condition that covers a class the switch handles makes the later branches dead. Fold the old target in first, and test each one.
 
 ## Dependencies and scripts
 
-- Standard library first. A dependency is a cost: justify it in the body or do not add it.
+- A dependency is a cost. Justify it in the body or do not add it.
 - Never a second package manager, lockfile, formatter or test runner.
-- A script that runs commands is TypeScript: `bun run scripts/<name>.ts`. Never Python or shell; a prompt command is not a script.
-- A script fails loudly, prints no secret, and names its arguments where the command is written. Delete a one-off.
+- A script that runs commands is TypeScript at `scripts/<name>.ts`, run with `bun`. Never Python or shell.
+- A script names its arguments where the command is written, and prints no secret.
 
 ## Errors and data
 
-- Fail explicitly: no silent fallback, no default hiding a missing input, no catch that only logs.
-- Validate at the boundary — input, network, filesystem, environment — and trust what is inside.
-- An error names what failed and what was expected, without blaming the reader.
+- Fail explicitly. No silent fallback, and no catch that only logs.
+- Validate at the boundary, and trust what is inside.
 - Never log, print or commit a secret, a token or personal data, not even truncated or in a fixture.
 
 ## Public surface
 
 - Private by default. Changing a public interface is a decision: say who consumes it and why.
-- Every function, class and constant carries a block comment: what it is for, what the signature cannot say.
+- Every function, class and constant carries a block comment: what it is for, and what the signature cannot say.
 - Never a JSDoc block. Types are the type system's job.
 
 ## The pull request
 
 - One version, one pull request, one branch, merged bottom-up.
-- Read `gh pr view <n> --json state` before pushing: auto-merge can land it while you edit.
-- A push after `MERGED` carries no pull request; open a new one for what remains.
-- Always `--reviewer thani-sh`, plus one peer:
-  - MaMa — product, architecture, an interface, a costly reversal
-  - MeMe — code that has to last · MiMi — a measured change or a new tool
-  - MoMo — untrusted input, shared state, security, parsing
-- Verify the request landed: `gh pr view <n> --json reviewRequests`. A login that does not exist is dropped without an error; add the real account with `gh pr edit <n> --add-reviewer <login>` and read the list again.
+- Read `gh pr view <n> --json state` before you push. Auto-merge can land it while you edit.
+- A push after `MERGED` carries no pull request. Open a new one for what remains.
+- Ask `thani-sh` and one peer whose role owns the risk: MaMa architecture, MeMe durability, MiMi a measurement, MoMo untrusted input.
+- Confirm the request landed: `gh pr view <n> --json reviewRequests`. A login that does not exist is dropped in silence; add it with `gh pr edit --add-reviewer`.
+- Read the reviews before you report done. A request for changes is the next step.
 - Arm it as you open it: `gh pr merge <n> --auto --rebase`. Never arm a draft or a spike.
-- A stacked pull request is never armed: `--auto` is refused. Merge it with `gh api -X PUT repos/<owner>/<repo>/pulls/<n>/merge-async -f sha=<head> -f merge_method=rebase`, then poll its `uuid` for the result.
-- The body is `writing`'s shape, never a file list.
+- A stacked pull request is never armed. Merge it with `gh api -X PUT repos/<owner>/<repo>/pulls/<n>/merge-async -f sha=<head> -f merge_method=rebase`, then poll its `uuid`.
+- The body follows `writing`, and is never a file list.
 
 ## After a review
 
-- A request for changes is a proposal: is it true, in scope, worth its cost? If not, answer on the thread.
+- A request for changes is a proposal. Ask whether it is true, in scope, and worth the cost. If not, answer on the thread.
 - When it holds, apply it and ask that reviewer again.
-- A push re-runs the gate and dismisses approvals; rebase as the base moves, then re-request.
-- An approval or fix on a head a rebase replaced is gone: re-apply it and ask again; an approval belongs to a commit, not a branch.
-- A rebase that meets another agent's doc commit conflicts on summaries, not facts: keep their new bullets, and recount any sentence that states a number instead of choosing a side.
+- A push re-runs the gate and drops approvals. Rebase as the base moves, then re-request.
+- An approval on a head a rebase replaced is gone. Re-apply it and ask again: an approval belongs to a commit, not a branch.
+- A rebase that meets another agent's doc commit conflicts on summaries, not facts. Keep their new bullets, and recount any number.
+- A rebase against a revert keeps the revert. Keep only the lines your change still owns.
 
 ## Done
 
-1. Formatter and linter clean, and the whole gate ran on the final tree.
-2. Read the diff as the reviewer will; take out what the task did not ask for.
-3. A fix is the smallest diff that removes the cause — not a check, a guard or a script.
+1. The formatter, linter and whole gate are clean on the final tree.
+2. Read the diff as the reviewer will, and take out what the task did not ask for.
+3. A fix is the smallest diff that removes the cause, not a guard around it.

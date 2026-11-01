@@ -6,41 +6,40 @@ when-to-use: "Anything a person reads: a chat message, a pull-request body, a re
 
 # Writing
 
-Two things decide whether writing works: it is short enough to finish, and the reader finds what they need first.
+Good writing is short enough to finish, and it puts the answer first.
 
 ## Length
 
-- A chat message, issue comment or pull-request body is 150 words. Past that it is a document: write it to a file and link it.
-- Count it (`wc -w <file>`) instead of estimating: the limit is exact and an eye estimate runs long every time.
-- A review is one screen: the verdict and the findings that block.
+- A chat message, issue comment or pull-request body is 150 words. Longer is a document: write the file and link it.
+- Draft to about 130 words. A first draft runs long, and trimming it costs rounds.
+- Count the words with `wc -w <file>`. Do not estimate.
 - A `SKILL.md` is 900 words, a reference 750, an agent file 260.
-- One rule per bullet, 30 words or less. The reason is a clause; the story belongs to the commit.
-- A section that can be one line is one line. Delete any sentence that would survive unchanged in another repository.
+- One rule per bullet, 30 words or less. The reason is a clause; the story goes in the commit.
 
 ## Shape
 
-- The first line is the answer, the verdict or the ask. Nothing before it: no preamble, no restating the request, no recap.
-- Then the evidence, then what you need. Never the other way round.
-- A list repeats; a paragraph argues. A lookup — who reviews what, which command for which case — is a list.
-- Concrete beats abstract: a path, a command, an example.
+- The first line is the answer, the verdict or the ask. No preamble, no recap of the request.
+- Then the evidence, then what you need.
+- Use a list for a lookup and a paragraph for an argument.
+- Be concrete: a path, a command, an example.
 
 ## Plain language
 
-- Short sentences, present tense, active voice. Imperative for instructions.
-- The short word: use not utilise, help not assist, about not approximately. No "simply", no "just", no "note that".
-- One idea per paragraph. Never hard-wrap. Never a table wider than 80 characters.
-- Explain a specialist term on first use: a reader who knows it is not slowed, and one who does not is lost.
+- Short sentences, present tense, active voice. Use the imperative for steps.
+- Choose the short word: use, not utilise; help, not assist; about, not approximately.
+- One idea per paragraph. Never hard-wrap.
+- Explain a specialist term on first use.
 
 ## Where a fact lives
 
-- One fact, one home. A repository has one document per subject — product, design, system — and the others link to it.
-- An ADR is the exception: it stands alone and cites only earlier ADRs.
-- User-facing behaviour is the product document. Serving and checks are the system document. Interface and visual decisions are the design document.
-- A shared document describes the pattern, not one instance: a page one agent has gets a generic clause, never the screen or mode.
-- A code comment explains why. A comment that restates the line beneath it is noise: delete the comment, or the line.
-- If the change makes a document untrue, fix that document in the same change.
-- A document that names the current release in prose goes stale at the next release: put the version in the changelog, or make the sentence version-agnostic.
-- Quote the ADR's condition word for word in product and system prose: "at or before it" is not "before it", and the reviewer checks the record.
+- One fact, one home. The product, design and system documents each own their subject, and the others link to them.
+- An ADR stands alone and cites only earlier ADRs.
+- User behaviour is the product document. Serving and checks are the system document. Interface and visual choices are the design document.
+- Describe the pattern, not one instance: a page one agent has gets a general clause.
+- A code comment explains why. Delete a comment that repeats the line below it.
+- When a change makes a document untrue, fix that document in the same change.
+- Do not name the current release in prose. Put the version in the changelog.
+- Quote an ADR's condition word for word.
 
 ## Which document
 
