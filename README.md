@@ -18,11 +18,13 @@ A profile loads `skills/` through `skills.external_dirs`, pointing at a checkout
 
 Each file under `agents/` is an agent's identity: one file per agent, copied over that profile's `SOUL.md`.
 
-## The skill archive
+## Each profile's own skills
 
-`agents/<name>/skills/` holds the skills that profile owns: the ones it wrote, and the stock files it edited. Nothing reads it.
+`agents/<name>/skills/` holds the skills that profile owns: the ones it wrote, and the stock files it edited.
 
-It exists for a rebuild. Restore with `cp -an agents/<name>/skills/. /root/.hermes/profiles/<name>/skills/`, which adds back only what is missing and overwrites nothing. The sync keeps it current, so an edit there is undone rather than published.
+A profile loads them through `skills.create_dir`, which points here. This directory is their only home: a skill an agent saves lands here and is live at once. The shared skills arrive separately, through `skills.external_dirs`.
+
+A stock Hermes skill stays in the profile. Only what this agent authored or changed lives here.
 
 ## Adding or changing a skill
 
