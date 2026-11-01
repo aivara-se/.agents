@@ -26,5 +26,7 @@ A green `bun test` and a finished `tinyjs build` say nothing about the app. Run 
 
 ## Pitfalls
 
+- Re-focus before every interaction, not once per run: a click or key that lands while the window has no X focus leaves the page's focus state stale, so a page that fades on `document.hasFocus()` shows no pixel change and looks like a bug. `xdotool windowfocus <id>`, then click, then screenshot.
+- Measure a fade instead of eyeballing it: sample the luminance of a control with the caret in the faded-away input and again after blur, and compare against `opacity*ink + (1-opacity)*paper` — 0.25 over a 199 paper and a 35 ink reads 158, which is what proves the promised quarter rather than "looks faded".
 - `pkill -f "dist/pereda"` matches the shell wrapper that contains the command and kills the session. Use `pkill -x <name>`.
 - The launcher writes a `.desktop` file and devices into the data folder: clean the whole `$XDG_DATA_HOME/<id>` between runs to start from an empty app.

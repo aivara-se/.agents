@@ -26,6 +26,22 @@
       "sha256": "3153c38d322903b02241ab4693c6a221438e6862e7fc8fcd495a56a7ebed2ae9",
       "origin": "stock-modified"
     },
+    "creative/architecture-diagram/SKILL.md": {
+      "sha256": "5721917b779100e2a5f76d12945a4ba7b02aa320a84335e9eaaa8413ff506bed",
+      "origin": "stock-modified"
+    },
+    "creative/hand-drawn-diagrams/SKILL.md": {
+      "sha256": "3cf899feddb2ecb84ff85edec4aae76755cdc75f92a040db5e921b8f1ced000e",
+      "origin": "authored"
+    },
+    "creative/hand-drawn-diagrams/references/visual-qa.md": {
+      "sha256": "629ef4fefbeb1399086e3d8bef59e3c00d6eaed21b9493947f9e832004476888",
+      "origin": "authored"
+    },
+    "creative/hand-drawn-diagrams/templates/canvas.py": {
+      "sha256": "8d4d6911f1b5ebcf97b7dddf437f8b24174d6ed11b9ec97f6d16aff8209fded8",
+      "origin": "authored"
+    },
     "email/himalaya/SKILL.md": {
       "sha256": "ef0632ddeb263ebde6d2c61af51fb9bf5aab04c3c88ad0a91f203175d54e86f3",
       "origin": "stock-modified"
@@ -35,15 +51,23 @@
       "origin": "stock-modified"
     },
     "software-development/aivara-se-workflow/SKILL.md": {
-      "sha256": "d8bf88e94875bc80a2b2f14714cc0fcc0773e876d2d4b718ea1b78e645893920",
+      "sha256": "e5aaa62b317c821d20d3224188a458b9308fa58251b636a8076642392d7eec72",
       "origin": "authored"
     },
     "software-development/aivara-se-workflow/references/board-project.md": {
       "sha256": "b854497f6b786f12d91133dfed4f1b647188fcce7857e4bb6c886a03ef2b26d4",
       "origin": "authored"
     },
+    "software-development/aivara-se-workflow/references/convention-audit.md": {
+      "sha256": "97d918a5744eb201403c19e97507deee970e22ff5430df2efe40ec415382fba8",
+      "origin": "authored"
+    },
     "software-development/aivara-se-workflow/references/design-decisions.md": {
-      "sha256": "3e2574308250234c25ec7b5caf0db6b17171b8109b7097cab26caf8e295a1df8",
+      "sha256": "96327fbd2606d7aa633670c5d356a4a5087f53360ec4a2dcc98728fe762d9b7d",
+      "origin": "authored"
+    },
+    "software-development/aivara-se-workflow/references/licensing.md": {
+      "sha256": "e0a66de56e4fbae4c75bbcd9abac509a5f944246bf6e663e37ae7df65a22d5bc",
       "origin": "authored"
     },
     "software-development/aivara-se-workflow/references/new-project.md": {
@@ -91,7 +115,7 @@
       "origin": "authored"
     },
     "software-development/tinyjs-desktop-apps/SKILL.md": {
-      "sha256": "a20f752152fdbbc8cc12e466c0f38c07c1c23ed1f157cd999fb34e200efa0eda",
+      "sha256": "96b13fae665ebfece9e6e21962eaf579dae3d4138d45ea17c7bc498d9a4920b9",
       "origin": "authored"
     },
     "software-development/tinyjs-desktop-apps/references/framework.md": {
@@ -99,7 +123,7 @@
       "origin": "authored"
     },
     "software-development/tinyjs-desktop-apps/references/verifying-a-build.md": {
-      "sha256": "916b159ab9059c9e266a884fc6d5833873548672b74ffdcfb254b4298b65eff4",
+      "sha256": "0074530880528961c55ab6bdd8080772f95ec7e24ce5f5cbdd69926fdca73531",
       "origin": "authored"
     }
   }

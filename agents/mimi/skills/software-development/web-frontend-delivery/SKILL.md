@@ -23,11 +23,23 @@ metadata:
 - A page or a whole site reproduced inside another codebase, where the result has to read as the original: the original is still live, and it is the reference you measure against.
 - A framework or dependency **major-version upgrade** that has to keep rendering the same: run the migration with `framework-major-migration`, then verify the result here.
 - A change to what an installed offline app keeps on the device — IndexedDB rows, a merged content file, a stored choice — where the devices already carrying the old shape are the ones that break: `references/device-storage-migration.md`.
+- A small control added to a screen the operator already likes — a mark, a toggle, a count — where the ask is a feature and the risk is a redesign: see "Changing a screen the operator already likes".
 - Not for a change that ships nothing a browser fetches — a docs-only or data-only change is covered by the gate sequence alone.
 
 ## The rule that carries the rest
 
 **A green type-check, a green formatter and a green build are not evidence that a page renders.** Every change to a route, a layout, a head block or a colour is verified by serving the built artifact and reading the response — because a component that renders without its layout, its head or half its children still returns 200, still passes the type checker, and still builds. The failure is invisible in the source and obvious in the response body. A prerendered `200` is not the whole check either: the server's HTML can be correct while the client replaces it with the framework's error page, so the response `curl` reads and the page a browser paints are two separate assertions.
+
+## Changing a screen the operator already likes
+
+The rejection to expect is "this changes the UI too much", and it is a verdict on the shape, not on the quality: a well-built new page that moves the product's centre of gravity is worse than a small control on the screen that already exists. The app has one primary job (the timetable, the list, the editor); everything else is allowed to borrow a few pixels of it and nothing more.
+
+- **The existing screen stays the screen.** Put the new job inside it — a mark, a toggle, a count — rather than a tab, a dock item or a route of its own. A new surface competes with what the app is for, and a feature ask ("track when I pray") never implies one.
+- **Disclose instead of adding.** Anything that can wait until it is needed stays out of the first paint: chevrons that fade in on hover, a hint that appears only in the empty state, a control that shows up after the first interaction. What must be visible on touch gets the smallest mark that reads — a 12px circle on the row — never a card, a stat row or a heading.
+- **Keep the navigation and the gesture that already work.** If the user swipes between days, the new control rides that same surface; replacing a pager with a menu, or a gesture with a button, reads as a regression however tidy it looks. Extend the existing range rather than inventing a second way to move.
+- **The change is a delta, so measure the delta.** At the same viewport, assert that adding a mark moves nothing: row tops and the columns' `x` are identical before and after the state change. A row that shifts when a control fills in is a UI change nobody asked for.
+- **The first paint must look like the old page.** A `{#key}` block with `in:`/`out:` transitions animates the initial render too, so the screen slides in on load; gate it behind a `mounted` flag set in `onMount` and pass `{ duration: 0 }` until then.
+- **A rejected shape is rebuilt on a fresh branch from the base branch**, not by stacking reversions on the branch under review; close the superseded PR with one line naming what replaced it and keep the old branch for reference.
 
 ## What the page is for
 
@@ -82,6 +94,7 @@ For each route, in one pass over the response:
   reports `Unused CSS selector`, which is the markup telling you to scope it `:global(svg)`. Prove the
   bundle kept only the icons imported by grepping the build for an unused icon's path data (0 files), and
   quote that when the dependency lands: `references/icon-sets.md`.
+- **An ask for an installable app, when the change only exists on the web, is answered with the gap and a link — never with a build of the untouched native app.** Say which clients actually contain the work (the Android tree has zero lines of a web-only feature), what a port would cost, and what the API needs first (a deployed endpoint, or the app has no server to talk to). Then hand over the web app through a quick tunnel so the phone can open it: a PWA install is the same feature with no build. Building the unchanged native app and calling it the deliverable answers a question nobody asked.
 - **A ground or surface token is a documented fact, not a local edit.** Recompute every contrast figure the repository publishes in the same commit — see `references/design-tokens-and-contrast.md`.
 - **Never let a surface fill equal the ground's lightest stop:** the card vanishes at 1.00:1 while every text tier still passes its own check.
 - **When the host app's global CSS is inherited, a ported page drifts by a few pixels without one ported rule changing.** A global `body { line-height: 1.55 }`, a `* { margin: 0 }` reset the original had and the host does not, a heading with no `line-height` of its own (36px where an explicit `1.1` gives 31px at phone width) all move the composition. Reset `line-height` and margins at the ported page's root, and find the rest with the measured diff rather than by reading the CSS.
@@ -145,6 +158,9 @@ For each route, in one pass over the response:
   to derive, a fact a reader would find useful — offer the line; do not add it. "True and useful" is not the
   test, the operator's ask is, and an unasked paragraph in a `README` reads as scope creep even when it is
   correct. On request, revert it in a commit of its own and say the file is back to what it was.
+
+- **A drag that ends over a tappable row fires a click on it.** Swiping to the next day marks the prayer the thumb lands on: record the travel distance on `pointerdown`→`pointerup`, and ignore taps for ~350ms after a drag longer than ~8px, then assert both halves in the browser (the day changed **and** the stored value is byte-identical). A tolerance measured in CSS px is not the guard — the click is dispatched after the pointer is released, so only a time gate catches it.
+- **A tap target inside a row must not change the row's height.** Putting the marker in the time column keeps the baseline and the columns still, which is what lets the delta be measured; a marker on its own line, a badge above the label or a border on the row moves every sibling and is a redesign the operator will notice before they notice the feature.
 
 ## References
 

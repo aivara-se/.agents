@@ -49,6 +49,10 @@
     "software-development/sandbox-provisioning/scripts/relink-toolchains.sh": {
       "sha256": "b434ff0d71882744f1eca40625fb78328463beb825e14519e542caf0d8d9d39b",
       "origin": "authored"
+    },
+    "testing/pereda-page-check/SKILL.md": {
+      "sha256": "42bd90a643f7ea01d5b55555e2319ed70977e86a94b5d7c840af3d3d741545b5",
+      "origin": "authored"
     }
   }
 }

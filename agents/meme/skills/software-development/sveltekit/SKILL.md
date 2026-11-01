@@ -1,7 +1,7 @@
 ---
 name: sveltekit
 description: Use when building or changing a SvelteKit 3 app.
-version: 1.3.0
+version: 1.4.0
 author: MeMe
 license: MIT
 when-to-use: Building or changing a SvelteKit app — a new one, a page or a component in an existing one, a conversion from a no-build browser app, or a build that fails, type-checks wrongly or serves a blank page. Especially SvelteKit 3, whose configuration and module names differ from every 2.x tutorial.
@@ -22,6 +22,7 @@ metadata:
 - Changing a page in an existing SvelteKit site — a section's order, a link that has to go, a string — where the gate is green and the render is the thing to check.
 - Changing or adding a drawing or the icon set: sourcing official artwork, vendoring it, cutting a silhouette out of a tile, reconstructing a mark as SVG, the favicon and maskable set — see `references/icons.md`.
 - Adding a project or agent page to a data-driven roster such as aivara.se — the places an entry touches, its copy rules and its screenshot — see `references/roster-pages.md` before the first edit: reading the source instead rediscovers five of the six places and the tests then name the sixth.
+- A part whose content lives outside the repo — a latest release's downloads, a count from an API — see `references/remote-data.md`: the URL choice, the build-time read, and the fallback that keeps the build green.
 - Anything a 2.x tutorial describes: check what changed below first.
 
 The installed package is the authority, not a tutorial: read `node_modules/@sveltejs/kit/types/index.d.ts` (the `declare module '$app/...'` blocks give every module's real exports) and `node_modules/@sveltejs/kit/src/core/config/options.js` (every option and its default).
@@ -113,7 +114,7 @@ built tree on this machine and give the operator a quick tunnel over it.
 - **`adapter-static` + a prerendered `/` + a rest route**: set `prerender = false` on the rest route only; marking it `true` makes the build try to enumerate infinite paths.
 - **A wall of `href="./..."` in `index.html` is normal; the absolute paths are in the fallback (`404.html`).** Read the `base` in that fallback's bootstrap for what the build was told it serves under: it is the whole story of whether the app's own files will load. The page looks right either way, so nothing else in the output says.
 - **The dev server does not build the service worker**, so offline behaviour can only be checked against a build.
-- **Kill a server by PID, and kill its child.** `pkill -f "vite preview"` matches the shell line that is running the kill — your own `bash -c` — so it SIGTERMs the session (exit 143) before the server dies, and killing a `bunx`/`npm` wrapper leaves the `node` process it spawned holding the port. Kill the PID the background handle gave you, kill its children with it, and re-read `ps` before rebinding.
+- **Kill a server by PID, and kill its child.** `pkill -f "vite preview"` matches the shell line that is running the kill — your own `bash -c` — so it SIGTERMs the session (exit 143) before the server dies; a pattern narrowed to the port is no safer, the kill's own command line carries the port. Kill the PID the background handle gave you, kill its children with it, and re-read `ps` before rebinding.
 - **Helpers defined outside a `page.evaluate` are undefined inside it.** The callback is serialised and runs in the page, so no closure crosses that boundary in either direction. Measure numerically instead — the rendered geometry, type sizes and colours of every key selector (see `scripts/measure-render.mjs`) — and when the script dies with `x is not defined`, move every helper the callback needs inside the callback before anything else.
 - **A file rewritten in several patches can end half new** — markup renamed while the old `<style>` block still names the old selectors, or an import left pointing at a component you deleted. `svelte-check` catches both (`Unused CSS selector`, `Cannot find module`), so run `check` after each batch of rewrites instead of only on the final tree.
 - **A snippet is styled by the component that defines it, not the one that calls it.** `{#snippet}` content compiles in the parent holding the `{#snippet}`, so that component's scoped `<style>` reaches it and the consumer's does not — inject an icon or a styled block as a snippet and leave the consumer's markup plain, rather than reaching for `:global` to style its own children.
