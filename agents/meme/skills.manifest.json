@@ -3,31 +3,31 @@
   "note": "Archive of the skills this profile owns. Read by no agent; restore with cp -an agents/meme/skills/. into that profile skills directory.",
   "files": {
     "creative/claude-design/SKILL.md": {
-      "sha256": "3c4780f2d6bb430618cdeb17ccb54bdee3b28ea0c969b7745e945d66885a23b8",
+      "sha256": "e2ebc69fb3934f27fd5bec4f441a99d752f7b946a4b914c1b78ce098870521e7",
       "origin": "stock-modified"
     },
     "creative/typography/SKILL.md": {
-      "sha256": "a34ca71dd35f8005f8f948dcd978e3c2fa8e463c690e5a33ef970ea240f18bd1",
+      "sha256": "36009c4eb7a94ece01a1b3dee0bea6d133c50b0a3efa56ff925a2d87e5e4ab6b",
       "origin": "authored"
     },
     "product-briefs/SKILL.md": {
-      "sha256": "84c40d3ed93035e591d2a1d8f1222c72aaae81c3d51454d0b4c0cb16acf07070",
+      "sha256": "7587772197e80124724921c22027276a7157337270f89953231d1f37e17b1d9b",
       "origin": "authored"
     },
     "product-briefs/references/product-naming.md": {
-      "sha256": "b38ecd36f6995cac41a8f59c06a1c8005b97c96d71d5e2e0708ee3ed71a193bd",
+      "sha256": "910371f313909841a058b9ed37bd6814135888ca1aa72d37b7baeee4afbedae2",
       "origin": "authored"
     },
     "software-development/aivara-board-card/SKILL.md": {
-      "sha256": "1ef126930b403bd5454c85b950c57dc5f1d76d11f2cc2fcfed1a9b7cfc3d3985",
+      "sha256": "56fb892abed00e7104010efc9f3368df0a9b149dec6b1c56f072f1eaf08c9cb2",
       "origin": "authored"
     },
     "software-development/aivara-board-card/references/frozen-spec-delivery.md": {
-      "sha256": "8c1fb4c04648667d37ba0b277465dbafcedf15df32eb2ea9161364d768887d0a",
+      "sha256": "3d834097173df7c2537c2d3dac543a22ed0c550f4de8081ed3b7a9ea075e29cb",
       "origin": "authored"
     },
     "software-development/dispatch-service/SKILL.md": {
-      "sha256": "106ad80c4b6ae902bc92f0f0472d066366d5b51ff9d64693a40146c39760cbe9",
+      "sha256": "c720a9edf673369d13c69591ecfee8ce1cfb84744289c09726740b00076380b7",
       "origin": "authored"
     },
     "software-development/dispatch-service/scripts/mutation-pass.sh": {
@@ -35,35 +35,35 @@
       "origin": "authored"
     },
     "software-development/github/SKILL.md": {
-      "sha256": "6d9b17f07c1efbe027876b43b4bf02cea318a77567167cb2b5600b5a2542507e",
+      "sha256": "565042921dd4d11c5af3e3752733bdde70447400fdfa00b10f5cb429daa7aa2b",
       "origin": "stock-modified"
     },
     "software-development/github/references/ci-troubleshooting.md": {
-      "sha256": "c0f201bfd981139c0cd38ef446eebf2ec657e9bdeea506eb2dc22648e76bfab9",
+      "sha256": "355756180b0fba69419baec5eea8c3ba4c284426dceab4ec81c6d90d9f16821f",
       "origin": "stock-modified"
     },
     "software-development/github/references/pr-workflow.md": {
-      "sha256": "b87dbf136b2b372f2af907ade25af7b95aa3058d8f2661222efdc5ac48ec883a",
+      "sha256": "64e8c80563e78f2d77581c46123320a7ccb0a79c2f6f3c004de7565eef3ff146",
       "origin": "stock-modified"
     },
     "software-development/github/references/repo-management.md": {
-      "sha256": "25e314d3256643a63e65b2dbda1b474df253027e5053a4e701c0134800141ce9",
+      "sha256": "63333683bdceb09bf73438da14da0f77e202cf4fae79ca6a5620bb6b0c36364c",
       "origin": "stock-modified"
     },
     "software-development/github/references/stacked-prs.md": {
-      "sha256": "e0d5f2b83cb71a7ba6b25c28970078ab19be9891ad366c555664d205edfd8430",
+      "sha256": "ae7b62c9b508f8eb0926522683212cb445e4ba4f8af8a99900f4b20e5f260624",
       "origin": "authored"
     },
     "software-development/instruction-audit/SKILL.md": {
-      "sha256": "ef845ce170c1bdd52645529773c874085d2dd789b2274ab9192fb6a1cbbb0d46",
+      "sha256": "f60879b73ee74a85355964c171c05b6fb41acbd5b751789694e9a07f0203ea63",
       "origin": "authored"
     },
     "software-development/instruction-audit/references/evidence.md": {
-      "sha256": "8c2cab78b7513439aa4749d8e3314d129bef1043e4199cc6d03c19951487ed9f",
+      "sha256": "d411974cc708d079e7e909a85f8a8863628ea68f81f174199dd1802c51d1bac9",
       "origin": "authored"
     },
     "software-development/instruction-audit/references/prose-gate.md": {
-      "sha256": "c62cdd32b983909861d21c47c74d58c93ae421380d838067148ec1c72fb8a8d4",
+      "sha256": "898749664d290448ca3e4081e53538a565c3d644603a9927482324fa27c8505e",
       "origin": "authored"
     },
     "software-development/instruction-audit/scripts/measure-prose.py": {
@@ -71,23 +71,23 @@
       "origin": "authored"
     },
     "software-development/sandbox-toolchains/SKILL.md": {
-      "sha256": "1ede4c12b00b6236eef195344d89f7137b026fefd4daa27cd7296d5c16a63c28",
+      "sha256": "5f7bd4d606eb9d523fda40cbfd7183eeb0233127cedfa04f834b66661d6817d5",
       "origin": "authored"
     },
     "software-development/sandbox-toolchains/references/version-sources.md": {
-      "sha256": "e585a6e3e546eca2e2a112a9ab295ffe3a3b9d7bd81298994e6e14b913faef06",
+      "sha256": "39d5ae659db61d424f9fcf4372421ed752625476ffedddfa848409e22ba2aa05",
       "origin": "authored"
     },
     "software-development/static-web-app/SKILL.md": {
-      "sha256": "f21ec10cc8e718fe1d74e2c1b73775d59532eab3e783bd081c34e3d35c34de84",
+      "sha256": "b6a5e4ce356441b878546c3d20412af543aa12a7deeaf7c5a95343f98c725ccd",
       "origin": "authored"
     },
     "software-development/static-web-app/references/browser-checks.md": {
-      "sha256": "ee6f42058aa96173dbe99e6cc83557b0a89f9cf89178a096f1e2e4cf75ef4a4a",
+      "sha256": "09458cc5b61e3cb860e45e78a22f1de6b6d9faf792161d8b36847887c3baeabf",
       "origin": "authored"
     },
     "software-development/static-web-app/references/service-worker.md": {
-      "sha256": "7a997b4bea0e7b783e70523f6f3665acb61c5a3d2dc06b2e94adf4df075bd826",
+      "sha256": "2c1be4eedad2aced582de43b8bada9348c1e4094c56921fba987b520936114bd",
       "origin": "authored"
     },
     "software-development/static-web-app/templates/static-server.ts": {
@@ -95,19 +95,19 @@
       "origin": "authored"
     },
     "software-development/sveltekit/SKILL.md": {
-      "sha256": "cfbdd551ba321a3b2ff945d457087bb7d3f29f2f87094e36f80c8b4d14f5b26a",
+      "sha256": "03d13d41a2eb18913a82580e0d680e5f1aeb1a1e3d8ee5bb6779d645ce40fa13",
       "origin": "authored"
     },
     "software-development/sveltekit/references/icons.md": {
-      "sha256": "23e2d07946346dd9c67a2c1642e537d9afcceee447c8edc2705edf73e3f5648d",
+      "sha256": "491a76ae5b712ce7beec835fe5aab2fb60178b75abca8dbe1ed33ad8dad00327",
       "origin": "authored"
     },
     "software-development/sveltekit/references/remote-data.md": {
-      "sha256": "907f73ba01e7c87fe7fdf34de41903513ff34e3f8ec3e5cbebe97c4e4b9b8e30",
+      "sha256": "4d68227bae1ec1e25bd74938a45fca824044d14dd366c0ac9c653960b6b4f123",
       "origin": "authored"
     },
     "software-development/sveltekit/references/roster-pages.md": {
-      "sha256": "e0a0e8d64198a3657e16a9762273934c6bb822b3109faacf2fcb1d80b4807784",
+      "sha256": "18b9be8eb662050c6c84eae89250c396faadf343a4a67c2f87f0ca081de53cae",
       "origin": "authored"
     },
     "software-development/sveltekit/scripts/measure-render.mjs": {
@@ -119,43 +119,43 @@
       "origin": "authored"
     },
     "software-development/tinyjs/SKILL.md": {
-      "sha256": "1bd0b9d4db6b86c11318e77a87ef60c3f8c17c4d7a1312e9e820a795246a9a5e",
+      "sha256": "417549ff0afd0de2e28ad9f0d6bceb8a70bdcef8e3b8bdb70071502f4a22a919",
       "origin": "authored"
     },
     "software-development/tinyjs/references/backend-handlers.md": {
-      "sha256": "00d76d399502e4917a09650b869819a76760b416b9754d515f647381614cd012",
+      "sha256": "76ce3f287fe55c5aa4eb56fbe8f1fa1d8bae90b0f897187523b78e17902b8222",
       "origin": "authored"
     },
     "software-development/tinyjs/references/bundled-fonts.md": {
-      "sha256": "96fadd50e0ca2997d5f57b3f4a630d9437dc688baee81c0eb51dd9e148f8d363",
+      "sha256": "7ee6f21421fcf59f8a3ddb475076095d81e9579a4c157d53c1830d245454212e",
       "origin": "authored"
     },
     "software-development/tinyjs/references/headless-run.md": {
-      "sha256": "000eeaa1f6b4f3ea2d08c4239296b2059a9760b3765821a62a0ca2d60720c6be",
+      "sha256": "1f88851c6b079eda323e1dc98dfaa1a7d707a0cc61634230bbd430a07be47b71",
       "origin": "authored"
     },
     "software-development/tinyjs/references/hotkeys.md": {
-      "sha256": "02de42728a5d307b8839a45b41c57f825cc5cb5500015b419dcd09dace84895f",
+      "sha256": "6b4c667bbd3ab3ad8998ef86959af3ad0d28db5fca239c92dbf87e1b52602fd0",
       "origin": "authored"
     },
     "software-development/tinyjs/references/page-harness.md": {
-      "sha256": "5fb0ab8e44d8d2abe82793b3773384abc1cc8a9e3fe06d73f8b148cd7976cae4",
+      "sha256": "3f07dd7010a2ab717a1e766c3839e2626df4418d30f9be6da9f9989acca9de39",
       "origin": "authored"
     },
     "software-development/tinyjs/references/release.md": {
-      "sha256": "b0e95b6fd3fc4b7ba679da9de4fe1355f1af9f1a3c14326f1fb393f2277c66b9",
+      "sha256": "5340185639bbe8ba4a119cb8030b607d31b03610382d0a44f71dc07da51b557b",
       "origin": "authored"
     },
     "software-development/tinyjs/references/sqlite-store.md": {
-      "sha256": "608122ede63f98b790c3668c753ff54dbd5d0e3130613d26e921ff34139912fc",
+      "sha256": "61c3cf4968c134be2eb09a15042b11c269f6b412764398783f2f6cad002cc7ed",
       "origin": "authored"
     },
     "software-development/tinyjs/references/window-chrome.md": {
-      "sha256": "0930defff147df5e4cccfce4f09d681fcf5945face216f2939c7774fe082bd24",
+      "sha256": "5bfdb2848506cea431b51f1420b554725a8468be91e5b36bbfca24ab8422f10b",
       "origin": "authored"
     },
     "text-measure-check/SKILL.md": {
-      "sha256": "335d521af20483c252f2522ce47a459a141b9fd2d1546af5ab94681d4ab806ae",
+      "sha256": "d66b4f284cd9a31eca350e8e40566b2649324550d408ab243813e07540bb2e06",
       "origin": "authored"
     },
     "text-measure-check/scripts/measure.mjs": {

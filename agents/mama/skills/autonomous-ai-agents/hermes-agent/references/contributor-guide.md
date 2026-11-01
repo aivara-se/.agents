@@ -11,8 +11,8 @@ hermes-agent/
 ├── toolsets.py           # Toolset definitions
 ├── cli.py                # Interactive CLI (HermesCLI)
 ├── hermes_state.py       # SQLite session store
-├── agent/                # Prompt builder, context compression, memory, model routing, credential pooling, skill dispatch
-├── hermes_cli/           # CLI subcommands, config, setup, commands
+├── agent/                # Prompt builder, compression, memory, model routing, credential pooling
+├── hermes_cli/           # CLI subcommands, config, setup
 │   ├── commands.py       # Slash command registry (CommandDef)
 │   ├── config.py         # DEFAULT_CONFIG, env var definitions
 │   └── main.py           # CLI entry point and argparse
@@ -21,7 +21,7 @@ hermes-agent/
 ├── gateway/              # Messaging gateway
 │   └── platforms/        # Platform adapters (telegram, discord, etc.)
 ├── cron/                 # Job scheduler
-├── tests/                # Extensive pytest suite (run via scripts/run_tests.sh)
+├── tests/                # pytest suite (run via scripts/run_tests.sh)
 └── website/              # Docusaurus docs site
 ```
 
@@ -29,11 +29,10 @@ Config: `~/.hermes/config.yaml` (settings), `~/.hermes/.env` (API keys) — both
 
 ### Adding a Tool
 
-Two files. Auto-discovery imports any `tools/*.py` with a top-level
-`registry.register()` call, but a tool is only *exposed* to an agent once
-its name appears in a toolset.
+Two files. Auto-discovery imports any `tools/*.py` with a top-level `registry.register()` call, but a tool is only _exposed_ once its name appears in a toolset.
 
-**1. Create `tools/your_tool.py`:**
+**1. Create `tools/your_tool.py`** — handlers return JSON strings, and `check_fn` keeps the tool hidden until its requirements are met:
+
 ```python
 import json, os
 from tools.registry import registry
@@ -55,38 +54,21 @@ registry.register(
 )
 ```
 
-**2. Wire it into a toolset in `toolsets.py`** — add the name to
-`_HERMES_CORE_TOOLS` (every platform) or to a specific toolset.
+**2. Wire it into a toolset in `toolsets.py`** — add the name to `_HERMES_CORE_TOOLS` (every platform) or to a specific toolset.
 
-All handlers must return JSON strings. Use `get_hermes_home()` for paths,
-never hardcode `~/.hermes`. For custom/local-only tools, write a plugin in
-`~/.hermes/plugins/` instead of editing core — see the developer docs.
+Use `get_hermes_home()` for paths. For a custom or local-only tool, write a plugin in `~/.hermes/plugins/` instead of editing core — see the developer docs.
 
 ### Adding a Slash Command
 
 1. Add `CommandDef` to `COMMAND_REGISTRY` in `hermes_cli/commands.py`
-2. Add handler in `cli.py` → `process_command()`
-3. (Optional) Add gateway handler in `gateway/run.py`
+2. Add a handler in `cli.py` → `process_command()`
+3. (Optional) Add a gateway handler in `gateway/run.py`
 
-All consumers (help text, autocomplete, Telegram menu, Slack mapping) derive from the central registry automatically.
-
-### Agent Loop (High Level)
-
-```
-run_conversation():
-  1. Build system prompt
-  2. Loop while iterations < max:
-     a. Call LLM (OpenAI-format messages + tool schemas)
-     b. If tool_calls → dispatch each via handle_function_call() → append results → continue
-     c. If text response → return
-  3. Context compression triggers automatically near token limit
-```
+Help text, autocomplete, the Telegram menu and the Slack mapping all derive from the central registry.
 
 ### Testing
 
-Use `scripts/run_tests.sh` for CI parity. It clears credentials, sets
-`TZ=UTC`, and runs each test file in a separate subprocess through
-`scripts/run_tests_parallel.py` on every platform. It does not use xdist.
+Use `scripts/run_tests.sh` for CI parity. It clears credentials, sets `TZ=UTC`, and runs each test file in a separate subprocess through `scripts/run_tests_parallel.py`. It does not use xdist.
 
 ```bash
 scripts/run_tests.sh                          # full suite
@@ -95,45 +77,20 @@ scripts/run_tests.sh tests/tools/test_x.py    # one file
 scripts/run_tests.sh -v --tb=long             # pass-through pytest flags
 ```
 
-- Tests auto-redirect `HERMES_HOME` to temp dirs — never touch real `~/.hermes/`.
-- Prepare Python through the PM developer workflow before building a test environment.
-- Run `python -m pm.build_env --source . --out .venv --group dev --group test`.
-  The output must not exist. Stop its processes and intentionally remove only
-  that disposable environment before regeneration.
-- The runner probes repository `.venv`, `venv`, and the standard source-install
-  venv before falling back to `HERMES_PYTHON`. Each candidate must contain pytest.
+- Tests redirect `HERMES_HOME` to a temp dir — they never touch the real `~/.hermes/`.
+- Build a test environment through PM, not pip or uv: `python -m pm.build_env --source . --out .venv --group dev --group test`. The output must not exist; stop its processes and remove only that disposable environment before regenerating.
+- The runner probes `.venv`, `venv` and the source-install venv before falling back to `HERMES_PYTHON`; each candidate must contain pytest.
+- After editing `pyproject.toml`, run `hermes pm lock`, re-source `./activate`, and commit `pyproject.toml` with `uv.lock`.
 - **Windows:** run the same wrapper through Git Bash. See `references/windows-quirks.md`.
-- After editing `pyproject.toml`, run `hermes pm lock`, re-source `./activate`, and
-  commit `pyproject.toml` with `uv.lock`.
-  Do not mutate Hermes environments with raw pip or uv commands.
 
-Host-specific tests run on the real host. Use one `@pytest.mark.platforms(...)`
-marker per test, such as `@pytest.mark.platforms("windows", arch="arm64")`.
-Do not fake the host by patching `sys.platform` or platform probes.
+Host-specific tests run on the real host, one `@pytest.mark.platforms(...)` marker per test (e.g. `@pytest.mark.platforms("windows", arch="arm64")`). Do not fake the host by patching `sys.platform` or platform probes.
 
 ### System prompt's execution-environment block
 
-Factual host/backend guidance (OS, `$HOME`, cwd, terminal backend, shell)
-is emitted by `agent/prompt_builder.py::build_environment_hints()`. The key
-invariant for prompt authors: with a **remote** terminal backend
-(`docker, singularity, modal, daytona, ssh, managed_modal`), host info is
-suppressed and *every* file tool runs inside the backend container — the
-prompt must never describe the host the agent can't touch.
+`agent/prompt_builder.py::build_environment_hints()` emits the host guidance (OS, `$HOME`, cwd, terminal backend, shell). With a **remote** backend (`docker, singularity, modal, daytona, ssh, managed_modal`) host info is suppressed and _every_ file tool runs inside the container — never let the prompt describe a host the agent cannot touch.
 
 ### Commit Conventions
 
-```
-type: concise subject line
+`type: concise subject line`, then an optional body. Types: `fix:`, `feat:`, `refactor:`, `docs:`, `chore:`
 
-Optional body.
-```
-
-Types: `fix:`, `feat:`, `refactor:`, `docs:`, `chore:`
-
-### Key Rules
-
-- **Never break prompt caching** — don't change context, tools, or system prompt mid-conversation
-- **Message role alternation** — never two assistant or two user messages in a row
-- Use `get_hermes_home()` from `hermes_constants` for all paths (profile-safe)
-- Config values go in `config.yaml`, secrets go in `.env`
-- New tools need a `check_fn` so they only appear when requirements are met
+The hard invariants (prompt caching, role alternation, `get_hermes_home()`, config-vs-secrets) live in `SKILL.md` and apply here unchanged.

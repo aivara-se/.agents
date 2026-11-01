@@ -15,26 +15,23 @@ prerequisites:
 
 # Himalaya Email CLI
 
-Himalaya is a CLI email client that lets you manage emails from the terminal using IMAP, SMTP, Notmuch, or Sendmail backends.
+Himalaya is a terminal email client over IMAP, SMTP, Notmuch or Sendmail.
 
-This skill is separate from the Hermes Email gateway adapter. The gateway
-adapter lets people email the agent and uses Hermes' built-in IMAP/SMTP
-adapter; this skill lets the agent operate a mailbox from terminal tools and
-requires the external `himalaya` CLI.
+This skill is not the Hermes Email gateway adapter. The adapter lets people email the agent; this skill lets the agent operate a mailbox, and needs the external `himalaya` CLI.
 
 ## Check the version first
 
-`himalaya --version` decides the command line, and v2 renamed most of it. Verified on v2:
+`himalaya --version` decides the command line, and v2 renamed most of it:
 
 | The v1 form this file shows | The v2 form |
-|---|---|
+| --- | --- |
 | `himalaya folder list` | `himalaya mailbox list` |
 | `himalaya envelope list --folder "Sent"` | `himalaya envelope list -m sent` |
 | `himalaya template send` (piped message) | `himalaya message send` (piped message) |
 
-A v2 config is flat and role-based — `imap.server`, `smtp.server`, `mailbox.alias.sent` — where the example below uses `backend.*` and `folder.aliases.*`. `envelope list` on v2 also takes `-r` (show recipients) and `-s` (page size); the folder flag is `-m`, never `--folder`.
+A v2 config is flat and role-based — `imap.server`, `smtp.server`, `mailbox.alias.sent` — where the v1 example uses `backend.*` and `folder.aliases.*`. `envelope list` on v2 also takes `-r` (recipients) and `-s` (page size); the folder flag is `-m`, never `--folder`.
 
-Two things bite on send. `message send` saves a copy as well as sending, so read it back with `himalaya envelope list -m sent -s 5` and check for exactly one: a duplicate send cannot be unsent, and a second writer (another session, a retry) leaves no other trace. And the saved copy can carry the `From:` you wrote while the delivered message shows the SMTP account — Gmail rewrites a From that is not a verified *Send mail as* alias, so an address that only forwards inbound mail cannot be the sender until it is added there.
+Two things bite on send. **`message send` saves a copy as well as sending**, so read it back with `himalaya envelope list -m sent -s 5` and check for exactly one: a duplicate send cannot be unsent, and a second writer (another session, a retry) leaves no other trace. And **the saved copy can carry the `From:` you wrote while the delivered message shows the SMTP account** — Gmail rewrites a From that is not a verified _Send mail as_ alias, so an address that only forwards inbound mail cannot be the sender until it is added there.
 
 ## References
 
@@ -44,8 +41,8 @@ Two things bite on send. `message send` saves a copy as well as sending, so read
 ## Prerequisites
 
 1. Himalaya CLI installed (`himalaya --version` to verify)
-2. A configuration file at `~/.config/himalaya/config.toml`
-3. IMAP/SMTP credentials configured (password stored securely)
+2. A config file at `~/.config/himalaya/config.toml`
+3. IMAP/SMTP credentials (password stored securely)
 
 ### Installation
 
@@ -60,152 +57,50 @@ brew install himalaya
 cargo install himalaya --locked
 ```
 
-## Configuration Setup
+## Configuration
 
-Run the interactive wizard to set up an account:
+Run `himalaya account configure` for the wizard, or write `~/.config/himalaya/config.toml` by hand. The account template, password options (`auth.cmd`, keyring) and per-provider blocks are in `references/configuration.md`.
 
-```bash
-himalaya account configure
-```
-
-Or create `~/.config/himalaya/config.toml` manually:
-
-```toml
-[accounts.personal]
-email = "you@example.com"
-display-name = "Your Name"
-default = true
-
-backend.type = "imap"
-backend.host = "imap.example.com"
-backend.port = 993
-backend.encryption.type = "tls"
-backend.login = "you@example.com"
-backend.auth.type = "password"
-backend.auth.cmd = "pass show email/imap"  # or use keyring
-
-message.send.backend.type = "smtp"
-message.send.backend.host = "smtp.example.com"
-message.send.backend.port = 587
-message.send.backend.encryption.type = "start-tls"
-message.send.backend.login = "you@example.com"
-message.send.backend.auth.type = "password"
-message.send.backend.auth.cmd = "pass show email/smtp"
-
-# Folder aliases (himalaya v1.2.0+ syntax). Required whenever the
-# server's folder names don't match himalaya's canonical names
-# (inbox/sent/drafts/trash). Gmail is the common case — see
-# `references/configuration.md` for the `[Gmail]/Sent Mail` mapping.
-folder.aliases.inbox = "INBOX"
-folder.aliases.sent = "Sent"
-folder.aliases.drafts = "Drafts"
-folder.aliases.trash = "Trash"
-```
-
-> **Heads up on the alias syntax.** Pre-v1.2.0 docs used a
-> `[accounts.NAME.folder.alias]` sub-section (singular `alias`).
-> v1.2.0 silently ignores that form — TOML parses fine, but the
-> alias resolver never reads it, so every lookup falls through to
-> the canonical name. On Gmail this means save-to-Sent fails *after*
-> SMTP delivery succeeds, and `himalaya message send` exits non-zero.
-> Any caller (agent, script, user) that retries on that exit code
-> will re-run the entire send — including SMTP — producing duplicate
-> emails to recipients. Always use `folder.aliases.X` (plural, dotted
-> keys, directly under `[accounts.NAME]`).
+> **Alias syntax.** Use `folder.aliases.X` (plural, dotted keys, directly under `[accounts.NAME]`). v1.2.0 **silently ignores** the pre-v1.2.0 `[accounts.NAME.folder.alias]` sub-section — TOML parses, the resolver never reads it, and every lookup falls through to the canonical name. On Gmail that makes save-to-Sent fail _after_ SMTP delivery succeeds, so `message send` exits non-zero; a caller that retries re-runs SMTP and the recipients get duplicates. v2 uses `mailbox.alias.X`.
 
 ## Hermes Integration Notes
 
-- **Reading, listing, searching, moving, deleting** all work directly through the terminal tool
-- **Composing/replying/forwarding** — piped input (`cat << EOF | himalaya template send`) is recommended for reliability. Interactive `$EDITOR` mode works with `pty=true` + background + process tool, but requires knowing the editor and its commands
-- Use `--output json` for structured output that's easier to parse programmatically
-- The `himalaya account configure` wizard requires interactive input — use PTY mode: `terminal(command="himalaya account configure", pty=true)`
+- **Reading, listing, searching, moving, deleting** go through the terminal tool.
+- **Composing, replying, forwarding** — pipe the message (see below). Interactive `$EDITOR` mode works with `pty=true` + background, but you must know the editor and its commands.
+- `--output json` gives structured output.
+- `himalaya account configure` needs input: `terminal(command="himalaya account configure", pty=true)`.
 
 ## Common Operations
 
-### List Folders
-
 ```bash
+# Folders and listing
 himalaya folder list
-```
-
-### List Emails
-
-List emails in INBOX (default):
-
-```bash
-himalaya envelope list
-```
-
-List emails in a specific folder:
-
-```bash
+himalaya envelope list                                  # INBOX
 himalaya envelope list --folder "Sent"
-```
-
-List with pagination:
-
-```bash
 himalaya envelope list --page 1 --page-size 20
-```
-
-### Search Emails
-
-```bash
 himalaya envelope list from john@example.com subject meeting
-```
 
-### Read an Email
-
-Read email by ID (shows plain text):
-
-```bash
+# Reading
 himalaya message read 42
-```
-
-Export raw MIME:
-
-```bash
 himalaya message export 42 --full
-```
 
-### Reply to an Email
-
-To reply non-interactively from Hermes, read the original message, compose a reply, and pipe it:
-
-```bash
-# Get the reply template, edit it, and send
+# Compose, reply, forward — pipe, do not open $EDITOR
 himalaya template reply 42 | sed 's/^$/\nYour reply text here\n/' | himalaya template send
-```
-
-Or build the reply manually:
-
-```bash
-cat << 'EOF' | himalaya template send
-From: you@example.com
-To: sender@example.com
-Subject: Re: Original Subject
-In-Reply-To: <original-message-id>
-
-Your reply here.
-EOF
-```
-
-Reply-all (interactive — needs $EDITOR, use template approach above instead):
-
-```bash
-himalaya message reply 42 --all
-```
-
-### Forward an Email
-
-```bash
-# Get forward template and pipe with modifications
 himalaya template forward 42 | sed 's/^To:.*/To: newrecipient@example.com/' | himalaya template send
+
+# Move, copy, delete (target folder first, then the id)
+himalaya message move "Archive" 42
+himalaya message copy "Important" 42
+himalaya message delete 42
+
+# Flags, attachments
+himalaya flag add 42 --flag seen
+himalaya flag remove 42 --flag seen
+himalaya attachment download 42
+himalaya attachment download 42 --downloads-dir ~/Downloads
 ```
 
-### Write a New Email
-
-**Non-interactive (use this from Hermes)** — pipe the message via stdin:
+Write a new message by piping it, or with header flags:
 
 ```bash
 cat << 'EOF' | himalaya template send
@@ -215,104 +110,30 @@ Subject: Test Message
 
 Hello from Himalaya!
 EOF
-```
 
-Or with headers flag:
-
-```bash
 himalaya message write -H "To:recipient@example.com" -H "Subject:Test" "Message body here"
 ```
 
-Note: `himalaya message write` without piped input opens `$EDITOR`. This works with `pty=true` + background mode, but piping is simpler and more reliable.
-
-### Move/Copy Emails
-
-Move to folder (target folder comes first, then the message ID):
-
-```bash
-himalaya message move "Archive" 42
-```
-
-Copy to folder (target folder comes first, then the message ID):
-
-```bash
-himalaya message copy "Important" 42
-```
-
-### Delete an Email
-
-```bash
-himalaya message delete 42
-```
-
-### Manage Flags
-
-Add flag:
-
-```bash
-himalaya flag add 42 --flag seen
-```
-
-Remove flag:
-
-```bash
-himalaya flag remove 42 --flag seen
-```
+`himalaya message write` with no piped input opens `$EDITOR`. Reply-all (`himalaya message reply 42 --all`) is interactive too — use the template pipe instead.
 
 ## Multiple Accounts
 
-List accounts:
-
 ```bash
 himalaya account list
-```
-
-Use a specific account:
-
-```bash
 himalaya --account work envelope list
 ```
 
-## Attachments
-
-Save attachments from a message:
-
-```bash
-himalaya attachment download 42
-```
-
-Save to specific directory:
-
-```bash
-himalaya attachment download 42 --downloads-dir ~/Downloads
-```
-
-## Output Formats
-
-Most commands support `--output` for structured output:
+## Output and debugging
 
 ```bash
 himalaya envelope list --output json
 himalaya envelope list --output plain
-```
-
-## Debugging
-
-Enable debug logging:
-
-```bash
 RUST_LOG=debug himalaya envelope list
-```
-
-Full trace with backtrace:
-
-```bash
 RUST_LOG=trace RUST_BACKTRACE=1 himalaya envelope list
 ```
 
 ## Tips
 
-- Use `himalaya --help` or `himalaya <command> --help` for detailed usage.
-- Message IDs are relative to the current folder; re-list after folder changes.
-- For composing rich emails with attachments, use MML syntax (see `references/message-composition.md`).
-- Store passwords securely using `pass`, system keyring, or a command that outputs the password.
+- **Message ids are relative to the current folder** — re-list after a folder change.
+- **Use MML for rich mail and attachments** — `references/message-composition.md`.
+- **Never store a password in the file** — use `pass`, a keyring, or a command that prints it.
