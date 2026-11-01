@@ -43,7 +43,7 @@ Parity is a measurement problem, not a taste problem: port the reference's own s
 ## Pitfalls
 
 - **Scope a string replacement to unique context.** A key in two blocks loses its first occurrence to a global replace; the type checker catches it, so run it before committing.
-- **Name paths; never use a glob or a repo-wide formatter write.** `git rm src/routes/*` took three sibling route files, and `prettier --write .` rewrites approval-gated files without a prompt. Pass explicit paths, restore anything touched, and read `git show --stat` before pushing.
+- **Name paths; never use a glob or a repo-wide formatter write.** `git rm src/routes/*` took three sibling route files, and `bun fmt .` rewrites approval-gated files without a prompt. Pass explicit paths, restore anything touched, and read `git show --stat` before pushing.
 - **An agent-instruction file (AGENTS.md, CLAUDE.md, a rule file) a write is blocked on is a finding, not an obstacle.** Do not route around the guard — propose the edit in the pull request.
 - **Kill a dev server by port, not by pattern.** `pkill -f '<pattern>'` matches the shell command that holds both the pattern and the launch: use `fuser -k <port>/tcp`.
 - **A build proves nothing about the layout it emitted.** List the output directory and confirm the pages you expected.

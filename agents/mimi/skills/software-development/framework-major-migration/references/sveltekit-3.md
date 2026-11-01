@@ -9,7 +9,7 @@ npx sv migrate sveltekit-3 --tasks all --confirm --install bun
 - Task-based migration in `sv`. Prerequisite tasks (`package-json`, `tsconfig`) always run; the rest are selectable.
 - Full task list: `package-json`, `tsconfig`, `svelte-config`, `environment`, `paths`, `external-redirects`, `shallow-routing`, `params`, `imports`, `lib-alias`, `app-state`, `collect-migration-instructions`.
 - `collect-migration-instructions` writes `MIGRATION_TASKS.md`; delete it when the migration is complete. Also grep for `@migration-task` comments.
-- `sv` formats the result with the project's `format`/`fmt` script afterwards (a repo-wide `prettier --write .` if it has none) — see the pitfalls in the parent skill.
+- `sv` formats the result with the project's `format`/`fmt` script afterwards (a repo-wide `bun fmt .` if it has none) — see the pitfalls in the parent skill.
 
 ## Version floors
 
