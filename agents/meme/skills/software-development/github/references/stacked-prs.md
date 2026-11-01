@@ -19,7 +19,8 @@ main ← feat/auth-layer (#1) ← feat/api-routes (#2) ← feat/ui (#3)
 ```
 
 The bottom PR targets the trunk; each higher PR targets the branch below it, so its diff is
-only its own layer. GitHub enforces the trunk's branch protection on every layer, runs
+only its own layer. GitHub enforces the trunk's branch protection on every layer and runs
+each layer's checks against its own base.
 
 ## Local workflow
 
@@ -65,6 +66,20 @@ down branches for PRs added remotely), fast-forward trunk, cascade rebase, atomi
 **A cascade rebase rewrites the children even when nothing conflicts** — every branch above
 the edited one gets a new SHA, which dismisses its approvals. After `gh stack push`, re-request
 review on the layers that moved.
+
+## Editing a layer
+
+- `gh pr edit <n> --body-file … --add-reviewer …` touches only the PR; the stack link and
+  every base survive. `--auto --open` seeded the body from the commit message, so replace it
+  with the PR body shape afterwards.
+- To change a lower layer: amend its commit, then `gh stack rebase --no-trunk` and
+  `gh stack push`; the cascade above applies.
+- A fix approved on a head that a rebase replaced is not on the branch. Check
+  `git cat-file -t <sha>` and cherry-pick or reapply it before the rebase; then ask again.
+- A test added at the bottom changes every upper layer's count. Re-run the gate per head
+  before quoting a count in a body.
+- Check every layer with `gh pr checks <n>`: each PR runs the gate against its own base, and
+  a green top does not prove a green middle.
 
 ## Merging
 

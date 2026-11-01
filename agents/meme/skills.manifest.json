@@ -27,7 +27,7 @@
       "origin": "authored"
     },
     "software-development/dispatch-service/SKILL.md": {
-      "sha256": "5c656e7469af02fe88ff3eb08969d78c4e269b7743c1271a775effc7561b144c",
+      "sha256": "106ad80c4b6ae902bc92f0f0472d066366d5b51ff9d64693a40146c39760cbe9",
       "origin": "authored"
     },
     "software-development/dispatch-service/scripts/mutation-pass.sh": {
@@ -35,7 +35,7 @@
       "origin": "authored"
     },
     "software-development/github/SKILL.md": {
-      "sha256": "2b32af28e1835cb65c1cd04fd8012b6db1ff494e1b21dbfa2ddde59d0c07dc9a",
+      "sha256": "6d9b17f07c1efbe027876b43b4bf02cea318a77567167cb2b5600b5a2542507e",
       "origin": "stock-modified"
     },
     "software-development/github/references/ci-troubleshooting.md": {
@@ -43,7 +43,7 @@
       "origin": "stock-modified"
     },
     "software-development/github/references/pr-workflow.md": {
-      "sha256": "1c54c384a9c47c327f25930250f918ef7d17abd9b4040c607b203c47f80c52de",
+      "sha256": "b87dbf136b2b372f2af907ade25af7b95aa3058d8f2661222efdc5ac48ec883a",
       "origin": "stock-modified"
     },
     "software-development/github/references/repo-management.md": {
@@ -51,7 +51,7 @@
       "origin": "stock-modified"
     },
     "software-development/github/references/stacked-prs.md": {
-      "sha256": "fb803912565b0f81a5b6766b60aec67bafc25359b909add595bf9754f7c6b432",
+      "sha256": "e0d5f2b83cb71a7ba6b25c28970078ab19be9891ad366c555664d205edfd8430",
       "origin": "authored"
     },
     "software-development/instruction-audit/SKILL.md": {
@@ -95,15 +95,19 @@
       "origin": "authored"
     },
     "software-development/sveltekit/SKILL.md": {
-      "sha256": "180963156db2aa3de31d718b1c36384f8abd3b3bd525aac64e64e34c2e376acb",
+      "sha256": "cfbdd551ba321a3b2ff945d457087bb7d3f29f2f87094e36f80c8b4d14f5b26a",
       "origin": "authored"
     },
     "software-development/sveltekit/references/icons.md": {
       "sha256": "23e2d07946346dd9c67a2c1642e537d9afcceee447c8edc2705edf73e3f5648d",
       "origin": "authored"
     },
+    "software-development/sveltekit/references/remote-data.md": {
+      "sha256": "907f73ba01e7c87fe7fdf34de41903513ff34e3f8ec3e5cbebe97c4e4b9b8e30",
+      "origin": "authored"
+    },
     "software-development/sveltekit/references/roster-pages.md": {
-      "sha256": "a3eb2d833b8067ba91aee62458ecf55af9b2d7cf2a25c9e3dc00c3953e904811",
+      "sha256": "e0a0e8d64198a3657e16a9762273934c6bb822b3109faacf2fcb1d80b4807784",
       "origin": "authored"
     },
     "software-development/sveltekit/scripts/measure-render.mjs": {
@@ -115,7 +119,11 @@
       "origin": "authored"
     },
     "software-development/tinyjs/SKILL.md": {
-      "sha256": "62b927c40fbc8c89efdf3027fbae798eefc18b6d42ae2643bd29515908c5a211",
+      "sha256": "1bd0b9d4db6b86c11318e77a87ef60c3f8c17c4d7a1312e9e820a795246a9a5e",
+      "origin": "authored"
+    },
+    "software-development/tinyjs/references/backend-handlers.md": {
+      "sha256": "00d76d399502e4917a09650b869819a76760b416b9754d515f647381614cd012",
       "origin": "authored"
     },
     "software-development/tinyjs/references/bundled-fonts.md": {
@@ -123,7 +131,15 @@
       "origin": "authored"
     },
     "software-development/tinyjs/references/headless-run.md": {
-      "sha256": "ed352aeb388149c01009ef7c67f71eff819c96907d5e3630ae07a8401970cb33",
+      "sha256": "000eeaa1f6b4f3ea2d08c4239296b2059a9760b3765821a62a0ca2d60720c6be",
+      "origin": "authored"
+    },
+    "software-development/tinyjs/references/hotkeys.md": {
+      "sha256": "02de42728a5d307b8839a45b41c57f825cc5cb5500015b419dcd09dace84895f",
+      "origin": "authored"
+    },
+    "software-development/tinyjs/references/page-harness.md": {
+      "sha256": "5fb0ab8e44d8d2abe82793b3773384abc1cc8a9e3fe06d73f8b148cd7976cae4",
       "origin": "authored"
     },
     "software-development/tinyjs/references/release.md": {

@@ -17,15 +17,15 @@ when-to-use: Any code, test, ADR-following, stacked-PR or tagging work in aivara
 
 - Implementing a merged ADR or roadmap version as Go code and tests.
 - Stacking one PR per version and resolving the conflicts after a base merges.
-- Creating the annotated version tags.
+- Cutting a release: bumping `VERSION` and letting CI tag it.
 
 Go, standard library only, module `github.com/aivara-se/dispatch`. The receiver that verifies deliveries and wakes agents lives in `internal/receiver`; `cmd/dispatch` wires it, `internal/run`, `internal/audit`, `internal/config` are the rest.
 
 ## Specs and versions
 
-- `docs/PRODUCT.md` (changelog + roadmap), `docs/SYSTEMS.md` and `docs/adrs/` are the spec. Design PRs merge before code; the documents are not yours to edit when implementing one, and the code PR says they were left out.
-- One PR per version. Implement only the version named; do not pull the next roadmap item in. An ADR's clauses are the scope — its edge-case list is explicitly out.
-- The changelog and roadmap move in a separate docs commit after the code lands; README and AGENTS.md follow there too. The relabelling is the easy half — most of the work is prose that counts or refuses:
+- `docs/PRODUCT.md` (changelog), `docs/SYSTEMS.md` and `docs/adrs/` are the spec. Design PRs merge before code; the documents are not yours to edit when implementing one, and the code PR says they were left out.
+- One PR per version. Implement only the version named; do not pull the next version in. An ADR's clauses are the scope — its edge-case list is explicitly out.
+- The changelog moves in a separate docs commit after the code lands; README and AGENTS.md follow there too. The relabelling is the easy half — most of the work is prose that counts or refuses:
   - the intro's "carries N flows" and the list after it, the number of fixed reason sentences, and the number of acting deliveries;
   - `What vX does not do` and `Edge cases vX leaves unhandled`: a bullet that says "only X is read", or that a refusal wakes nobody, is the first to go false — delete the false clause and add the new version's known gaps (a dismissal pairing, a run on a third branch);
   - the Acceptance heading and every bullet it holds, the subscription list, the storage lines and `SYSTEMS.md`'s payload-field sentence;
@@ -35,7 +35,8 @@ Go, standard library only, module `github.com/aivara-se/dispatch`. The receiver 
 
 ### What is built
 
-- Built means an annotated tag `vX.Y` is pushed. The pending list is every roadmap line from the first untagged version on — `docs/PRODUCT.md`'s *Roadmap* header says as much; do not derive it from the changelog's wording or from the code alone.
+- **Whether a version is built is read from the code and the release, never from tags.** `025` made a release a tag of `VERSION` (`vX.Y.Z`), so per-version tags stop at whatever version was current when that landed and every later version ships inside the release tag with no tag of its own. `PRODUCT.md` has no *Roadmap* header any more either. Read the predicate and the reason string in `internal/receiver/receiver.go`'s `decide`/`payload`, confirm the commit with `git log -S <symbol> -- internal/receiver/receiver.go`, and run the flow's tests.
+- **A bare "implement vX" can name a version already on `main`.** Prove the flow absent before writing a line; when it is there, answer with the commit, the release that contains it (`git describe --tags --contains <sha>`) and the flow's tests passing by name — re-implementing it is a diff nobody asked for, and a missing tag is not evidence of missing code.
 - Never read implementation state off `receiver_test.go`: an event or action type appearing there is often a negative test for a flow the receiver refuses, so grep `internal/receiver/receiver.go`'s `decide`/`payload` for the field before claiming a version is missing or present.
 - Before implementing a version, and again before opening its code PRs, check open docs PRs for it: a review fix or a new ADR can rewrite its contract (reason string, actor rule, a consequence) after the original docs already sit on `main`. `git diff origin/main <docs-branch>`, read the body; if it disagrees with `main`, build to `main` and name the open proposal in the body rather than coding against an unmerged change.
 - Answering "what is left" starts with a refresh: `git fetch --all --tags --prune`, then `git checkout main && git merge --ff-only origin/main`. The working copy is routinely left detached on a docs commit or behind `origin/main`.
@@ -137,7 +138,7 @@ Confirm `git diff --stat origin/main..HEAD` is only this version, and the gate i
 
 ## Tags
 
-One annotated tag per version, created when the code lands: `git tag -a vX.Y -m "Dispatch vX.Y: <one sentence>" <last code commit of the version>`. Point it at the final code/test commit, not the later docs commit. Push the tags explicitly; the operator owns deploys.
+A release is one annotated `vX.Y.Z` tag cut from `VERSION` on a push to `main` (`025`), not one tag per version: bump `VERSION`, let CI tag it, and do not hand-create `vX.Y` tags for versions that shipped inside a release. The operator owns deploys.
 
 ## Boundaries
 

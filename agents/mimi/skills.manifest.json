@@ -83,7 +83,7 @@
       "origin": "stock-modified"
     },
     "software-development/page-geometry-cdp/SKILL.md": {
-      "sha256": "f1b22a1c25801dcf81a529e946c3a4e278e2c9c23fb117301efb832fa82437a9",
+      "sha256": "49a745e6ac882961df21d3ffa0b2057574e8ed80a1da57a62c73b24cbc9b0504",
       "origin": "authored"
     },
     "software-development/page-geometry-cdp/scripts/link-coverage.mjs": {
@@ -107,7 +107,7 @@
       "origin": "authored"
     },
     "software-development/sandbox-toolchains/SKILL.md": {
-      "sha256": "ef984894c5af739cb4594505969d0790baee1366d9197b2821aeea92de3e03ab",
+      "sha256": "9e7808ef61726e6f73fec280cf80508352be60529248b972593731da64473903",
       "origin": "authored"
     },
     "software-development/spike/SKILL.md": {
@@ -126,12 +126,20 @@
       "sha256": "bc2230e642d1d07ee59bf10d8531542966848c4114c0bb78f712c168ecb1c19c",
       "origin": "authored"
     },
+    "software-development/sveltekit-worker-feature/SKILL.md": {
+      "sha256": "3ae379d3d66844156e107fc132552d761c1f87f4636d29089af4ef6b8bf758a7",
+      "origin": "authored"
+    },
     "software-development/terminology-rename/SKILL.md": {
       "sha256": "995e6752f66d2a884667aafd3020cb270d528e252e9df6fa10efc5b2eeb87e5d",
       "origin": "authored"
     },
+    "software-development/tinyjs-page-harness/SKILL.md": {
+      "sha256": "91a4dd321cd65246c0c90f568046a38989ed5bc0352ccb48a1ed8183269da9fc",
+      "origin": "authored"
+    },
     "software-development/web-frontend-delivery/SKILL.md": {
-      "sha256": "802380f2de3c8df28b9eba6b7935234e8182e636b8d385c264df78240815c1f2",
+      "sha256": "3a8915ef008ea0a36b9b8fdb2f5597c5794627b574b3d11cc124c1d300a24baa",
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/references/design-tokens-and-contrast.md": {
@@ -155,7 +163,7 @@
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/references/quick-tunnel-preview.md": {
-      "sha256": "b5e06a52c0de00f470078e29c1733c2658551e8218a7eabecad9dc6f35614997",
+      "sha256": "f092384422a4bd03245714f05032e8be22ab4de79548f52ce5a68efeac540f4e",
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/references/sveltekit-cloudflare-pages.md": {

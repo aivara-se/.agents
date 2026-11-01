@@ -229,3 +229,10 @@ Project down to a small object — never dump the DOM:
   prints the returned value swallows it — the page stays where it was and the result reads as a
   navigation that did not fire. Read the served hrefs first, then drive the click from the attribute you
   found, and treat an unchanged `pathname` as a broken selector until proven otherwise.
+- **`document.readyState === 'complete'` means the document arrived, not that the app rendered.**
+  A client-rendered page paints a skeleton first and fills it from a later fetch, so a check that runs a
+  fixed second after `complete` counts zero rows and reads as a broken feature — the same drive passes
+  when re-run later. Poll for the node the assertion is about (`document.querySelectorAll('button[aria-pressed]').length === 5`,
+  or the loaded table) with a deadline, then settle briefly; never trust a fixed sleep, and when a run
+  fails only its content checks while the title and the dock are right, suspect timing before the code.
+  Through a tunnel the same page is several times slower, because every module is fetched across the edge.

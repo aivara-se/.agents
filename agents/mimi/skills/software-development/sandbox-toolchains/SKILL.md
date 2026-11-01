@@ -61,6 +61,28 @@ metadata:
 
    Run `hash -r` after moving or replacing a binary in the current session.
 
+## Android builds in this sandbox
+
+A Gradle build needs a JDK and the SDK, and `~/.local` survives rebuilds:
+
+```sh
+# JDK 21 (Temurin)
+curl -sSL -o jdk21.tar.gz "https://api.adoptium.net/v3/binary/latest/21/ga/linux/x64/jdk/hotspot/normal/eclipse"
+tar xzf jdk21.tar.gz -C ~/.local && ln -sfn "$(ls -d ~/.local/jdk-21* | head -1)" ~/.local/jdk
+
+# cmdline-tools, then the packages the project pins
+curl -sSL -o cmdline-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
+python3 -c "import zipfile;zipfile.ZipFile('cmdline-tools.zip').extractall('/tmp/x')"
+mv /tmp/x/cmdline-tools ~/.local/android-sdk/cmdline-tools/latest
+chmod -R +x ~/.local/android-sdk/cmdline-tools/latest/bin   # the zip arrives without exec bits
+```
+
+`compileSdk = 37` resolves to `platforms;android-37.0`, not `platforms;android-37` — that name does not exist, and the plain guess fails with "Failed to find package". Use `--channel=3` (canary) to see the numbered platforms.
+
+**`TMPDIR` pointing at `/tmp` breaks Room.** Its KSP processor extracts `libsqlitejdbc.so` and loads it; a noexec `/tmp` gives `UnsatisfiedLinkError: failed to map segment from shared object`, which surfaces as `ExceptionInInitializerError` and reads like a compiler bug. Export `TMPDIR=$HOME/tmp` and `JAVA_TOOL_OPTIONS=-Djava.io.tmpdir=$HOME/tmp` for Gradle, Kotlin and KSP alike, and put `sdk.dir` in `apps/android/local.properties` (gitignored).
+
+Gradle's daemon dies in a 7 GB sandbox when Chromium and a dev server are also resident: kill them, then build with `--no-daemon --max-workers=2`.
+
 ## Pitfalls
 
 - **Anything installed into `/usr/local/bin` returns as `command not found` after the next rebuild**, because the image comes back without it. Reinstall into `~/.local/bin`; move an existing copy with `install -m 755 /usr/local/bin/<tool> ~/.local/bin/<tool> && rm /usr/local/bin/<tool>`, then `hash -r`.
