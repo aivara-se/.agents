@@ -14,12 +14,13 @@ const BUDGETS: { match: RegExp; max: number }[] = [
   { match: /^skills\/[^/]+\/templates\/.+\.md$/, max: 750 },
   { match: /^agents\/[^/]+\/skills\/.+\.md$/, max: 12000 },
   { match: /^agents\/[^/]+\/[^/]+\.md$/, max: 500 },
-  { match: /^agents\/[^/]+\.md$/, max: 260 },
+  { match: /^agents\/[^/]+\.md$/, max: 280 },
   { match: /^(AGENTS|README)\.md$/, max: 400 },
 ];
 
 const RULE_WORDS = 30;
-const SENTENCE_WORDS = 35;
+// Simplified Technical English: 20 words for an instruction, 25 for a description.
+const SENTENCE_WORDS = 25;
 const BANNED = [
   "simply",
   "just",
@@ -102,7 +103,7 @@ for (const path of markdown(ROOT)) {
       );
     }
 
-    for (const sentence of line.split(/(?<=[.!?])\s+/)) {
+    for (const sentence of line.split(/(?<=[.!?])\*{0,2}\s+/)) {
       if (words(sentence) > SENTENCE_WORDS) {
         report(
           file,

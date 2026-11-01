@@ -13,7 +13,7 @@ Good writing is short enough to finish, and it puts the answer first.
 - A chat message, issue comment or pull-request body is 150 words. Longer is a document: write the file and link it.
 - Draft to about 130 words. A first draft runs long, and trimming it costs rounds.
 - Count the words with `wc -w <file>`. Do not estimate.
-- A `SKILL.md` is 900 words, a reference 750, an agent file 260.
+- A `SKILL.md` is 900 words, a reference 750, an agent file 280.
 - One rule per bullet, 30 words or less. The reason is a clause; the story goes in the commit.
 
 ## Shape
@@ -23,12 +23,22 @@ Good writing is short enough to finish, and it puts the answer first.
 - Use a list for a lookup and a paragraph for an argument.
 - Be concrete: a path, a command, an example.
 
-## Plain language
+## Simplified Technical English
 
-- Short sentences, present tense, active voice. Use the imperative for steps.
-- Choose the short word: use, not utilise; help, not assist; about, not approximately.
-- One idea per paragraph. Never hard-wrap.
+Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-word dictionary.
+
+- An instruction is 20 words or less, a description 25.
+- One instruction per sentence, in the imperative, present tense.
+- Active voice with the actor named: "The job writes the row", not "the row is written".
+- One term for one item, every time. Choose the short word: start, not initiate.
+- Three words at most in a noun cluster: "the limit for pull request size".
+- One idea per paragraph, six sentences at most. Never hard-wrap.
 - Explain a specialist term on first use.
+- No idiom, metaphor, joke or rhetorical question.
+- No contraction, `i.e.` or `e.g.`: write "do not", "that is", "for example".
+- The rules bind prose only: code, identifiers, paths, commands and quoted output keep their form.
+- Two registers are exempt: the public blog and the site copy keep their own voice.
+- `references/writing-ste.md` holds the numbers, the rewrites and the exemptions.
 
 ## Where a fact lives
 
@@ -43,6 +53,7 @@ Good writing is short enough to finish, and it puts the answer first.
 
 ## Which document
 
+- `references/writing-ste.md` — the controlled language every sentence here obeys.
 - `references/writing-messages.md` — chat, issue and pull-request comments.
 - `references/writing-reviews.md` — a review verdict.
 - `references/writing-pull-requests.md` — the body of a pull request.

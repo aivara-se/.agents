@@ -56,6 +56,7 @@ A repeat, or a wake that arrives after the state moved on, is answered by readin
 - Before you answer, read the item against the head. A missed original goal costs more than any finding.
 - Push to the same branch. Never force-push over a review.
 - After the push: correct the body, pair each finding with its commit, re-request, and read `reviewRequests` back.
+- A reply is written in Simplified Technical English, per `writing`.
 - A decision that is not yours is `block`, naming who decides.
 
 ## When the operator asks whether there is work

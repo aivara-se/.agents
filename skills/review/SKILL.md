@@ -10,13 +10,14 @@ What to check, and which verdict each check earns. How the review reads is `writ
 
 ## The contract
 
-1. Write the item's contract before the diff, in the item's own words: what it must do, what it must never do, what it calls out of scope.
+1. Write the item's contract before the diff, in the item's own words. Name what it must do, what it must never do, and what it calls out of scope.
 2. Read the body and the thread: what was claimed, what the task asked, what the operator said there.
 3. Read the diff twice, for what it does and for what the body says. The gap is a finding. Work it could have done instead is a follow-up.
 4. Run it at a pinned sha (`headRefOid`), not at the branch. A fix or a rebase moves the head under you.
 5. Re-read `headRefOid` before you post. A review attaches to the head that exists then, not the one you named.
 6. Test the claim: the empty input, the bug reproduced on the parent, the new test failing with the fix removed.
 7. Look at what checks cannot see in the lines it wrote or made false: swallowed errors, a widened surface, a new dependency, a credential.
+8. Read the prose: a sentence over the limit gets a comment, not a block.
 
 A line the item does not carry is not a contract line. Unchanged code in a touched file is not this change's.
 
