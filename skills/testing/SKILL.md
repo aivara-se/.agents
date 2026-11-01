@@ -12,6 +12,7 @@ when-to-use: Any change that adds or alters behaviour, any bug fix, and any chan
 - A bug fix starts with the failing test and keeps it: the bug returns the day nothing catches it.
 - Cover the happy path, the error path and one boundary: empty, maximum, malformed, duplicated.
 - Test the contract, not the internals. A test that breaks on a refactor is testing the wrong thing.
+- An entry point that imports a platform module at the top is never run by a test of its pure neighbours: stub the platform and drive the public call.
 - Table-driven cases beat copy-paste: one case per line, the expectation visible.
 - Never a test that can pass for the wrong reason: no call assertion without its value, no `assert True`.
 - Pin a compound filter one clause at a time. Prove each clause by replacing it with `true` and watching the case fail.
