@@ -104,3 +104,4 @@ A design change is reviewed by using the running app, not by reading a diff.
 - **An SVG path with no `fill` of its own renders black.** `fill: currentColor` on the icon's rule keeps it in its link's colour; drop it and the path fills black while every other colour still looks right. Read a pixel of the rendered icon.
 - **`getBBox()` ignores the element's own transform**, returning geometry in its user space, so a `scale()` reads as though it never applied. Use `getBoundingClientRect()`.
 - **What the operator has signed off is a lock.** After a refactor beside it, measure that element's box and colour again and show they are unchanged; an unasked change is a defect even when it looks better.
+- **The hand-written `bun:test` shim is the only matcher surface `svelte-check` sees.** `bun test` accepts a matcher the shim omits (`toMatch`), but `check` fails with `Property 'toMatch' does not exist`; declare it in `src/bun-test.d.ts`.
