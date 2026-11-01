@@ -8,10 +8,13 @@ export function profiles(home = CFG.home): string[] {
   const found = ["default"];
   const dir = join(home, "profiles");
   if (!existsSync(dir)) return found;
-  for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+  for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  )) {
     // A dot-directory is a retired profile's leftover, not an agent: the shell
     // glob never matched one, and neither should this.
-    if (entry.isDirectory() && !entry.name.startsWith(".")) found.push(entry.name);
+    if (entry.isDirectory() && !entry.name.startsWith("."))
+      found.push(entry.name);
   }
   return found;
 }
@@ -23,7 +26,9 @@ export const profileDir = (profile: string, home = CFG.home) =>
 export function homeOf(profile: string, home = CFG.home): string | null {
   const docker = join(home, "profiles", profile, "sandboxes", "docker");
   if (!existsSync(docker)) return null;
-  const match = readdirSync(docker).find((name) => name.startsWith(`shared_${profile}-`));
+  const match = readdirSync(docker).find((name) =>
+    name.startsWith(`shared_${profile}-`),
+  );
   return match ? join(docker, match, "home") : null;
 }
 
@@ -35,7 +40,11 @@ export function leaseCount(profile: string, home = CFG.home): number | null {
   if (!existsSync(db)) return 0;
   try {
     const conn = new Database(db, { readonly: true });
-    const row = conn.query("select count(*) as n from session_turn_leases where expires_at is not null and expires_at > ?").get(Math.floor(Date.now() / 1000)) as { n: number } | null;
+    const row = conn
+      .query(
+        "select count(*) as n from session_turn_leases where expires_at is not null and expires_at > ?",
+      )
+      .get(Math.floor(Date.now() / 1000)) as { n: number } | null;
     conn.close();
     return row?.n ?? 0;
   } catch {
@@ -43,8 +52,11 @@ export function leaseCount(profile: string, home = CFG.home): number | null {
   }
 }
 
-export const liveTurns = () => profiles().reduce((sum, profile) => sum + (leaseCount(profile) ?? 1), 0);
+export const liveTurns = () =>
+  profiles().reduce((sum, profile) => sum + (leaseCount(profile) ?? 1), 0);
 
 /** The hermes install the host actually runs, not the path a default would guess. */
 export const installDir = (): string =>
-  run(["hermes", "--version"]).out.match(/^Install directory:\s*(.+)$/m)?.[1]?.trim() ?? join(CFG.home, "hermes-agent");
+  run(["hermes", "--version"])
+    .out.match(/^Install directory:\s*(.+)$/m)?.[1]
+    ?.trim() ?? join(CFG.home, "hermes-agent");

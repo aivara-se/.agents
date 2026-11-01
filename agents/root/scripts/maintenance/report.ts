@@ -7,12 +7,26 @@ export class Reporter {
   readonly warnings: string[] = [];
   readonly actions: string[] = [];
 
-  say(line = "") { this.lines.push(line); }
-  ok(msg: string) { this.lines.push(`  [ok]   ${msg}`); }
-  info(msg: string) { this.lines.push(`  · ${msg}`); }
-  warn(msg: string) { this.warnings.push(msg); this.lines.push(`  [WARN] ${msg}`); }
-  act(msg: string) { this.actions.push(msg); this.lines.push(`  [act]  ${msg}`); }
-  plan(msg: string) { this.lines.push(`  [plan] ${msg}`); }
+  say(line = "") {
+    this.lines.push(line);
+  }
+  ok(msg: string) {
+    this.lines.push(`  [ok]   ${msg}`);
+  }
+  info(msg: string) {
+    this.lines.push(`  · ${msg}`);
+  }
+  warn(msg: string) {
+    this.warnings.push(msg);
+    this.lines.push(`  [WARN] ${msg}`);
+  }
+  act(msg: string) {
+    this.actions.push(msg);
+    this.lines.push(`  [act]  ${msg}`);
+  }
+  plan(msg: string) {
+    this.lines.push(`  [plan] ${msg}`);
+  }
 
   /** The closing block every pass ends with. */
   summary(): string[] {

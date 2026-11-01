@@ -2,7 +2,10 @@
  *  applies a timeout, and never throws on a missing binary. */
 export type Res = { code: number; out: string; err: string };
 
-export function run(cmd: string[], opts: { cwd?: string; timeout?: number } = {}): Res {
+export function run(
+  cmd: string[],
+  opts: { cwd?: string; timeout?: number } = {},
+): Res {
   try {
     const proc = Bun.spawnSync(cmd, {
       cwd: opts.cwd,
@@ -21,4 +24,5 @@ export function run(cmd: string[], opts: { cwd?: string; timeout?: number } = {}
   }
 }
 
-export const lines = (text: string) => text.split("\n").filter((line) => line.length > 0);
+export const lines = (text: string) =>
+  text.split("\n").filter((line) => line.length > 0);

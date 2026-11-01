@@ -16,7 +16,14 @@
  * The stages are a list (`registry.ts`); this file only assembles the context,
  * runs the list, and owns the summary, the log and the exit code.
  */
-import { copyFileSync, existsSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname } from "node:path";
 
 import { parseArgs } from "./args";
@@ -43,7 +50,9 @@ function main() {
   const ctx: Ctx = { cfg, dry: args.dry, upgrade: args.upgrade };
 
   say("==============================================================");
-  say(` maintenance — ${new Date().toISOString().replace("T", " ").slice(0, 16)} UTC (${run(["hostname"]).out.trim()})`);
+  say(
+    ` maintenance — ${new Date().toISOString().replace("T", " ").slice(0, 16)} UTC (${run(["hostname"]).out.trim()})`,
+  );
   if (args.dry) say(" dry run — nothing is changed");
   say("==============================================================");
 

@@ -28,8 +28,14 @@ function fixture() {
 
   write(join(stock, "writing", "SKILL.md"), "stock prose\n");
   write(join(skills, "writing", "SKILL.md"), "stock prose\n");
-  write(join(skills, "writing", "references", "note.md"), "an added reference\n");
-  write(join(skills, "agent-operations", "host-ops", "SKILL.md"), "authored skill\n");
+  write(
+    join(skills, "writing", "references", "note.md"),
+    "an added reference\n",
+  );
+  write(
+    join(skills, "agent-operations", "host-ops", "SKILL.md"),
+    "authored skill\n",
+  );
   write(join(skills, ".state", "ignore.md"), "runtime state\n");
 
   return { root, home, repo, stock, skills, write };
@@ -40,7 +46,10 @@ describe("leaseCount", () => {
     const { root } = fixture();
     const home = join(root, "hermes");
     mkdirSync(join(home, "profiles", "leaky"), { recursive: true });
-    writeFileSync(join(home, "profiles", "leaky", "state.db"), "not a database");
+    writeFileSync(
+      join(home, "profiles", "leaky", "state.db"),
+      "not a database",
+    );
     expect(leaseCount("leaky", home)).toBeNull();
   });
 
@@ -51,7 +60,9 @@ describe("leaseCount", () => {
     mkdirSync(dir, { recursive: true });
     const db = new Database(join(dir, "state.db"));
     db.exec("create table session_turn_leases (expires_at integer)");
-    db.exec(`insert into session_turn_leases values (${Math.floor(Date.now() / 1000) + 600})`);
+    db.exec(
+      `insert into session_turn_leases values (${Math.floor(Date.now() / 1000) + 600})`,
+    );
     db.exec("insert into session_turn_leases values (1)");
     db.close();
     expect(leaseCount("mama", home)).toBe(1);
@@ -60,17 +71,31 @@ describe("leaseCount", () => {
 
 describe("parseArgs", () => {
   test("defaults to every step, a real pass", () => {
-    expect(parseArgs([])).toEqual({ dry: false, upgrade: false, stages: ["host", "fleet", "sync", "leaks", "upgrade"] });
+    expect(parseArgs([])).toEqual({
+      dry: false,
+      upgrade: false,
+      stages: ["host", "fleet", "sync", "leaks", "upgrade"],
+    });
   });
 
   test("an optional step stays listed but does not run without its flag", () => {
     const ctx = { cfg: {} as never, dry: false, upgrade: false };
-    expect(selectSteps(parseArgs([]).stages, ctx).map((step) => step.name)).toEqual(["host", "fleet", "sync", "leaks"]);
-    expect(selectSteps(parseArgs(["--upgrade"]).stages, { ...ctx, upgrade: true }).map((step) => step.name)).toContain("upgrade");
+    expect(
+      selectSteps(parseArgs([]).stages, ctx).map((step) => step.name),
+    ).toEqual(["host", "fleet", "sync", "leaks"]);
+    expect(
+      selectSteps(parseArgs(["--upgrade"]).stages, {
+        ...ctx,
+        upgrade: true,
+      }).map((step) => step.name),
+    ).toContain("upgrade");
   });
 
   test("--only keeps the named stages only", () => {
-    expect(parseArgs(["--dry-run", "--only=leaks,host"]).stages).toEqual(["leaks", "host"]);
+    expect(parseArgs(["--dry-run", "--only=leaks,host"]).stages).toEqual([
+      "leaks",
+      "host",
+    ]);
     expect(parseArgs(["--dry-run"]).dry).toBe(true);
   });
 });

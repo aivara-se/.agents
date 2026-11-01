@@ -4,7 +4,8 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { lines, run } from "./shell";
 
-export const sha256 = (path: string) => createHash("sha256").update(readFileSync(path)).digest("hex");
+export const sha256 = (path: string) =>
+  createHash("sha256").update(readFileSync(path)).digest("hex");
 
 export function walk(dir: string): string[] {
   const out: string[] = [];

@@ -1,10 +1,17 @@
 /** Three-way soul merge, with the baseline that makes "both changed" decidable. */
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { profiles, profileDir } from "../../profile";
 import { run } from "../../shell";
 
-export const repoName = (profile: string) => (profile === "default" ? "root" : profile);
+export const repoName = (profile: string) =>
+  profile === "default" ? "root" : profile;
 
 /** Seed a missing baseline from the last agreed version, before the rebase rewrites it. */
 export function seedBases(repo: string, bases: string) {
@@ -12,7 +19,13 @@ export function seedBases(repo: string, bases: string) {
   for (const name of profiles()) {
     const base = join(bases, `${repoName(name)}.md`);
     if (existsSync(base)) continue;
-    const seeded = run(["git", "-C", repo, "show", `HEAD:agents/${repoName(name)}.md`]).out;
+    const seeded = run([
+      "git",
+      "-C",
+      repo,
+      "show",
+      `HEAD:agents/${repoName(name)}.md`,
+    ]).out;
     if (seeded.trim()) writeFileSync(base, seeded);
   }
 }
@@ -52,6 +65,9 @@ export function mergeSoul(name: string, repo: string, bases: string): string {
     writeFileSync(base, merged.out);
     return "merged";
   }
-  writeFileSync(`${base}.conflict.${Math.floor(Date.now() / 1000)}`, merged.out);
+  writeFileSync(
+    `${base}.conflict.${Math.floor(Date.now() / 1000)}`,
+    merged.out,
+  );
   return "conflict";
 }

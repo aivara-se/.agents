@@ -15,38 +15,42 @@ const ROW_SELECTOR = process.argv[3];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function newTarget(url) {
-	const res = await fetch(`http://127.0.0.1:${PORT}/json/new?${encodeURIComponent(url)}`, {
-		method: 'PUT'
-	});
-	if (!res.ok) throw new Error(`json/new → HTTP ${res.status} — is the browser running?`);
-	return res.json();
+  const res = await fetch(
+    `http://127.0.0.1:${PORT}/json/new?${encodeURIComponent(url)}`,
+    {
+      method: "PUT",
+    },
+  );
+  if (!res.ok)
+    throw new Error(`json/new → HTTP ${res.status} — is the browser running?`);
+  return res.json();
 }
 
 function client(wsUrl) {
-	const ws = new WebSocket(wsUrl);
-	let id = 0;
-	const pending = new Map();
-	const events = [];
-	ws.addEventListener('message', (e) => {
-		const msg = JSON.parse(e.data);
-		if (msg.id && pending.has(msg.id)) {
-			pending.get(msg.id)(msg);
-			pending.delete(msg.id);
-		} else if (msg.method) {
-			events.push(msg.method);
-		}
-	});
-	const ready = new Promise((resolve, reject) => {
-		ws.addEventListener('open', () => resolve());
-		ws.addEventListener('error', () => reject(new Error('websocket error')));
-	});
-	const send = (method, params = {}) =>
-		new Promise((resolve) => {
-			const n = ++id;
-			pending.set(n, resolve);
-			ws.send(JSON.stringify({ id: n, method, params }));
-		});
-	return { ready, send, events, close: () => ws.close() };
+  const ws = new WebSocket(wsUrl);
+  let id = 0;
+  const pending = new Map();
+  const events = [];
+  ws.addEventListener("message", (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.id && pending.has(msg.id)) {
+      pending.get(msg.id)(msg);
+      pending.delete(msg.id);
+    } else if (msg.method) {
+      events.push(msg.method);
+    }
+  });
+  const ready = new Promise((resolve, reject) => {
+    ws.addEventListener("open", () => resolve());
+    ws.addEventListener("error", () => reject(new Error("websocket error")));
+  });
+  const send = (method, params = {}) =>
+    new Promise((resolve) => {
+      const n = ++id;
+      pending.set(n, resolve);
+      ws.send(JSON.stringify({ id: n, method, params }));
+    });
+  return { ready, send, events, close: () => ws.close() };
 }
 
 const expression = `(() => {
@@ -85,32 +89,42 @@ const expression = `(() => {
 })()`;
 
 const run = async () => {
-	const url = process.argv[2];
-	if (!url || !ROW_SELECTOR) {
-		console.error('usage: node link-coverage.mjs <url> <row-selector> [width] [height]');
-		process.exit(2);
-	}
-	const target = await newTarget('about:blank');
-	const cdp = client(target.webSocketDebuggerUrl);
-	await cdp.ready;
-	await cdp.send('Page.enable');
-	await cdp.send('Runtime.enable');
-	await cdp.send('Emulation.setDeviceMetricsOverride', {
-		width: W,
-		height: H,
-		deviceScaleFactor: 1,
-		mobile: W < 600
-	});
-	await cdp.send('Page.navigate', { url });
-	for (let i = 0; i < 80 && !cdp.events.includes('Page.loadEventFired'); i++) await sleep(100);
-	await sleep(400);
-	const res = await cdp.send('Runtime.evaluate', { expression, returnByValue: true });
-	const value = res.result?.result?.value;
-	console.log(value ? JSON.stringify(JSON.parse(value), null, 2) : JSON.stringify(res.result ?? res));
-	cdp.close();
+  const url = process.argv[2];
+  if (!url || !ROW_SELECTOR) {
+    console.error(
+      "usage: node link-coverage.mjs <url> <row-selector> [width] [height]",
+    );
+    process.exit(2);
+  }
+  const target = await newTarget("about:blank");
+  const cdp = client(target.webSocketDebuggerUrl);
+  await cdp.ready;
+  await cdp.send("Page.enable");
+  await cdp.send("Runtime.enable");
+  await cdp.send("Emulation.setDeviceMetricsOverride", {
+    width: W,
+    height: H,
+    deviceScaleFactor: 1,
+    mobile: W < 600,
+  });
+  await cdp.send("Page.navigate", { url });
+  for (let i = 0; i < 80 && !cdp.events.includes("Page.loadEventFired"); i++)
+    await sleep(100);
+  await sleep(400);
+  const res = await cdp.send("Runtime.evaluate", {
+    expression,
+    returnByValue: true,
+  });
+  const value = res.result?.result?.value;
+  console.log(
+    value
+      ? JSON.stringify(JSON.parse(value), null, 2)
+      : JSON.stringify(res.result ?? res),
+  );
+  cdp.close();
 };
 
 run().catch((err) => {
-	console.error(`FAILED: ${err.message}`);
-	process.exit(1);
+  console.error(`FAILED: ${err.message}`);
+  process.exit(1);
 });

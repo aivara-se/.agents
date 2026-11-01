@@ -20,8 +20,13 @@ Bun.serve({
     let path = new URL(request.url).pathname;
     if (path === "/") path = "/index.html";
     const file = Bun.file(join(ROOT, path));
-    if (!(await file.exists())) return new Response("not found", { status: 404 });
-    return new Response(file, { headers: { "content-type": TYPES[extname(path)] ?? "application/octet-stream" } });
+    if (!(await file.exists()))
+      return new Response("not found", { status: 404 });
+    return new Response(file, {
+      headers: {
+        "content-type": TYPES[extname(path)] ?? "application/octet-stream",
+      },
+    });
   },
 });
 
