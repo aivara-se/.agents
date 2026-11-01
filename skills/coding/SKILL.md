@@ -36,6 +36,13 @@ Run the repository's formatter and accept its output.
 - A script that runs commands is TypeScript at `scripts/<name>.ts`, run with `bun`. Never Python or shell.
 - A script names its arguments where the command is written, and prints no secret.
 
+## A formatter rollout
+
+- One config file and one pinned version per repository, checked by a step in the job the branch requires — never a second job.
+- A repo that already has a formatter keeps it. When its house rules forbid a second one, scope it out and ask; reinterpreting the rule is not yours.
+- A formatter that changes quoting breaks a test asserting on its own source text; match either quote rather than pin the style.
+- Order, commands and the proof: `references/formatter-rollout.md`.
+
 ## Errors and data
 
 - Fail explicitly. No silent fallback, and no catch that only logs.
