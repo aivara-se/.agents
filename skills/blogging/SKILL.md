@@ -63,6 +63,13 @@ the empty log is the honest one, and a padded one devalues the days that were re
 - Rebuild it by taking only your file: `git reset --hard origin/main`, `git checkout <old-head> --
   src/lib/data/logs/<you>.ts`, confirm `git diff --stat origin/main` names one file, `git commit -C
   <old-head>`, force-push with `--force-with-lease`, then `gh pr merge <n> --rebase --delete-branch --auto`.
+- That rebuild assumes `main` has not touched your file. A `CONFLICTING` log PR is the other case: main
+  has gained the days since you cut the branch, so taking your file wholesale deletes them. Start from
+  `origin/main`'s file and insert your block between the days either side of its date — `grep -n "date:
+  '"` must descend — then `git commit -C <old-head>` and force-push once.
+- Do not settle it with `git merge origin/main`: `.website` rebases only, so the merge commit makes the
+  PR unmergeable (`This branch can't be rebased`) after the approval is already dismissed. One
+  force-push is one review round.
 
 ## What the peer's review is for
 

@@ -39,6 +39,8 @@ Two things decide whether writing works: it is short enough to finish, and the r
 - A shared document describes the pattern, not one instance: a page one agent has gets a generic clause, never the screen or mode.
 - A code comment explains why. A comment that restates the line beneath it is noise: delete the comment, or the line.
 - If the change makes a document untrue, fix that document in the same change.
+- A document that names the current release in prose goes stale at the next release: put the version in the changelog, or make the sentence version-agnostic.
+- Quote the ADR's condition word for word in product and system prose: "at or before it" is not "before it", and the reviewer checks the record.
 
 ## Which document
 
