@@ -5,12 +5,12 @@ The daily pass runs `agents/root/scripts/maintenance/` (entry `index.ts`, deploy
 ## Stages
 
 - **Host** — refresh package lists, count pending upgrades, clear temp files, cap the journal, drop stale rotated logs, report disk and memory.
-- **Fleet** — archive state and identities, check containers, gateway, tunnel and dashboard, restart an idle container to clear orphans, watch swap and kernel OOM kills, read the shared provider balance.
-- **Sync** — fetch, three-way merge the souls, then hand the agent one reviewable diff: the paths it must rewrite or commit verbatim. The script never commits, rebases or pushes. The agent does all four and refreshes the `next -> main` pull request. The checkout must be on `next`; any other branch is refused.
+- **Fleet** — archive state and identities, check containers, gateway, tunnel and dashboard, read the shared provider balance. Restart an idle container to clear orphans; watch swap and kernel OOM kills.
+- **Sync** — fetch, three-way merge the souls, then hand the agent one reviewable diff. It names the paths to rewrite or commit verbatim. The script never commits, rebases or pushes. The agent does all four and refreshes the `next -> main` pull request. The checkout must be on `next`; any other branch is refused.
 - **Leaks** — report watch spins, orphaned sandbox processes, dead registry pids and overgrown logs.
-- **Upgrade** — only with `--upgrade`, and skipped while any profile holds a live turn lease: the dockerd restart would kill a live turn.
+- **Upgrade** — only with `--upgrade`, and skipped while a profile holds a live turn lease: the dockerd restart would kill a live turn.
 
-Each stage reports `[ok]`, `[act]` (a change it made), `[WARN]` (a decision it will not take) or `[plan]` (what `--dry-run` would have done).
+Each stage reports `[ok]`, `[act]` (a change it made), `[WARN]` (a decision it will not take) or `[plan]` (what `--dry-run` would do).
 
 ## Rules the script obeys
 
@@ -26,7 +26,7 @@ Each stage reports `[ok]`, `[act]` (a change it made), `[WARN]` (a decision it w
 
 - Every `[WARN]`: fix it, or state what it costs to leave it.
 - The package upgrade: run it only when no profile holds a live turn lease.
-- The whole sync hand-off: rebase, resolve a conflict on both sides, rewrite the queue, commit, push under the lease, refresh the `next -> main` pull request.
+- The whole sync hand-off: rebase, resolve a conflict on both sides, rewrite the queue, commit, push under the lease. Then refresh the `next -> main` pull request.
 - Skill content and prose: a rule naming a job, script, path or cadence that no longer exists.
 - Anything destructive, irreversible or outside the host: the operator's call, with the cost.
 

@@ -26,6 +26,7 @@ when-to-use: Any change that adds or alters behaviour, any bug fix, and any chan
 
 - Follow the repository's convention. If it has none, put the test beside the code and say so in the body.
 - A fixture is named for its case and lives with its test.
+- A test name states the behaviour in Simplified Technical English.
 - A harness is code in the repository's language, not a shell script of commands.
 
 ## Running them

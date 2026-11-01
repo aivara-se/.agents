@@ -58,7 +58,7 @@ Run the repository's formatter and accept its output.
 - Read the reviews before you report done. A request for changes is the next step.
 - Arm it as you open it: `gh pr merge <n> --auto --rebase`. Never arm a draft or a spike.
 - A stacked pull request is never armed. Merge it with `gh api -X PUT repos/<owner>/<repo>/pulls/<n>/merge-async -f sha=<head> -f merge_method=rebase`, then poll its `uuid`.
-- The body follows `writing`, and is never a file list.
+- The body follows `writing`, in Simplified Technical English, and is never a file list.
 
 ## After a review
 

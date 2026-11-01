@@ -15,7 +15,7 @@ The tree is the index. A new skill is a new directory with a `SKILL.md`, and eve
 - The entry file a repository adopts is `aivara-se/.template`, never this repository's own `AGENTS.md`.
 - Never leave a slot (`{{...}}`) unfilled in a copy of the template. No slot exists in this repository.
 - Never write a secret, a token, a host path or a personal name into this repository.
-- Change a skill here once, rather than copying it into a profile or a repository. A profile's own skills are the exception: they live under `agents/<name>/skills/` and load from there, so a host path or a personal name in them is that profile's. A secret is never exempt.
+- Change a skill here once, rather than copying it into a profile or a repository. A profile's own skills are the exception: they live under `agents/<name>/skills/` and load from there. A host path or a personal name in them is that profile's. A secret is never exempt.
 - An agent file is complete on its own: copy it over `SOUL.md` and nothing is lost.
 
 ## Version Control
