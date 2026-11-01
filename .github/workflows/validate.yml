@@ -18,7 +18,7 @@ jobs:
           bun-version: latest
 
       - name: Format
-        run: bun x prettier@3.9.10 --check .
+        run: bun fmt --no-script --check .
 
       - name: Prose budgets
         run: bun run scripts/check-prose.ts
