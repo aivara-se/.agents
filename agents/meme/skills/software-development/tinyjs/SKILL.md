@@ -41,6 +41,15 @@ when-to-use: Any change to a tinyjs app — backend, page, tinyjs.json, build, b
 - An overlay that replaces the log blurs the editor before its trigger's click handler runs. Read on the trigger's `mousedown` whether the note was being written, and restore it on close. Otherwise the note comes back read-only.
 - Key a window-wide fade on `:focus-within` and the body class that says a writable note has the caret. Never key it on a persistent `today` or `editing` class: today carries that class while another entry is written, so it would stay bright.
 
+## A page that renders its own text
+
+- `frontend.build` runs in the app folder and refuses while that folder has no `node_modules`. Add `bun install` to every job that runs `tinyjs build`.
+- Keep `frontend.dist` out of `dist/`: that folder holds the packaged app, and the release archives it.
+- esbuild's `serve({ servedir })` keeps `tinyjs dev` working: the bundle is served from memory at `devUrl`, and no built file lands in the source tree.
+- Style the text of a whole line with a mark over that text. A line decoration is dropped when it starts where a block replace ends.
+- An app-wide keydown that must beat the editor listens in the capture phase. CodeMirror ignores a key another handler already cancelled.
+- A caret at either end of a form is outside it. Every note at rest has selection 0, so a rule that counts touching as inside reveals the form at a note's first character.
+
 ## The window
 
 - Non-system chrome belongs in `chrome` in `tinyjs.json` — `frame: false`, `windowControls: false`, `transparent`, a vibrancy material — so the first paint is frameless; `setChrome()` afterwards flashes the title bar (`references/window-chrome.md`).
