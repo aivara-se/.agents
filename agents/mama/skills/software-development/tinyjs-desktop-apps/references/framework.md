@@ -1,16 +1,16 @@
 # tinyjs framework notes
 
-MIT. Re-read `https://tinyjs.app/llms.txt` for the installed version; these notes are a map, not the contract.
+A map, not the contract. Re-read `https://tinyjs.app/llms.txt` for the installed version.
 
 ## The shape
 
-Two processes:
+Three parts:
 
-- **Backend** — JavaScript or TypeScript on txiki.js. Exports `init(app)`, `export const api`, and optional hooks (`onMenu`, `onSystem`, `onWindowClosed`, `onOpenFiles`, `onUpdateAvailable`). Has the `tjs` global and `tjs:*` modules, `app.paths()`, `app.win`, `app.menu` and `app.push`.
-- **Launcher** — native. Owns the window, menus, tray and dialogs; runs the system webview: WKWebView on macOS, WebView2 on Windows, GTK3 + WebKitGTK 4.1 on Linux. Talks to the backend over a Unix socket, or a named pipe on Windows. No HTTP server, no port.
-- **Page** — a real `file://` document. Gets `window.tiny` before its scripts; has no `tjs`. Calls `tiny.api.call`, listens with `tiny.api.on`, and uses `tiny.win`, `tiny.dialog`, `tiny.menu`, `tiny.store`, `tiny.app`.
+- **Backend** — JavaScript or TypeScript on txiki.js. Exports `init(app)`, `export const api`, and optional hooks (`onMenu`, `onSystem`, `onWindowClosed`, `onOpenFiles`, `onUpdateAvailable`). Has the `tjs` global, `tjs:*` modules, `app.paths()`, `app.win`, `app.menu` and `app.push`.
+- **Launcher** — native. Owns the window, menus, tray and dialogs, and runs the system webview: WKWebView on macOS, WebView2 on Windows, GTK3 + WebKitGTK 4.1 on Linux. Talks to the backend over a Unix socket, or a named pipe on Windows. No HTTP server and no port.
+- **Page** — a real `file://` document. Gets `window.tiny` before its scripts and has no `tjs`. Calls `tiny.api.call`, listens with `tiny.api.on`, and uses `tiny.win`, `tiny.dialog`, `tiny.menu`, `tiny.store`, `tiny.app`.
 
-`tinyjs dev` hot-reloads page edits in place and restarts the backend on backend edits. `TINYJS_DEBUG=1` traces every message across the bridge. Platforms: macOS 15+ (arm64 and x86_64), Windows 10/11 (x86_64 and arm64), Linux with WebKitGTK 4.1.
+`tinyjs dev` hot-reloads page edits and restarts the backend on backend edits. `TINYJS_DEBUG=1` traces every message across the bridge.
 
 ## tinyjs.json
 
@@ -26,6 +26,7 @@ Every key is optional except `name`.
 | `size` | main window page box, `WxH` |
 | `backend` | entry file; its folder is the backend root |
 | `frontend` | `dir`, or `build`/`dist`/`dev`/`devUrl` for a bundler |
+| `icon` | 1024×1024 PNG |
 | `resources` / `executables` | shipped files; `paths().resources` / `executables` |
 | `update` | `url`, `auto`, `publicKey`; auto-update is a network call |
 | `api` | gate for pages you do not ship; omitted means no limit |
@@ -51,33 +52,40 @@ db.prepare(
 ).run(day, body, seq);
 ```
 
-There is no `get()`; use `.all(...)[0]`. `run()` returns nothing; add `RETURNING` and use `.all()` when you need the new row. `db.transaction(fn)` commits on return and rolls back on throw. `db.close()` closes.
+There is no `get()`; use `.all(...)[0]`. `run()` returns nothing; add `RETURNING` and use `.all()` when the new row is needed. `db.transaction(fn)` commits on return and rolls back on throw.
 
 ## API surface
 
-- `api` functions get `(params, app, { window, origin })`; they return JSON, and a thrown error reaches the page as the message string, not an `Error`.
-- `app.push(name, data)` reaches every window; the page listens with `tiny.api.on(name, fn)`. `app.win.push` reaches the main window; `app.window(id).push` one window.
+- `api` functions get `(params, app, { window, origin })` and return JSON. A thrown error reaches the page as the message string, not an `Error`.
+- `app.push(name, data)` reaches every window; the page listens with `tiny.api.on(name, fn)`. `app.win.push` reaches the main window, `app.window(id).push` one window.
 - Dialogs are page-only: `tiny.dialog.openFile`, `openFiles`, `pickFolder`, `saveFile`, `alert`, `confirm`, `prompt`. No backend twin. A picker returns a path; the backend does the I/O.
-- Menus: `app.menu.set([...])` in `init`; clicks reach the backend's `onMenu(id, app)` and the page's `tiny.menu.on`.
+- Menus: `app.menu.set([...])` in `init`. Clicks reach the backend's `onMenu(id, app)` and the page's `tiny.menu.on`.
 - Window: `app.win.setTitle`, `app.win.open(id, opts)`, `app.win.setHideOnClose`, `rememberWindows`.
-- Single instance is keyed by `id`; a second launch does not open a second writer on the same data folder.
+- Single instance is keyed by `id`, so a second launch never opens a second writer on the same data folder.
+
+## On-device AI (macOS)
+
+- `app.macos.ai.availability()` answers `'available' | 'unavailable' | 'unsupported'`. `generate(prompt, { instructions })` runs Apple's FoundationModels model offline — no key, no provider, no network.
+- `'unsupported'` merges three causes the app cannot tell apart: not macOS, macOS below 26, and a launcher compiled without the FoundationModels shim. Released macOS tarballs link the shim; a source build or an older SDK quietly builds without it, and every Mac then answers `'unsupported'`.
+- On such a launcher `app.macos.ai` can be `undefined`, not merely unready. Feature-detect `app.macos?.ai` first, then read `availability()`.
+- macOS-only. The backend's `macos` calls throw on Windows and Linux, except `ai.availability()`, which answers `'unsupported'`.
 
 ## Build and release
 
 - `tinyjs build` builds for the OS it runs on. macOS: `dist/<title>.app` and a bare `dist/<name>`; `--dmg` adds the disk image; `--arch arm64|x86_64` or `--universal` picks the CPUs. Windows: `dist/<name>.exe` plus the folder. Linux: `dist/<name>` plus the folder. `--cli` also writes a command that opens files through `onOpenFiles`.
-- `tinyjs notarize` needs a Developer ID Application certificate and a keychain profile holding an app-specific password. It checks the built app carries a real Developer ID signature.
+- `tinyjs notarize` needs a Developer ID Application certificate and a keychain profile holding an app-specific password. It checks that the built app carries a real Developer ID signature.
 - `tinyjs publish` builds, zips and writes `manifest.json` for auto-update. The app's `update.url` points at the manifest; `update.auto` is `launch` or `daily`. Install verifies sha256 and, on macOS, the code signature and Team ID. Signed updates pin Ed25519 public keys and sign the manifest with a private key outside the project.
-- Cross-OS builds are not supported: build each OS on its own runner.
+- Cross-OS builds are not supported. Build each OS on its own runner.
 
 ## Gotchas
 
 - No Node: no `require`, `process`, `Buffer` or `node:*`. Use `tjs`, Web APIs, or a TypeScript backend bundled with esbuild that avoids Node's built-ins.
-- `tjs` file calls are async; SQLite is sync. A missing `await tjs.makeDir(...)` before `new Database(...)` is a race that fails only sometimes.
+- `tjs` file calls are async, SQLite is sync. A missing `await tjs.makeDir(...)` before `new Database(...)` is a race that fails only sometimes.
 - `tjs.cwd` is a property, and in a built app it is rarely the project folder. Build paths from `app.paths()`.
 - `import.meta.url` throws in a built app; the backend is compiled into one executable.
-- A hidden, covered or minimized webview throttles timers and `requestAnimationFrame`; put continuous work in the backend.
-- macOS limits local media to the page's folder unless `readAccess` is set; Windows and Linux do not.
+- A hidden, covered or minimized webview throttles timers and `requestAnimationFrame`. Put continuous work in the backend.
+- macOS limits local media to the page's folder unless `readAccess` is set. Windows and Linux do not.
 - Wayland limits window placement and global hotkeys; `windowPlacement` can run the app through XWayland.
 - `tinyjs build` empties `dist/` first.
-- The default right-click menu carries Reload and Inspect; `contextMenu: false` removes it, and a custom menu needs `tiny.menu.setContext` with stock edit roles.
-- `tinyjs publish` does not notarize; first installs ship from `build` + `notarize`. Auto-update refuses in `dev` and from macOS App Translocation.
+- The default right-click menu carries Reload and Inspect. `contextMenu: false` removes it, and a custom menu needs `tiny.menu.setContext` with stock edit roles.
+- `tinyjs publish` does not notarize. First installs ship from `build` + `notarize`. Auto-update refuses in `dev` and from macOS App Translocation.

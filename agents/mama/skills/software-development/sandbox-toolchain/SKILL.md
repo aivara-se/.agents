@@ -14,36 +14,41 @@ metadata:
 
 # Sandbox toolchain
 
-## When to use
-
-- `command not found` for `node`, `npm`, `go`, `bun`, `gh` or `gofmt`.
-- `--version` reports a version older than the task needs.
-- After a container rebuild, before any build, test or git-host command.
-- `/usr/local/bin` looks empty while `~/.config/gh` or `~/.bun` survive.
-
 ## What survives a rebuild
 
-Only `/root` is a bind-mounted home; `/usr/local`, `/etc` and `/tmp` belong to the container, so a rebuild takes every binary installed there while `~/.bun`, `~/.config/gh` and `~/github` stay. Install system-wide for this container, keep durable state in `$HOME` (bun: `~/.bun/bin`, gh: `~/.config/gh/hosts.yml`, repos: `~/github/<owner>/<repo>`), and delete the tarballs when done.
+Only `/root` is a bind-mounted home. `/usr/local`, `/etc` and `/tmp` belong to the container, so a rebuild takes every binary installed there. `~/.bun`, `~/.config/gh` and `~/github` stay.
+
+Install system-wide for the container; keep what must last in `$HOME`. Delete the tarballs when done.
 
 ## Procedure
 
-1. Probe first: `uname -m`, `which -a node go bun gh`, each `--version`. A version already on `PATH` may be older than the newest release, or a leftover install — decide, do not assume.
-2. Resolve the newest version from the upstream endpoint, never from memory:
+1. Probe first: `uname -m`, then `which -a node go bun gh` and each `--version`. A binary on `PATH` may be older than the release you need, or a leftover from another install.
+2. Resolve the newest version from upstream, never from memory:
    - node: `curl -s https://nodejs.org/dist/index.json | jq -r '.[0].version'`
    - go: `curl -s 'https://go.dev/dl/?mode=json' | jq -r '.[0].version'`
    - bun: `curl -s https://api.github.com/repos/oven-sh/bun/releases/latest | jq -r .tag_name`
-   - gh: same GitHub-releases shape on `cli/cli`
-3. Install, then print the version the binary reports: a silent `curl -s` plus `tar` can succeed on a truncated download.
-   - node: `node-vX-linux-x64.tar.xz` → `/usr/local/lib/nodejs`, symlink `node npm npx corepack` into `/usr/local/bin`. Install beside `/usr/bin`, never over it, so distro package ownership stays intact.
-   - go: unpack to `/usr/local` (it creates `/usr/local/go`), symlink `go` and `gofmt` into `/usr/local/bin`, set `GOROOT`.
-   - bun: `curl -fsSL https://bun.sh/install | bash` owns `~/.bun/bin`; do not copy the binary elsewhere — set `BUN_INSTALL="$HOME/.bun"` and put that dir on `PATH`.
-4. Persist `PATH` in two places, because login and non-login shells read different files: write `/etc/profile.d/zz-langs.sh` (`GOROOT`, `GOPATH`, `BUN_INSTALL`, `PATH`) and source or repeat it in `~/.bashrc`. Create that file on a fresh container; do not append blindly.
-5. Verify in fresh shells, not the current one: `bash -lc 'node -v; go version; bun -v'` and `bash -ic '…'`. A running shell keeps the old `PATH` and hides a broken export.
-6. Smoke-test with real work: compile and run a three-line `main.go`, a `.mjs` under node, a `.ts` under bun.
+   - gh: the same shape on `cli/cli`
+3. Install, then print the version the binary reports. A silent curl plus `tar` can succeed on a truncated download.
+   - **node**: `node-vX-linux-x64.tar.xz` into `/usr/local/lib/nodejs`, symlink `node npm npx corepack` into `/usr/local/bin`. Install beside `/usr/bin`, not over it.
+   - **go**: unpack to `/usr/local`, symlink `go` and `gofmt` into `/usr/local/bin`, set `GOROOT`.
+   - **bun**: the installer owns `~/.bun/bin`. Do not copy the binary elsewhere; export `BUN_INSTALL="$HOME/.bun"`.
+4. Persist `PATH` in two places, because login and non-login shells read different files: `/etc/profile.d/zz-langs.sh` (`GOROOT`, `GOPATH`, `BUN_INSTALL`, `PATH`), repeated in `~/.bashrc`. Create that file if the container has none.
+5. Verify in fresh shells: `bash -lc 'node -v; go version; bun -v'` and `bash -ic '…'`. A running shell keeps the old `PATH` and hides a broken export.
+6. Smoke-test with real work: compile a three-line `main.go` and run it, run a `.mjs` under node and a `.ts` under bun.
+
+## The Android gate
+
+Reviewing `aivara-se/pereda`'s `apps/android` needs a JVM the sandbox does not ship.
+
+1. `apt-get install -y openjdk-21-jdk-headless unzip`.
+2. Command-line tools into `$HOME/android-sdk/cmdline-tools/latest`, then `yes | sdkmanager --licenses` and `sdkmanager "platforms;android-37.0" "build-tools;37.0.0" "platform-tools"`. `compileSdk = 37` wants `platforms;android-37.0`; plain `platforms;android-37` is not in the manifest.
+3. `printf 'sdk.dir=%s\n' "$HOME/android-sdk" > local.properties` in the app directory, with `ANDROID_HOME` and `GRADLE_USER_HOME=$HOME/.gradle` exported.
+4. Run with `--no-daemon --max-workers=2 -Dorg.gradle.jvmargs=-Xmx1536m`. The project's 2 GB heap plus the Kotlin daemon kills the daemon on a 7.5 GB sandbox: "daemon disappeared".
 
 ## Pitfalls
 
-- **`/tmp` is a noexec tmpfs.** `go run`, a test binary or any compiled artifact there fails with `fork/exec … permission denied`, which reads like a compiler bug. Build from `$HOME` (`mkdir -p ~/tmp/<name>`); treat "permission denied" on a fresh binary as the mount before touching code.
-- **A missing binary is not a missing credential.** When `gh` is gone but `~/.config/gh/hosts.yml` holds a valid token, reinstall the binary; `gh auth login` would rotate the token. Check with `curl -H "Authorization: Bearer ***" https://api.github.com/user`.
-- **`gofmt -l` prints the file when it needs formatting** — a one-line `func` body is unformatted. Read the output; do not assume silence.
-- Never `apt install` a language for a newer version; distro packages lag, and the upstream tarball is the version the task asked for.
+- **`/tmp` is a noexec tmpfs.** `go run` and any compiled artifact there fail with `fork/exec … permission denied`, which reads like a compiler bug. Build from `$HOME` (`mkdir -p ~/tmp/<name>`).
+- **A missing binary is not a missing credential.** With `gh` gone and a valid token in `~/.config/gh/hosts.yml`, reinstall the binary. `gh auth login` rotates the token.
+- **`gofmt -l` prints the file when it needs formatting.** Read the output.
+- **A JVM dependency that unpacks a native library fails under noexec `/tmp`.** `sqlite-jdbc` extracts into `java.io.tmpdir`, so tests die at `DriverManager.getConnection` with `UnsatisfiedLinkError`. Aim the JVM at `$HOME` from an init script (`tasks.withType(Test) { systemProperty 'java.io.tmpdir', "$HOME/tmp/jvm" }`), never by editing the repository.
+- Do not `apt install` a language for a newer version. Distro packages lag; use the upstream tarball.
