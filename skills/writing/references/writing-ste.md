@@ -6,7 +6,8 @@ The rules exist for a reader who is tired, hurried, or reading a second language
 
 ## The numbers
 
-- An instruction, a step or a bullet: 20 words or less.
+- An instruction or a step in a document: 20 words or less.
+- A rule bullet in a `SKILL.md`: 30. A rule is a note, not a sentence a reader meets.
 - A description, or any sentence in a paragraph: 25 words or less.
 - A paragraph: six sentences on one topic.
 - A noun cluster: three words at most. Write "the limit for pull request size", not "pull request size limit".
