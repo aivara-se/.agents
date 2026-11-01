@@ -62,3 +62,16 @@ gh api repos/{owner}/{repo}/rulesets/<id> | python3 -c "import json,sys; d=json.
 `required_status_checks` absent means the new name is right and still unenforced. Settings are not code: name the gap in the pull request body, do not try to change it from a branch.
 
 - A `paths` filter on the trigger leaves the required check pending rather than skipped, so a pull request that does not match never merges; a job skipped by an `if:` reports success.
+
+## Removing a job or a matrix arm
+
+A matrix job reports one check per arm, named `<job> (<value>)` — `macos (x86_64)`. Collapsing the matrix or deleting an arm renames the check, so a ruleset that still requires the old name waits on a check that never reports and blocks every pull request. Read the ruleset (above) before the change, and state in the pull request that the old name is gone.
+
+- A one-entry matrix is a plain job: drop `strategy.matrix` and replace every `${{ matrix.<key> }}` in the same commit — the build flag, the artifact `name`, and any archive filename built from it. A left-over reference renders empty, and the upload then fails on `if-no-files-found: error`.
+- Delete a comment the change falsifies (`for both Macs`) instead of leaving it to contradict the YAML.
+- The same matrix is usually duplicated in the publish workflow. Change the workflow the request names: "when validating" means `validate.yml`, and the release may rightly keep every platform. Confirm the other file still builds what it ships.
+- Prove the result on the run: `gh run view <id> --json jobs --jq '.jobs[]|"\(.name) \(.conclusion)"'` shows one job, and `gh api repos/{owner}/{repo}/actions/runs/<id>/artifacts --jq '.artifacts[].name'` shows the artifact renamed with it.
+
+## Before pushing a workflow edit
+
+Run the gates on the file you touched before the push, not only after it: `actionlint <file>` catches expression and context errors that GitHub reports only as a red run, and a repository whose validate job runs a formatter (`bun x prettier@<version> --check .`) rejects a re-indented YAML block — run that formatter on the file too.

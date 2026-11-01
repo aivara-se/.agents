@@ -14,6 +14,7 @@ The one authoritative place for what the interface looks like and the values tha
 
 - A concept diagram is a guide, not law. Follow what it shows, and describe it as drawn. Do not do the opposite of it either: a concept drawn light is not shipped dark because nothing said otherwise.
 - Measure a value on the surface it is used on before it ships. Until then it is marked measured-at-build. Never invent a number and mark it decided.
+- Trace each number to the rule that sets it on that element. A value copied from a neighbouring element is a different surface, and a false number.
 - Write the edge: what happens when the column fills, a line wraps, the oldest item leaves.
 - Nothing is signalled by colour alone. A changed or marked thing is also a shape, a weight or a word.
 - One movement, off under `prefers-reduced-motion: reduce`.

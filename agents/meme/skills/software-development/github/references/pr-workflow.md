@@ -160,6 +160,10 @@ gh pr merge N --rebase --delete-branch
 gh pr merge --auto --squash --delete-branch
 ```
 
+### After a rebase merge, local branches still look unmerged
+
+A rebase merge rewrites every commit, so `git rev-list --count origin/main..<branch>` stays non-zero on a branch that landed and `git branch -d` refuses it. Prove publication with `git cherry -v origin/main <branch>`: a line starting `-` means the patch is equivalent to one upstream; `+` is work that never landed. Answer "anything unpublished?" with `git status --porcelain` and `git stash list` in every clone and linked worktree, then `git cherry` per local branch. An untracked core dump or a stale branch is not unpublished work; name it as such rather than deleting it unasked.
+
 ### A conflicted branch in a rebase-only repo
 
 `gh pr merge --rebase` failing with `GraphQL: This branch can't be rebased (mergePullRequest)` means the branch carries a merge commit — usually one added to settle a conflict — and the ruleset allows rebase only. Read the enforced method before resolving, because every push that moves the head dismisses the approval:

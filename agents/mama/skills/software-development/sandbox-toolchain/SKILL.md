@@ -45,6 +45,12 @@ Reviewing `aivara-se/pereda`'s `apps/android` needs a JVM the sandbox does not s
 3. `printf 'sdk.dir=%s\n' "$HOME/android-sdk" > local.properties` in the app directory, with `ANDROID_HOME` and `GRADLE_USER_HOME=$HOME/.gradle` exported.
 4. Run with `--no-daemon --max-workers=2 -Dorg.gradle.jvmargs=-Xmx1536m`. The project's 2 GB heap plus the Kotlin daemon kills the daemon on a 7.5 GB sandbox: "daemon disappeared".
 
+## The browser for page tests
+
+- The Playwright browsers live in `/opt/playwright`; keep `PLAYWRIGHT_BROWSERS_PATH=/opt/playwright` set, or a scratch install downloads a second copy into `~/.cache`.
+- `bun add playwright` in a scratch directory gives the client. `bunx playwright install webkit` fetches the engine, but it launches only after `bunx playwright install-deps webkit`, which installs `libgtk-4-1` and the rest. Without it the launch error names the package.
+- A page that ships in a tinyjs app runs in WKWebView or WebKitGTK. Run the same script under `webkit`, not only Chromium; a Chromium pass says nothing about the shipped engine.
+
 ## Pitfalls
 
 - **`/tmp` is a noexec tmpfs.** `go run` and any compiled artifact there fail with `fork/exec … permission denied`, which reads like a compiler bug. Build from `$HOME` (`mkdir -p ~/tmp/<name>`).

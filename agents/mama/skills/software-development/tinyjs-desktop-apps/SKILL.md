@@ -33,6 +33,7 @@ Not for a web app, a Tauri app, or a general Electron question.
 ## Shape
 
 - The plain template is `src/backend/main.js` (or `.ts`), `src/frontend/` with `index.html`, JS and CSS, an icon, and `tinyjs.json`. Take a Vite template only when the page needs a framework: it grows the size and the dependency surface.
+- A page that needs a real text editor adds a build step and a dependency. Choose the editing model before the library, and measure the bundle: `references/markdown-editing.md`. Point `frontend.build` in `tinyjs.json` at the bundler command: `tinyjs build` runs it before packaging, so the three release jobs keep their one command and no built file is committed.
 - The page is a real `file://` document and has no `tjs`. Never hand it a general `exec` or `query` call: every page the app loads can call anything in `api`. Expose named operations only.
 - A page from a site you do not control makes the app a site wrapper. Only then is the `api` gate in `tinyjs.json` mandatory. Do not load one in a local-first app.
 
@@ -42,6 +43,8 @@ Not for a web app, a Tauri app, or a general Electron question.
 - SQLite is built in (`tjs:sqlite`) and synchronous. `tjs.*` file calls are async, so await `makeDir` before opening a database.
 - Autosave a whole document with a monotonic sequence: never delete the row. Write an empty body as a tombstone, and make the upsert conditional on the incoming sequence being greater than the stored one. A late write then cannot resurrect a cleared document. Test the stale sequence.
 - WAL and `synchronous=FULL` let a committed save survive a power loss, at one flush per save. Keep the debounce in the system document, and promise nothing the debounce can lose.
+- `tiny.store` (`store.json` in the data folder) is the page's own durable key-value store; use it for settings and one small document. Do not put durability in `localStorage`: the page is a `file://` document and WebKit does not treat that origin as an app store.
+- Guard the store call with `globalThis.tiny?.store` and fall back to `localStorage`. The page then runs in a plain browser, which is how its behaviour gets tested without a webview.
 
 ## Local-only promises
 
@@ -54,6 +57,9 @@ Not for a web app, a Tauri app, or a general Electron question.
 ## Ship
 
 - `tinyjs build` builds for the OS it runs on, so macOS, Windows and Linux need three runners. macOS first install needs a Developer ID signature and notarization; `--dmg` packages the app. Windows and Linux signing is a separate certificate decision.
+- From a Linux sandbox no macOS build exists: `--arch arm64` picks the CPU but the build still runs on a Mac. Push a `workflow_dispatch` job on `macos-15` (arm64) and fetch the result with `gh run download <run> -n <artifact>`; `templates/macos-artifact.yml` is that job. Keep it in a throwaway repository: a product's publish workflow is version-gated on `main`, and a manual build job dropped beside it ships with every release.
+- Smoke-test on the runner before the upload: `open "dist/<Title>.app"`, `sleep 8`, `pgrep -fl <name>`, then `screencapture -x shot.png` and upload the PNG. A job that only exits 0 proves the build ran, not that a window drew.
+- Without a Developer ID the `.app` is ad-hoc signed; the download needs right-click → Open once. Confirm the CPU with `file Contents/MacOS/<name>` (Mach-O arm64) and hash the page bundle inside the `.app` against the local build — an artifact can carry a stale page.
 - `tinyjs dev` hot-reloads the page and restarts the backend. `tinyjs doctor` diagnoses a setup that will not run.
 - Test pure logic with `bun test`. Test the store against the same SQL, injecting the `Database` so the backend opens `tjs:sqlite`. The webview, native dialogs, the data folder and the signed bundle are checked by hand each release, headless, with `references/verifying-a-build.md`.
 - `mock.module('tjs:sqlite', () => ({ Database }))` imports `src/backend/main.js` under `bun test`, so the `api` calls run against a real store. Walk a paging loop over a hundred days and count duplicates and gaps.
@@ -67,3 +73,4 @@ Not for a web app, a Tauri app, or a general Electron question.
 - `import.meta.url` throws in a built app. Find shipped files through `app.paths().resources` and `executables`.
 - A hidden or covered webview throttles timers. Do continuous work in the backend and push events to the page.
 - `tinyjs build` empties `dist/` first. Never keep an artifact you need there.
+- **A committed page bundle matches every symbol search.** The minified file beside its source turns one search of the front end into hundreds of kilobytes of noise; name the source file, or exclude the bundle, when you hunt a symbol.

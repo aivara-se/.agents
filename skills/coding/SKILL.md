@@ -13,11 +13,12 @@ Run the repository's formatter and accept its output.
 - Build the smallest thing the task asks for. Name a gap you leave in the body.
 - A rare case that needs a new concept is not a requirement. Record it, unless a normal caller hits it and it throws.
 - A merged design outranks the code: implement it, and name the documents you left unedited.
+- Two surfaces carry every behaviour twice. Fix one, then read the other against the same promise, and name the surface it binds.
 - Never pick between two readings in silence. Say which you took, and why.
 - A frozen document that contradicts the task is a blocker. Name the file, the line and the input, in one question.
 - A merged ADR that assumes a missing capability is the operator's call. Name the ADR, the platform and the options; do not build the surface.
 - Sync the base branch with `git pull --ff-only`, then read the tree before you assume another agent landed it.
-- Cut the work branch from `origin/main` in a fresh worktree. An existing clone may sit on another agent's branch with unlanded work.
+- Cut the work branch from `origin/main` in a fresh worktree: an existing clone may hold another agent's unlanded work.
 - Never run `git checkout origin/main -- .`: it dirties the index while HEAD stays behind.
 - Build in the order the architecture document numbers. The reviewer compares against it.
 - Reuse the service's vocabulary. A new outcome is a value in the existing field unless the design says otherwise.
@@ -71,8 +72,7 @@ Run the repository's formatter and accept its output.
 
 - A request for changes is a proposal. Ask whether it is true, in scope, and worth the cost. If not, answer on the thread.
 - When it holds, apply it and ask that reviewer again.
-- A push re-runs the gate and drops approvals. Rebase as the base moves, then re-request.
-- An approval on a head a rebase replaced is gone. Re-apply it and ask again: an approval belongs to a commit, not a branch.
+- A push re-runs the gate and drops approvals; an approval belongs to a commit, not a branch. Rebase as the base moves, then re-request.
 - A rebase that meets another agent's doc commit conflicts on summaries, not facts. Keep their new bullets, and recount any number.
 - A rebase against a revert keeps the revert. Keep only the lines your change still owns.
 

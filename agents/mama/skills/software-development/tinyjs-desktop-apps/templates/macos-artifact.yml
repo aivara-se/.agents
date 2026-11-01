@@ -1,0 +1,59 @@
+name: macos
+
+# Build an unsigned macOS .app on a GitHub runner and prove it drew a window.
+# Run by hand: gh workflow run macos.yml
+# Fetch: gh run download <run-id> -n macos-arm64
+#
+# macos-15 is an arm64 runner; --arch arm64 matches it. tinyjs cannot
+# cross-build, so this is the only way to get an Apple silicon .app from a
+# Linux machine. `ditto` keeps the bundle's resource forks and signature.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tinyjs
+        run: |
+          curl -fsSL https://tinyjs.app/install | TINYJS_NO_MODIFY_PATH=1 sh
+          echo "$HOME/.tinyjs" >> "$GITHUB_PATH"
+
+      - name: Build for arm64
+        run: tinyjs build --arch arm64
+
+      - name: Package
+        env:
+          TITLE: Pereda POC # tinyjs.json .title
+        run: |
+          ditto -c -k --keepParent "dist/$TITLE.app" "app-macos-arm64.zip"
+          ls -lh app-macos-arm64.zip
+
+      # Exit 0 from `tinyjs build` says the binary compiled. This says the
+      # webview opened and the page painted. Drop the screenshot step only
+      # when the runner has no WindowServer session.
+      - name: Smoke test
+        env:
+          TITLE: Pereda POC
+          NAME: peredapoc # tinyjs.json .name
+        run: |
+          open "dist/$TITLE.app"
+          sleep 8
+          pgrep -fl "$NAME" || (echo "the app did not stay running"; exit 1)
+          screencapture -x "$RUNNER_TEMP/shot.png" || true
+          cp "$RUNNER_TEMP/shot.png" shot.png 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-arm64
+          path: |
+            app-macos-arm64.zip
+            shot.png
+          if-no-files-found: error

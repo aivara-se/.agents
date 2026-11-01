@@ -62,6 +62,8 @@ const IDENTITY_EXCLUDES = [
   "./*.tmp",
 ];
 
+// tar exits 1 when a file changed while it was read. A live state.db always
+// does, and the archive still lists — so the listing is the test of a backup.
 function archive(
   src: string,
   dest: string,
@@ -82,10 +84,15 @@ function archive(
     ],
     { timeout: 900_000 },
   );
-  if (tar.code !== 0 || !existsSync(dest) || statSync(dest).size === 0)
+  if (tar.code > 1 || !existsSync(dest) || statSync(dest).size === 0)
     return null;
   chmodSync(dest, 0o600);
-  const members = lines(run(["tar", "-tf", dest], { timeout: 300_000 }).out);
+  const listed = run(["tar", "-tf", dest], { timeout: 300_000 });
+  const members = lines(listed.out);
+  if (listed.code !== 0 || members.length === 0) {
+    rmSync(dest, { force: true });
+    return null;
+  }
   return { bytes: statSync(dest).size, members };
 }
 

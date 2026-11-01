@@ -33,6 +33,11 @@
 - Identify each binary with `file` (Mach-O arm64 and x86_64, PE32+ x86-64, ELF x86-64), and the macOS bundle version from `Contents/Info.plist` with `python3 -c "import plistlib; print(plistlib.load(open('Pereda.app/Contents/Info.plist','rb'))['CFBundleShortVersionString'])"` — `plutil` does not exist on Linux.
 - Run the Linux archive under Xvfb: `/proc/<pid>/cmdline` prints `launcher … <title> <WxH> <version>`, the released build, checked without an About panel.
 
+## When the app the operator runs lacks the change
+
+- A release asset is the tag, not `main`. `git merge-base --is-ancestor <fix> v<version>` answers whether the published build carries a fix; one merged after the tag was cut is in no download.
+- `publish` will not rebuild a version whose tag and release already exist: the next `version` is the fix. Say that before auditing code that is not in the binary.
+
 ## A test build on a pull request
 
 - Build the `.app` for both architectures in the validation workflow, gated on the test job and only on `pull_request`.

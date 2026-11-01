@@ -5,8 +5,20 @@
 1. **Ground before proposing.** Fetch the repository; read the product and system documents, every ADR in `docs/adrs/`, the fleet's shared skills in `aivara-se/.agents` and any open pull request against them, and search past sessions (`session_search`). A change in review can retire a candidate, and a mechanism proposed from memory repeats a withdrawn decision.
 2. **Answer with options first.** A numbered list, each option one line plus its single trade-off, ordered by the stated priority. Then say which survive and why the others are out.
 3. **Recommend one and take the defaults.** Every fork that does not change the artifact gets a named default; ask only where the wrong pick changes an interface, a file or a promise.
-4. **Record the pick as an ADR before the code.** `docs/adrs/NNN-<slug>.md` with `## Context`, `## Decision`, `## Consequences`. Read the directory **on the fetched remote head, not the working tree**, and the open pull requests, before choosing `NNN`: an ADR in review already owns its number, and a branch shows a shorter directory whose top number is taken on `main`. Take `max+1` from `git ls-tree --name-only origin/main docs/adrs/`, or from a throwaway clone. The Consequences say what the choice costs. The record stands alone: cite only lower-numbered ADRs, never `PRODUCT.md`, `SYSTEMS.md`, `DESIGN.md` or the README, which move with the version. The Context states the product premise in its own words; documents link to the record, never the reverse.
-5. **Sweep the documents the decision falsifies, in the same change.** A rule the product document still promises and the decision withdraws is deleted, not left beside its replacement; the system document's mechanism section, the README's commands and the entry file's map follow. **An older ADR is immutable once merged: a contradicting decision is a new ADR naming the clauses it overrides.** `000` makes presence in `main` the status, so editing rewrites the history a reader relies on. The new ADR names the record and the clause ("this overrides `002`'s one-event bullet and its no-API consequence, and narrows `003`'s "never delayed" to one bounded read; everything else stands"); the falsified clause stays as what was believed then. A configuration list growing is the same act. An issue's _Done means_ naming an already-merged `NNN` gets a new ADR too, with the body saying why the named file was not edited.
+4. **Record the pick as an ADR before the code.** `docs/adrs/NNN-<slug>.md` with `## Context`, `## Decision`, `## Consequences`. Read the directory **on the fetched remote head, not the working tree**, and the open pull requests, before choosing `NNN`: an ADR in review already owns its number, and a branch shows a shorter directory whose top number is taken on `main`. Take `max+1` from `git ls-tree --name-only origin/main docs/adrs/`, or from a throwaway clone. The Consequences say what the choice costs. The record stands alone: cite only lower-numbered ADRs, never `PRODUCT.md`, `SYSTEMS.md`, `DESIGN.md` or the README, which move with the version. The Context states the product premise in its own words; documents link to the record, never the reverse. **Check the batch's citations after drafting it, before the pull request.** A batch written in request order cites forward, and the fix is a renumber, not a rewritten sentence. No output from this loop means every record cites only lower numbers:
+
+```bash
+python3 - <<'PY'
+import pathlib, re
+for f in sorted(pathlib.Path("docs/adrs").glob("[0-9][0-9][0-9]-*.md")):
+    n = int(f.name[:3])
+    for c in re.findall(r"\]\((\d{3})-", f.read_text()):
+        if int(c) >= n:
+            print(f.name, "cites", c)
+PY
+```
+
+5. **Sweep the documents the decision falsifies, in the same change.** A rule the product document still promises and the decision withdraws is deleted, not left beside its replacement; the system document's mechanism section, the design document's values — creating `DESIGN.md` when the repository carries none — the README's commands and the entry file's map follow. **An older ADR is immutable once merged: a contradicting decision is a new ADR naming the clauses it overrides.** `000` makes presence in `main` the status, so editing rewrites the history a reader relies on. The new ADR names the record and the clause ("this overrides `002`'s one-event bullet and its no-API consequence, and narrows `003`'s "never delayed" to one bounded read; everything else stands"); the falsified clause stays as what was believed then. A configuration list growing is the same act. An issue's _Done means_ naming an already-merged `NNN` gets a new ADR too, with the body saying why the named file was not edited.
 6. **Land it by pull request**, one decision per PR, and report the link.
 
 ## The conflict pass
@@ -21,13 +33,17 @@ Read the edited documents against each other before opening the pull request. A 
 - **A surface that becomes a mode re-decides every clause naming it.** Hiding a field changes the empty query, the cleared field, Esc, the text kept after a jump and the result set, each with a rule written for the always-visible surface. List every clause naming the surface before deciding the mode.
 - **A mode that dims or hides the window keeps the failure surface readable.** A fade taking the status line to quarter strength keeps the pixel and loses the promise that a failed save is shown.
 - **Grep the exact token your record quotes.** A record fixing an argv, flag or field name is a second copy of that string: a living document carrying `--source dispatch` against a record's `--source tool` ships two answers. Correct the living sentence, name it as found drift, and put the fallen value in the new ADR's override.
+- **Cite a record for what it decided, never for a state of the tree.** A timing, a padding or a layout the record never fixed is described as what the code does now; an ADR number attached to it claims a clause that does not exist.
+- **Count the records the sentence claims.** "One decision is recorded and not built" beside two ADR links is a contradiction; a version carrying several records counts them and links each.
 
 ## What the operator expects
 
 - Options before any recommendation.
+- **A brainstorm invitation is answered with a document.** Each option says what it buys, what it costs and what would kill it; the close is one first step carrying a number. The chat carries the verdict and the attachment, not the argument.
 - Simplicity named as the priority unless they say otherwise; every option says what it rules out.
 - Decisions arrive as numbered answers, each becoming a document rather than a paragraph of chat.
 - **A design pull request's body names the judgement calls** — two or three forks the reviewer may want to reverse, each with its one-line consequence.
+- **A prohibition the operator lifts moves the boundary; it does not remove it.** "It doesn't need to be read-only" instructs a new set, not a capability: name which writes, on what trigger, and which verbs stay refused by name (no label, no merge, no push, no review request, no dismissal). Record the platform's grant beside the act the code performs, because the grant is coarser — `issues: write` also closes and labels — and that gap is the reviewer's question.
 - A scope cut ("ignore crash or restart") deletes the mechanisms that existed only for those cases; the design shrinks visibly rather than carrying a caveat.
 - **A version's out-of-scope cases are a section, not a silence.** One heading, a lead sentence calling them deliberately unhandled, and one bullet per case naming the observable outcome — a wake that does not happen, a run that happens twice — never a plan to fix it. Probe what turns on another program's behaviour; only what a probe cannot reach is written "unrecorded here", with the workaround at the point of use.
 - **An ADR records what is decided, not planned.** No "the next version will…", no roadmap in Context or Consequences; work left out is stated as cost. A cut feature is deleted, not left as a placeholder.
@@ -57,16 +73,19 @@ A "what should vN+1, vN+2 carry" request is not a decision to record: answer wit
 - **A new product's first product document may carry a candidate list.** A `Roadmap` led by _Candidates, not commitments_: one line per version, no ADR, only the version being specified decided.
 
 - **A plan for an unbuilt surface keeps the product document describing the binary.** The roadmap line says decided and not built. The system document's _Planned, not built_ section names the mechanisms. The new interface goes in its own file under `docs/`, linked from that section. `PRODUCT.md`'s present-tense rules and acceptance stay true until the surface ships. A spec that widens the product document early puts an acceptance list on a binary that cannot meet it.
+- **A repository with no roadmap carries the plan in the system document alone.** The records land In Review, _Planned, not built_ states the mechanism in about four sentences and links each record, and its lead sentence counts them ("two things are decided and unbuilt"). The paragraph summarises the records; it never restates a rule one owns, and the product document keeps describing the shipped binary until the change lands.
 
 ## Sizing a decided-but-unbuilt change
 
 "How complex is it to add X" is a read of the tree, not of the record: the ADR says what was chosen, the code says which seams it must cross.
 
 - **Read the ADR, then list touch points in the tree.** `ls internal/`, the handler's decision function, `main`'s listeners; a new package plus one call site plus one wiring block is the small case. An estimate from prose misses the plumbing every route needs: a listener that fails at boot, a shutdown path, a golden-output test.
+- **Put a number on each axis before calling it small or medium.** Count the call sites the change rewires (`grep -o 'entry\.text' | wc -l`), the file's lines, the tests that must stay green, the bytes the artifact grows by, and the versions the product has shipped — a stated figure is reviewable and an adjective is not.
 - **A closed enumeration in an older ADR is stale once a later ADR adds a state.** Read the ADR directory in number order, diff the sets, and settle the seam with a short new ADR naming the clause it overrides.
 - **Instrumentation must sit on a path the code runs.** A follow-up run started from the exit path has no delivery, event or duration: read that path (`exit`, `followUp`) before promising one instrument covers both.
 - **A label drawn from a request header is unbounded until you find the guard.** `X-GitHub-Event` is attacker-controlled; cardinality is bounded only because an unsigned delivery returns before a label is recorded, and every value still needs escaping.
 - **Separate decided from unbuilt from out of scope.** An unimplemented ADR is work; the _What it never does_ and edge-case lists are deliberate refusals and must not be counted in the estimate.
+- **A change that adds interpretation to stored text has a migration even when no row moves.** Old notes start rendering without an edit: name the marker pairs that would fire, the part of the log they touch, and the subset rule that keeps the surprise small (one delimiter family, no `_`). A schema diff shows nothing, so this is the compatibility cost a reader finds the hard way — and the one an impact note must lead with.
 
 ## Probing a behaviour a decision turns on
 
@@ -79,6 +98,7 @@ A claim about another program — GitHub, Hermes — is sourced or observed, nev
 - **Clean up and cite.** Delete the hook (`gh api -X DELETE …/hooks/<id>`), close the probe issues and pull requests, and put the observation and its date in the record.
 - **A probe that closes a case shrinks the design.** Delete the branch and the product's edge bullet rather than keeping a code path for a doubt that no longer exists.
 - **A dependency's cost is measured, not estimated.** Build the claim in a scratch module under `/tmp`: `go get` the package, compile a program using it, and diff the binary against a baseline that imports what the real binary already imports. Report the bytes, the `go.sum` line count and the direct requires.
+- **A browser dependency is priced from its tarball.** `curl -fsSL $(npm view <pkg> dist.tarball) | tar xz`, then `gzip -c9 <file> | wc -c` for the bytes the page fetches. Count the wasm and each wrapper separately — a SQLite build is 406 KB gzipped for the wasm and about 190 KB more for a JavaScript wrapper and the OPFS proxy — and quote the sum, because that is what the first load carries.
 - **Price the layer, then ask whether the signal earns it.** In the Go OpenTelemetry SDK the API is small and the OTLP exporter is nearly all the rest, because it drags gRPC, protobuf and `genproto` in. Measure the variant the service would run, not the smallest import that compiles. With no inbound trace context and no instrumented child, a span is a root with one attribute set and a duration — a log line with timing — while the operator's questions (how many, how often, how slow, did it fail) are a counter and a histogram. A standard-library metrics endpoint in Prometheus text on a fixed loopback port, scraped by a stock collector (Grafana Alloy or `otelcol`), keeps the module clean and the provider choice in the collector.
 
 ## Containerising a service that drives the host

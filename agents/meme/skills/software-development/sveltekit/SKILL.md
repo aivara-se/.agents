@@ -78,6 +78,8 @@ export default defineConfig({
 - **A green deploy is not a live site.** Check the address a reader uses (`curl -sSI https://<domain>/`), not the run's conclusion: a Pages site with no custom domain serves `<owner>.github.io/<repo>/` (`cname: null`) while the domain answers _Site not found_ with a 404 from GitHub's edge.
 - **When a section loses its only heading, move the accessible name with it.** A `<section aria-labelledby="…">` whose `<h2>` is gone names nothing: put `aria-label` on the section, fed by the same dictionary string.
 
+- **A page whose state lives in a worker can be seeded from the dev server.** `vite dev` serves source module URLs, so an evaluate can import the page's own client and write a past day before a reload: `await import('/src/lib/client.js')`, then `call('saveDay', { day, body, seq: 1e6 })`. Use a high seq — a tombstone keeps its counter, and a low one is refused. The build's hashed chunks cannot be imported this way: use the dev server when the data must be arranged, the built tree when only the drawing is checked.
+
 ## Sharing a preview for the operator's review
 
 A design change is reviewed by using the running app, not by reading a diff.
@@ -105,3 +107,5 @@ A design change is reviewed by using the running app, not by reading a diff.
 - **`getBBox()` ignores the element's own transform**, returning geometry in its user space, so a `scale()` reads as though it never applied. Use `getBoundingClientRect()`.
 - **What the operator has signed off is a lock.** After a refactor beside it, measure that element's box and colour again and show they are unchanged; an unasked change is a defect even when it looks better.
 - **The hand-written `bun:test` shim is the only matcher surface `svelte-check` sees.** `bun test` accepts a matcher the shim omits (`toMatch`), but `check` fails with `Property 'toMatch' does not exist`; declare it in `src/bun-test.d.ts`.
+- **A row rendered by `{#if selected}` disappears at the mousedown that blurs the note.** The blur handler clears the selection, Svelte removes the button before the mouseup, and no click lands — the same failure as a `pointer-events: none` fade. Render the row whenever the entry is not being edited, reveal it on `:focus-within`/`.selected`, and let a delayed `visibility` carry both the fade and the hit test.
+- **A row hung inside a clipped box is invisible and takes no press.** Put the clip and the ellipsis on the text node, then prove the row with `elementsFromPoint` and a real press: `el.click()` passes through the clip.

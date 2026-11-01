@@ -79,6 +79,15 @@ chmod -R +x ~/.local/android-sdk/cmdline-tools/latest/bin   # the zip arrives wi
 
 **`TMPDIR` pointing at `/tmp` breaks Room.** Its KSP processor extracts `libsqlitejdbc.so` and loads it; a noexec `/tmp` gives `UnsatisfiedLinkError: failed to map segment from shared object`, surfacing as `ExceptionInInitializerError` and reading like a compiler bug. Export `TMPDIR=$HOME/tmp` and `JAVA_TOOL_OPTIONS=-Djava.io.tmpdir=$HOME/tmp` for Gradle, Kotlin and KSP, and put `sdk.dir` in `apps/android/local.properties` (gitignored).
 
+## NativeScript and Svelte Native
+
+- `ns build` refuses to build until the `emulator` package is installed: its doctor runs `emulator -help` and exits 127 otherwise, even with no device.
+- The generated `platforms/android/gradle.properties` asks for `-Xmx16384M`. In a 4 GB cgroup the daemon dies with "Gradle build daemon disappeared". Set `-Xmx1152m`, `org.gradle.daemon=false`, `org.gradle.workers.max=1`, `kotlin.daemon.jvmargs=-Xmx512m` after `ns prepare`; the CLI keeps the file.
+- The generated `app/build.gradle` filters all four ABIs. Patch its `abiFilters` to `'arm64-v8a'`: the debug APK drops from 113 MB to 36 MB, the release from 31 MB.
+- A **debug** APK crashes at launch when the app has no INTERNET permission: the bundled V8 inspector opens a socket and throws `SocketException: EPERM`. Build `--release` (runtime `nativescript-optimized`) instead of adding the permission back.
+- NativeScript's V8 has no Unicode property escapes and no Intl data. `/\p{L}/u` throws `Invalid property name in character class`; `toLocaleDateString(locale, options)` ignores both. Use explicit ranges and month tables.
+- A release build needs all four `--key-store-*` flags; the flag is `--key-store-path`, not `--key-store`.
+
 Gradle's daemon dies in a small sandbox when Chromium and a dev server are resident: kill them, then build with `--no-daemon --max-workers=2`.
 
 ## Pitfalls
@@ -88,6 +97,7 @@ Gradle's daemon dies in a small sandbox when Chromium and a dev server are resid
 - **Moving `gh` breaks `git` too.** `git config --global credential.https://github.com.helper` stores an absolute path (`!/usr/bin/gh auth git-credential`), so `git fetch` fails with `/usr/bin/gh: not found` while `gh` works. Repoint it: `--unset-all` then `--add` the new path (a plain set refuses — the key has several values), and the same for `gist.github.com`.
 - **`write_file` refuses `/root/.profile` even when the file does not exist**, because the guard resolves the path from a stale view. Create `~/.profile` and `~/.bashrc` with a heredoc in `terminal`, then remove probe files.
 - **Delete nothing the image shipped without being asked.** List the older shadowed copy and its version, then offer to remove it.
+- **Scratch `npm i` goes under `$HOME`, never `/tmp`.** `/tmp` is noexec, so a throwaway install there gives `Permission denied` when you run `node_modules/.bin/<tool>` — the error looks like a bad package. `mkdir -p ~/scratch && cd ~/scratch && npm i --no-save <pkg>` also keeps plugin resolution (`Cannot find package '<plugin>'`) working, since Prettier and friends resolve plugins from the config file's directory.
 
 ## Reporting
 

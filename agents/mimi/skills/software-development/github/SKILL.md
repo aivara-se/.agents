@@ -25,8 +25,9 @@ Work GitHub end to end with the `gh` CLI (REST fallback where noted). Each workf
 | Carry an issue to a verified PR | `references/issue-to-pr.md` |
 | Review a PR: diffs, inline comments, verdict | `references/code-review.md` |
 | Clone, fork, configure repos, org policy, releases | `references/repo-management.md` |
+| Measure CI cost, slow steps, and fixes | `references/ci-performance-audit.md` |
 
-Supporting assets: `scripts/gh-env.sh`, `scripts/git-credential-token.py`, `templates/`, `references/ci-troubleshooting.md`, `references/conventional-commits.md`, `references/github-api-cheatsheet.md`, `references/review-output-template.md`.
+Supporting assets: `scripts/gh-env.sh`, `scripts/git-credential-token.py`, `templates/`, `references/ci-troubleshooting.md`, `references/ci-performance-audit.md`, `references/conventional-commits.md`, `references/github-api-cheatsheet.md`, `references/review-output-template.md`.
 
 ## Core discipline
 
