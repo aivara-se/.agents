@@ -1,75 +1,34 @@
 # GitHub Code Review
 
-Perform code reviews on local changes before pushing, or review open PRs on GitHub. Most of this skill uses plain `git` — the `gh`/`curl` split only matters for PR-level interactions.
+Review local changes before you push, or review a PR on GitHub. Most of this is plain `git`; the `gh`/`curl` split matters only for PR-level calls.
 
 ## Prerequisites
 
-- Authenticated with GitHub (see `github-auth` skill)
-- Inside a git repository
+- Authenticated (read `references/auth.md`).
+- Inside a git repository.
 
-### Setup (for PR interactions)
+For the API calls, extract the owner and repo from the remote:
 
 ```bash
-if command -v gh &>/dev/null && gh auth status &>/dev/null; then
-  AUTH="gh"
-else
-  AUTH="git"
-  if [ -z "$GITHUB_TOKEN" ]; then
-    if _hermes_env="${HERMES_HOME:-$HOME/.hermes}/.env"; [ -f "$_hermes_env" ] && grep -q "^GITHUB_TOKEN=" "$_hermes_env"; then
-      GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" "$_hermes_env" | head -1 | cut -d= -f2 | tr -d '\n\r')
-    elif grep -q "github.com" ~/.git-credentials 2>/dev/null; then
-      GITHUB_TOKEN=$(uv run python "${HERMES_HOME:-$HOME/.hermes}/skills/github/github-auth/scripts/git-credential-token.py")
-    fi
-  fi
-fi
-
 REMOTE_URL=$(git remote get-url origin)
 OWNER_REPO=$(echo "$REMOTE_URL" | sed -E 's|.*github\.com[:/]||; s|\.git$||')
 OWNER=$(echo "$OWNER_REPO" | cut -d/ -f1)
 REPO=$(echo "$OWNER_REPO" | cut -d/ -f2)
 ```
 
----
-
-## 1. Reviewing Local Changes (Pre-Push)
-
-This is pure `git` — works everywhere, no API needed.
-
-### Get the Diff
+## 1. Reviewing local changes (pre-push)
 
 ```bash
-# Staged changes (what would be committed)
-git diff --staged
-
-# All changes vs main (what a PR would contain)
-git diff main...HEAD
-
-# File names only
+git diff --staged            # what would be committed
+git diff main...HEAD         # what a PR would contain
 git diff main...HEAD --name-only
-
-# Stat summary (insertions/deletions per file)
 git diff main...HEAD --stat
 ```
 
-### Review Strategy
-
-1. **Get the big picture first:**
+Read the scope first (`git diff main...HEAD --stat` and `git log main..HEAD --oneline`), then review file by file: the diff shows what changed, `read_file` shows the code around it. Then sweep for what a diff hides:
 
 ```bash
-git diff main...HEAD --stat
-git log main..HEAD --oneline
-```
-
-2. **Review file by file** — use `read_file` on changed files for full context, and the diff to see what changed:
-
-```bash
-git diff main...HEAD -- src/auth/login.py
-```
-
-3. **Check for common issues:**
-
-```bash
-# Debug statements, TODOs, console.logs left behind
+# Debug statements and unresolved markers
 git diff main...HEAD | grep -n "print(\|console\.log\|TODO\|FIXME\|HACK\|XXX\|debugger"
 
 # Large files accidentally staged
@@ -82,11 +41,9 @@ git diff main...HEAD | grep -in "password\|secret\|api_key\|token.*=\|private_ke
 git diff main...HEAD | grep -n "<<<<<<\|>>>>>>\|======="
 ```
 
-4. **Present structured feedback** to the user.
+### Review output format
 
-### Review Output Format
-
-When reviewing local changes, present findings in this structure:
+Four sections, worst first. Each finding names `file:line`, the defect, and the fix.
 
 ```
 ## Code Review Summary
@@ -97,273 +54,73 @@ When reviewing local changes, present findings in this structure:
 
 ### Warnings
 - **src/models/user.py:23** — Password stored in plaintext. Use bcrypt or argon2.
-- **src/api/routes.py:112** — No rate limiting on login endpoint.
 
 ### Suggestions
-- **src/utils/helpers.py:8** — Duplicates logic in `src/core/utils.py:34`. Consolidate.
-- **tests/test_auth.py** — Missing edge case: expired token test.
+- **src/utils/helpers.py:8** — Duplicates logic in `src/core/utils.py:34`.
 
 ### Looks Good
 - Clean separation of concerns in the middleware layer
-- Good test coverage for the happy path
 ```
 
----
-
-## 2. Reviewing a Pull Request on GitHub
-
-### View PR Details
-
-**With gh:**
+## 2. Reviewing a PR
 
 ```bash
 gh pr view 123
-gh pr diff 123
 gh pr diff 123 --name-only
-```
-
-**With git + curl:**
-
-```bash
-PR_NUMBER=123
-
-# Get PR details
-curl -s \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER \
-  | python -c "
-import sys, json
-pr = json.load(sys.stdin)
-print(f\"Title: {pr['title']}\")
-print(f\"Author: {pr['user']['login']}\")
-print(f\"Branch: {pr['head']['ref']} -> {pr['base']['ref']}\")
-print(f\"State: {pr['state']}\")
-print(f\"Body:\n{pr['body']}\")"
-
-# List changed files
-curl -s \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER/files \
-  | python -c "
-import sys, json
-for f in json.load(sys.stdin):
-    print(f\"{f['status']:10} +{f['additions']:-4} -{f['deletions']:-4}  {f['filename']}\")"
-```
-
-### Check Out PR Locally for Full Review
-
-This works with plain `git` — no `gh` needed:
-
-```bash
-# Fetch the PR branch and check it out
-git fetch origin pull/123/head:pr-123
-git checkout pr-123
-
-# Now you can use read_file, search_files, run tests, etc.
-
-# View diff against the base branch
-git diff main...pr-123
-```
-
-**With gh (shortcut):**
-
-```bash
 gh pr checkout 123
+# without gh:
+#   git fetch origin pull/123/head:pr-123
+#   git checkout pr-123
 ```
 
-### Leave Comments on a PR
+The `pull/123/head` fetch works everywhere and leaves you a branch that `read_file`, `search_files` and the test runner can use.
 
-**General PR comment — with gh:**
+### Comment and review
 
 ```bash
+# General comment
 gh pr comment 123 --body "Overall looks good, a few suggestions below."
-```
 
-**General PR comment — with curl:**
-
-```bash
-curl -s -X POST \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$OWNER/$REPO/issues/$PR_NUMBER/comments \
-  -d '{"body": "Overall looks good, a few suggestions below."}'
-```
-
-### Leave Inline Review Comments
-
-**Single inline comment — with gh (via API):**
-
-```bash
+# One inline comment — line is the line in the NEW file
 HEAD_SHA=$(gh pr view 123 --json headRefOid --jq '.headRefOid')
-
-gh api repos/$OWNER/$REPO/pulls/123/comments \
-  --method POST \
+gh api repos/$OWNER/$REPO/pulls/123/comments --method POST \
   -f body="This could be simplified with a list comprehension." \
-  -f path="src/auth/login.py" \
-  -f commit_id="$HEAD_SHA" \
-  -f line=45 \
-  -f side="RIGHT"
-```
+  -f path="src/auth/login.py" -f commit_id="$HEAD_SHA" -f line=45 -f side="RIGHT"
 
-**Single inline comment — with curl:**
-
-```bash
-# Get the head commit SHA
-HEAD_SHA=$(curl -s \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER \
-  | python -c "import sys,json; print(json.load(sys.stdin)['head']['sha'])")
-
-curl -s -X POST \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER/comments \
-  -d "{
-    \"body\": \"This could be simplified with a list comprehension.\",
-    \"path\": \"src/auth/login.py\",
-    \"commit_id\": \"$HEAD_SHA\",
-    \"line\": 45,
-    \"side\": \"RIGHT\"
-  }"
-```
-
-### Submit a Formal Review (Approve / Request Changes)
-
-**With gh:**
-
-```bash
+# Formal verdict
 gh pr review 123 --approve --body "LGTM!"
 gh pr review 123 --request-changes --body "See inline comments."
 gh pr review 123 --comment --body "Some suggestions, nothing blocking."
 ```
 
-**With curl — multi-comment review submitted atomically:**
+`side` is `RIGHT` for added lines and `LEFT` for deleted ones. Event values are `"APPROVE"`, `"REQUEST_CHANGES"`, `"COMMENT"`.
 
-```bash
-HEAD_SHA=$(curl -s \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER \
-  | python -c "import sys,json; print(json.load(sys.stdin)['head']['sha'])")
+Without `gh`, one POST to `https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews` submits a whole review at once: `commit_id`, `event`, `body`, and a `comments` array of `{path, line, body}`. That is the only way to land several inline comments in one round instead of one call each.
 
-curl -s -X POST \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews \
-  -d "{
-    \"commit_id\": \"$HEAD_SHA\",
-    \"event\": \"COMMENT\",
-    \"body\": \"Code review from Hermes Agent\",
-    \"comments\": [
-      {\"path\": \"src/auth.py\", \"line\": 45, \"body\": \"Use parameterized queries to prevent SQL injection.\"},
-      {\"path\": \"src/models/user.py\", \"line\": 23, \"body\": \"Hash passwords with bcrypt before storing.\"},
-      {\"path\": \"tests/test_auth.py\", \"line\": 1, \"body\": \"Add test for expired token edge case.\"}
-    ]
-  }"
-```
+## 3. Review checklist
 
-Event values: `"APPROVE"`, `"REQUEST_CHANGES"`, `"COMMENT"`
+- **Correctness** — does it do what it claims? Empty input, nulls, large data, concurrent access, error paths.
+- **Security** — no hardcoded secrets, input validation, injection and traversal, auth checks.
+- **Quality** — naming, no premature abstraction, no duplicated logic, one job per function.
+- **Testing** — every new path tested, happy and error cases.
+- **Performance** — N+1 queries, blocking calls on an async path.
+- **Docs** — public APIs, "why" comments on non-obvious logic, README when behaviour changed.
 
-The `line` field refers to the line number in the *new* version of the file. For deleted lines, use `"side": "LEFT"`.
+## 4. Pre-push workflow
 
----
+1. `git diff main...HEAD --stat` — scope.
+2. `git diff main...HEAD` — the change.
+3. `read_file` any changed file you need context for.
+4. Apply the checklist.
+5. Report in the four sections.
+6. Offer to fix critical findings before the push.
 
-## 3. Review Checklist
+## 5. PR review, end to end
 
-When performing a code review (local or PR), systematically check:
-
-### Correctness
-- Does the code do what it claims?
-- Edge cases handled (empty inputs, nulls, large data, concurrent access)?
-- Error paths handled gracefully?
-
-### Security
-- No hardcoded secrets, credentials, or API keys
-- Input validation on user-facing inputs
-- No SQL injection, XSS, or path traversal
-- Auth/authz checks where needed
-
-### Code Quality
-- Clear naming (variables, functions, classes)
-- No unnecessary complexity or premature abstraction
-- DRY — no duplicated logic that should be extracted
-- Functions are focused (single responsibility)
-
-### Testing
-- New code paths tested?
-- Happy path and error cases covered?
-- Tests readable and maintainable?
-
-### Performance
-- No N+1 queries or unnecessary loops
-- Appropriate caching where beneficial
-- No blocking operations in async code paths
-
-### Documentation
-- Public APIs documented
-- Non-obvious logic has comments explaining "why"
-- README updated if behavior changed
-
----
-
-## 4. Pre-Push Review Workflow
-
-When the user asks you to "review the code" or "check before pushing":
-
-1. `git diff main...HEAD --stat` — see scope of changes
-2. `git diff main...HEAD` — read the full diff
-3. For each changed file, use `read_file` if you need more context
-4. Apply the checklist above
-5. Present findings in the structured format (Critical / Warnings / Suggestions / Looks Good)
-6. If critical issues found, offer to fix them before the user pushes
-
----
-
-## 5. PR Review Workflow (End-to-End)
-
-When the user asks you to "review PR #N", "look at this PR", or gives you a PR URL, follow this recipe:
-
-### Step 1: Set up environment
-
-```bash
-source "${HERMES_HOME:-$HOME/.hermes}/skills/github/github-auth/scripts/gh-env.sh"
-# Or run the inline setup block from the top of this skill
-```
-
-### Step 2: Gather PR context
-
-Get the PR metadata, description, and list of changed files to understand scope before diving into code.
-
-**Take the base from the PR, not from your local branch.** `gh pr view <n> --json baseRefOid,changedFiles,additions,deletions` gives the base commit and the host's own size; `gh pr diff <n> --name-only` gives the files it actually touches. A stale local `main` (one that lags the PR's base) makes a local `git diff main...HEAD` include every commit the branch is merely built on, so the file set and line count come out an order of magnitude too large. Reconcile the body's size claim against `additions`/`deletions`, not against the number of hunks.
-
-**With gh:**
-```bash
-gh pr view 123
-gh pr diff 123 --name-only
-gh pr checks 123
-```
-
-**With curl:**
-```bash
-PR_NUMBER=123
-
-# PR details (title, author, description, branch)
-curl -s -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$GH_OWNER/$GH_REPO/pulls/$PR_NUMBER
-
-# Changed files with line counts
-curl -s -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$GH_OWNER/$GH_REPO/pulls/$PR_NUMBER/files
-```
-
-### Step 3: Check out the PR locally
-
-This gives you full access to `read_file`, `search_files`, and the ability to run tests.
-
-```bash
-git fetch origin pull/$PR_NUMBER/head:pr-$PR_NUMBER
-git checkout pr-$PR_NUMBER
-```
-
-### Step 4: Read the diff and understand changes
-
-Check out the PR (Step 3), then diff against the PR's *own* base commit from Step 2 — not your local `main`, which may lag it. Fetch the base first so the ref exists:
+1. **Set up** — `source "${HERMES_HOME:-$HOME/.hermes}/skills/github/github-auth/scripts/gh-env.sh"`, or the auth block in `references/auth.md`.
+2. **Gather context** — `gh pr view 123`, `gh pr diff 123 --name-only`, `gh pr checks 123`.
+3. **Check the PR out** — `gh pr checkout`, or the `pull/N/head` fetch above.
+4. **Diff against the PR's own base.** Take the base from the PR, never from your local branch:
 
 ```bash
 BASE=$(gh pr view $PR_NUMBER --json baseRefOid --jq '.baseRefOid')
@@ -371,104 +128,18 @@ git fetch origin "$BASE"
 
 git diff "$BASE"...pr-$PR_NUMBER --stat     # scope
 git diff "$BASE"...pr-$PR_NUMBER            # the change
-
 git diff "$BASE"...pr-$PR_NUMBER -- path/to/file.py   # file-by-file
 ```
 
-`gh pr diff $PR_NUMBER` is the same diff computed by GitHub — use it to confirm the local one matches before reading.
+A local `main` that lags the PR base makes `git diff main...HEAD` include every commit the branch is merely built on, so the file set and line count come out an order of magnitude too large. Reconcile the body's size claim against `additions`/`deletions` from `gh pr view --json`, not against the hunk count. `gh pr diff $PR_NUMBER` is the same diff GitHub computes — use it to confirm the local one matches before you read.
 
-For each changed file, use `read_file` to see full context around the changes — diffs alone can miss issues visible only with surrounding code.
+5. **Run the gate** — `python -m pytest 2>&1 | tail -20`, `ruff check . 2>&1 | head -30`, or the project's equivalents.
+6. **Apply the checklist.**
+7. **Post the verdict** as a formal review with inline comments. Then add one summary comment so the author sees the whole picture at a glance — format in `references/review-output-template.md`.
+8. **Clean up** — `git checkout main && git branch -D pr-$PR_NUMBER`.
 
-### Step 5: Run automated checks locally (if applicable)
+### Verdict
 
-```bash
-# Run tests if there's a test suite
-python -m pytest 2>&1 | tail -20
-# or: npm test, cargo test, go test ./..., etc.
-
-# Run linter if configured
-ruff check . 2>&1 | head -30
-# or: eslint, clippy, etc.
-```
-
-### Step 6: Apply the review checklist (Section 3)
-
-Go through each category: Correctness, Security, Code Quality, Testing, Performance, Documentation.
-
-### Step 7: Post the review to GitHub
-
-Collect your findings and submit them as a formal review with inline comments.
-
-**With gh:**
-```bash
-# If no issues — approve
-gh pr review $PR_NUMBER --approve --body "Reviewed by Hermes Agent. Code looks clean — good test coverage, no security concerns."
-
-# If issues found — request changes with inline comments
-gh pr review $PR_NUMBER --request-changes --body "Found a few issues — see inline comments."
-```
-
-**With curl — atomic review with multiple inline comments:**
-```bash
-HEAD_SHA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$GH_OWNER/$GH_REPO/pulls/$PR_NUMBER \
-  | python -c "import sys,json; print(json.load(sys.stdin)['head']['sha'])")
-
-# Build the review JSON — event is APPROVE, REQUEST_CHANGES, or COMMENT
-curl -s -X POST \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$GH_OWNER/$GH_REPO/pulls/$PR_NUMBER/reviews \
-  -d "{
-    \"commit_id\": \"$HEAD_SHA\",
-    \"event\": \"REQUEST_CHANGES\",
-    \"body\": \"## Hermes Agent Review\n\nFound 2 issues, 1 suggestion. See inline comments.\",
-    \"comments\": [
-      {\"path\": \"src/auth.py\", \"line\": 45, \"body\": \"🔴 **Critical:** User input passed directly to SQL query — use parameterized queries.\"},
-      {\"path\": \"src/models.py\", \"line\": 23, \"body\": \"⚠️ **Warning:** Password stored without hashing.\"},
-      {\"path\": \"src/utils.py\", \"line\": 8, \"body\": \"💡 **Suggestion:** This duplicates logic in core/utils.py:34.\"}
-    ]
-  }"
-```
-
-### Step 8: Also post a summary comment
-
-In addition to inline comments, leave a top-level summary so the PR author gets the full picture at a glance. Use the review output format from `references/review-output-template.md`.
-
-**With gh:**
-```bash
-gh pr comment $PR_NUMBER --body "$(cat <<'EOF'
-## Code Review Summary
-
-**Verdict: Changes Requested** (2 issues, 1 suggestion)
-
-### 🔴 Critical
-- **src/auth.py:45** — SQL injection vulnerability
-
-### ⚠️ Warnings
-- **src/models.py:23** — Plaintext password storage
-
-### 💡 Suggestions
-- **src/utils.py:8** — Duplicated logic, consider consolidating
-
-### ✅ Looks Good
-- Clean API design
-- Good error handling in the middleware layer
-
----
-*Reviewed by Hermes Agent*
-EOF
-)"
-```
-
-### Step 9: Clean up
-
-```bash
-git checkout main
-git branch -D pr-$PR_NUMBER
-```
-
-### Decision: Approve vs Request Changes vs Comment
-
-- **Approve** — no critical or warning-level issues, only minor suggestions or all clear
-- **Request Changes** — any critical or warning-level issue that should be fixed before merge
-- **Comment** — observations and suggestions, but nothing blocking (use when you're unsure or the PR is a draft)
+- **Approve** — nothing critical or warning-level.
+- **Request Changes** — any critical or warning-level issue that should land before merge.
+- **Comment** — observations only, nothing blocking; use it when you are unsure or the PR is a draft.

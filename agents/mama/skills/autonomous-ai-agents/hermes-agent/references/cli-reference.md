@@ -1,7 +1,6 @@
 # Hermes CLI Reference
 
-Live sources when anything looks stale: `hermes --help`, `hermes <command> --help`,
-https://hermes-agent.nousresearch.com/docs/reference/cli-commands
+Live sources when anything looks stale: `hermes --help`, `hermes <command> --help`, https://hermes-agent.nousresearch.com/docs/reference/cli-commands
 
 ### Global Flags
 
@@ -35,6 +34,7 @@ hermes chat [flags]
   --max-turns N             Cap tool-calling iterations
   --source TAG              Session source tag (default: cli)
 ```
+
 (plus the global flags above)
 
 ### Configuration
@@ -70,6 +70,7 @@ hermes mcp catalog | install NAME     Curated catalog install
 hermes mcp configure NAME             Toggle tool selection
 hermes mcp serve                      Run Hermes as an MCP server
 ```
+
 Details (transport, tool discovery, catalog): `references/native-mcp.md`.
 
 ### Gateway (Messaging Platforms)
@@ -78,8 +79,7 @@ Details (transport, tool discovery, catalog): `references/native-mcp.md`.
 hermes gateway run|install|start|stop|restart|status|setup
 ```
 
-20+ platforms: Telegram, Discord, Slack, WhatsApp (Baileys + Business Cloud API), iMessage (Photon — `hermes photon setup`), Signal, Email, SMS, Matrix, Mattermost, Teams, LINE, SimpleX, ntfy, Google Chat, Home Assistant, DingTalk, Feishu, WeCom, Weixin, API Server, Webhooks. Open WebUI connects via the API Server adapter. Most adapters ship under `plugins/platforms/`.
-Docs: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/
+Platforms include Telegram, Discord, Slack, WhatsApp (Baileys + Business Cloud API), iMessage (Photon — `hermes photon setup`), Signal, Email, SMS, Matrix, Mattermost, Teams, LINE, SimpleX, ntfy, Google Chat, Home Assistant, DingTalk, Feishu, WeCom, Weixin, API Server and Webhooks. Open WebUI connects via the API Server adapter. Most adapters ship under `plugins/platforms/`. Docs: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/
 
 ### Sessions
 
@@ -88,14 +88,7 @@ hermes sessions list|browse|rename ID TITLE|delete ID|export OUT|prune|stats
 hermes sessions list [--source TAG] [--workspace DIR] [--limit N]
 ```
 
-**Addressing a run.** A session is named, listed and resumed; a process is killed; only a gateway *chat* session can be steered. Know which plane a question is on before answering.
-
-- **Label at spawn with `--source <tag>`** — the only per-invocation label `chat` accepts (no `--title` flag exists; `hermes_cli/_parser.py`). An explicit tag is always stored as given; a one-shot defaults to `oneshot`. `hermes sessions list --source <tag>` is the filter.
-- **Title after the fact** with `hermes sessions rename <id> "<title>"`; unique, ≤100 chars, and only control/zero-width/RTL characters are stripped, so `/` and `#` survive. Titles are auto-generated (3–7 words, auxiliary model) after the first exchange unless one is set.
-- **The session id is printed at exit**, on stderr under `-Q` and by the exit summary otherwise; a non-zero exit is the run's outcome (`cli_single_query.py`). That is what makes an audit record of a child's exit meaningful.
-- **A one-shot holds a live-session lease**: `$HERMES_HOME/runtime/active_sessions.json` carries pid, surface and session id, and `hermes status` reports the holders. A configured `max_concurrent_sessions` can refuse a run, which exits 1 — a wake can therefore fail for capacity, not for its own logic.
-- **Resume** with `-c "<title>"` or `-r <id|title|latest>`; a compressed lineage (`title`, `title #2`) resolves to the newest variant, which is why a deterministic title is worth more than the auto-generated one.
-- **Steering is gateway-only.** A `-q` run is a single turn with no inbox: `/queue`, `/status` and `/stop` reach a gateway chat session, not a child process. "Continue" for a finished run is a resume; "steer" means the run was started on the gateway route.
+**Label at spawn with `--source <tag>`** — there is no `--title`. **Resume** with `-c "<title>"` or `-r <id|title|latest>`. **Steering is gateway-only**: `/queue`, `/status` and `/stop` reach a gateway chat session, not a `-q` child. Titles, leases and the id at exit: `references/sessions-and-runs.md`.
 
 ### Cron / Webhooks
 
@@ -104,6 +97,7 @@ hermes cron list|create SCHED|edit ID|pause|resume|run ID|remove|status
     Schedules: '30m', 'every 2h', '0 9 * * *', ISO timestamp
 hermes webhook subscribe NAME|list|remove NAME|test NAME
 ```
+
 Webhook payloads/routes: `references/webhooks.md`.
 
 ### Profiles
@@ -121,7 +115,8 @@ hermes auth                 Interactive credential manager
 hermes auth add [PROVIDER]  Add OAuth or API-key credential (nous, openai-codex, qwen-oauth, …)
 hermes auth list|remove P IDX|reset PROVIDER|status
 ```
-Multiple credentials per provider form a pool that rotates automatically and skips exhausted keys.
+
+Several credentials for one provider form a pool that rotates and skips exhausted keys.
 
 ### Other
 
@@ -137,21 +132,20 @@ hermes pets <verb>          Pet mascots (see references/petdex.md)
 hermes memory setup|status|off|reset   Memory provider
 hermes secrets bitwarden|onepassword   External secret stores
 hermes moa                  Mixture-of-Agents slots
-hermes hooks / security / backup / import / checkpoints / console
 hermes logs [-f] [errors]   View agent/error logs
 hermes send                 One-off message through a gateway platform
-hermes pairing / plugins / insights / journey / computer-use
 hermes acp                  ACP server (IDE integration)
-hermes completion bash|zsh|fish
+hermes hooks / security / backup / import / checkpoints / console
+hermes pairing / plugins / insights / journey / computer-use / completion
 hermes update / uninstall / claw migrate
 ```
 
-Plugin- and provider-supplied subcommands (e.g. `hermes photon setup`) only appear once their plugin is installed/active.
+Plugin- and provider-supplied subcommands (e.g. `hermes photon setup`) appear only once their plugin is installed.
 
 ### Where to Find Things
 
 | Looking for... | Location |
-|---|---|
+| --- | --- |
 | Config options | `hermes config edit` · [Configuration docs](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) |
 | Tools / toolsets | `hermes tools list` · [Tools reference](https://hermes-agent.nousresearch.com/docs/reference/tools-reference) |
 | Skills catalog | `hermes skills browse` · [Skills catalog](https://hermes-agent.nousresearch.com/docs/reference/skills-catalog) |

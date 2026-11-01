@@ -3,87 +3,87 @@
   "note": "Archive of the skills this profile owns. Read by no agent; restore with cp -an agents/mimi/skills/. into that profile skills directory.",
   "files": {
     "autonomous-ai-agents/hermes-agent/SKILL.md": {
-      "sha256": "324cc375828e4780b21de112867aedec4de77de16cbf0db94f35efd0d92634dd",
+      "sha256": "d0e15c322bb29b93fafb2f4bf9a0ad6a5b326d4ecd63981572cdd62e9f2bc9cb",
       "origin": "stock-modified"
     },
     "autonomous-ai-agents/hermes-agent/references/background-systems.md": {
-      "sha256": "01e11d4377d67165d41451f4dcd924df908cd7b795d13413cc8c09ab879a4b0a",
+      "sha256": "2d1c51fe6a398bfe135b8ea9f79eee2e92cd5ac23cb82838f0cbeef2daa7c8ff",
       "origin": "stock-modified"
     },
     "autonomous-ai-agents/hermes-agent/references/release-tracking.md": {
-      "sha256": "36167001f0e7e35dd615ba70d284d00516b2ea81229cfa8305ff0266b4bcf07f",
+      "sha256": "fe6ad28d095f5be9cf58ff7c2ceaf6534bd9ad6c7f1f56a940faebf3e7731acb",
       "origin": "authored"
     },
     "software-development/aivara-board/SKILL.md": {
-      "sha256": "35d796fb825fddbb9128f15c58ae9e4517aa3bd73ee5c1c12427f346d4efcd07",
+      "sha256": "c328efad9aaba86bedfb38455ccb574c9030facf4b0a2f0fc75637ef069741ee",
       "origin": "authored"
     },
     "software-development/aivara-board/references/verifying-a-merge.md": {
-      "sha256": "2fb38229a1bfbb068339b80ffcacec39bd77e8110db6a01e8c6e27a679e9384c",
+      "sha256": "90d928369ae31751cb2caefe1142ab1e2c3920ef81082992d1abaea1b5e91a60",
       "origin": "authored"
     },
     "software-development/benchmarking/SKILL.md": {
-      "sha256": "fa426b2c0980787a4235f7a0f486718f526a19cc0b0e011471e4ff1542ad9485",
+      "sha256": "8b9736ba81577d74021f4a83319be872cb254b19087dad6f3b02f89ba5f74dc0",
       "origin": "authored"
     },
     "software-development/benchmarking/references/sdlc-experiment-log.md": {
-      "sha256": "24fe266cab41f289156199ed7e4056611f2e085aa7e1e269c6fd1fe39dcc5cfa",
+      "sha256": "f5be3ca2834fcdbb4b97300683e13fde935b22aeafdcd05de95b037ba5971c7d",
       "origin": "authored"
     },
     "software-development/change-planning/SKILL.md": {
-      "sha256": "944047d92eea8346db5edc7ac1825be17a1fc659523f3dc5ab0537f511bc4a6f",
+      "sha256": "b8c3402b11cf7975f56ffe208a8d3e0e3940ce76e424b15ee2d2863c205e739c",
       "origin": "authored"
     },
     "software-development/change-planning/references/origin-consolidation.md": {
-      "sha256": "d1f5331dbb65406789d7220911f3cfdca4b366d4be7294a0f74f76d829b80943",
+      "sha256": "b6a1da131782748fc9d2539e0465e1521b3c9a8fe91f8e6bdae62e71c36cfdb5",
       "origin": "authored"
     },
     "software-development/desktop-app-stack-choice/SKILL.md": {
-      "sha256": "33a0c2782b4fb7f2bd5034138448b56a5c1bb01e8aa2ab916ce035edf6acdc42",
+      "sha256": "329f14ef571881f7edf5fd67c0e2ad4030f7379a1dc2ab5c8c732637de3be9f6",
       "origin": "authored"
     },
     "software-development/desktop-app-stack-choice/references/artifact-size-audit.md": {
-      "sha256": "ccb4d86fa483731e2822d672f964b953d874e7f65a3f9143022ea3e1b6a7a966",
+      "sha256": "3214f5421c6b94c16d8a1d2c9390b86c94582279d4fee7f4a23ddf0ea7a5b7fc",
       "origin": "authored"
     },
     "software-development/dogfood/SKILL.md": {
-      "sha256": "994fb35dde0be3f660fb3db1ade453a9aaeefdfe87f97dcd80ee7fdf63cd4e13",
+      "sha256": "3795f91395c3e78f9fbfac8e8942affcddfe7bd452efcf5176d094c4446436c6",
       "origin": "stock-modified"
     },
     "software-development/framework-major-migration/SKILL.md": {
-      "sha256": "335f34476eb31ecfbf62d0b00c4c5279291c7e860a1ffc8a547f15c8b2067464",
+      "sha256": "f71632b9a753dd1d7c0c9c2259241599f067db34b43a2ed045ac360232a5aea5",
       "origin": "authored"
     },
     "software-development/framework-major-migration/references/sveltekit-3.md": {
-      "sha256": "a7598195a7825562e078f89621f891a81da5cfe98271d96ccc93ec006bf9a488",
+      "sha256": "591bf5012600c0f1aceb4fd73b52b2f680ae7d0f6ec3db88675320c4bc925ac7",
       "origin": "authored"
     },
     "software-development/github/SKILL.md": {
-      "sha256": "c5fee9e74f1cb305c71e95fec305c580bd27ee551869fb1b9ab2958d6b14bd8c",
+      "sha256": "ba0024cb124b000bf27eead8eb2d5516dee2677a3b854b297ebb50b3397c9409",
       "origin": "stock-modified"
     },
     "software-development/github/references/auth.md": {
-      "sha256": "707c36bfc2f27c7ed1c837092840d8fddf4dbc0adc8f294cd3c57a62148ad1dc",
+      "sha256": "7cf9277c843da019ff4639b4b6f1c44845bad101489b8fc2a283022bb8308cb2",
       "origin": "stock-modified"
     },
     "software-development/github/references/ci-troubleshooting.md": {
-      "sha256": "6e17e6621c5e3f4e80d9fbd3397eec77bc9dfb791e84d332d6cf435ac6b9c530",
+      "sha256": "d49f18d31c3ff9f20edfa56708c787bea5da1f4d18795d042892c118032b7033",
       "origin": "stock-modified"
     },
     "software-development/github/references/code-review.md": {
-      "sha256": "f2df27d2491910764ed32fe213eed5982c33d178a8ef2793c545667e54b355bb",
+      "sha256": "4c6f7bf42e8f561c1450f6fb137d1b53239671da35cadf046b8990ebe299eaaf",
       "origin": "stock-modified"
     },
     "software-development/github/references/pr-workflow.md": {
-      "sha256": "bdf62e2e5dc1b07b4983d3f6a0826617539c36c35b00f51ea46004f7fab53663",
+      "sha256": "5234e737b926f0fa9cd81e940cecd58a9802dfc5ad97ffd5946ddb18dd99de00",
       "origin": "stock-modified"
     },
     "software-development/github/references/repo-management.md": {
-      "sha256": "59e0288f2fd6e1b6da9594fb83d739f0e4670893976b51abdba563a800a4c315",
+      "sha256": "b74c2818b2f8b70c657ec588a8ba4307ec130a7eb104f4d9ad50566c337b6117",
       "origin": "stock-modified"
     },
     "software-development/page-geometry-cdp/SKILL.md": {
-      "sha256": "49a745e6ac882961df21d3ffa0b2057574e8ed80a1da57a62c73b24cbc9b0504",
+      "sha256": "4649a4b7bf66172beb8ea199c1f3a1bdcb479298a371895af65857c706a410f4",
       "origin": "authored"
     },
     "software-development/page-geometry-cdp/scripts/link-coverage.mjs": {
@@ -95,31 +95,31 @@
       "origin": "authored"
     },
     "software-development/product-direction-research/SKILL.md": {
-      "sha256": "707f562c8b9fb13865751490b5195b1bce94e1ed5bd69ebac4ca579243a3b436",
+      "sha256": "99ef1e713571f702d4faaac835e232db766d8bea6df856ea0282fc18d45c48c6",
       "origin": "authored"
     },
     "software-development/product-direction-research/references/agent-sdlc-evidence.md": {
-      "sha256": "be86f9fd7a27ba0d20b25bf5824c02f2d8d3b093b4dc1fc2fb64f535be92c721",
+      "sha256": "64b3cae19bec8402a3db5c771fba41ab0cc6bf79a5e06df6ad3e1fa77f3ae936",
       "origin": "authored"
     },
     "software-development/repo-bootstrap/SKILL.md": {
-      "sha256": "66a5216bc0c0541f411c92f2b5348a302dfe943e5b1d895d5f39feeb5b697184",
+      "sha256": "24d7605f9a6627bd7c736b3b98673c916499ee0a872fdb1aab9d38911f95d362",
       "origin": "authored"
     },
     "software-development/sandbox-toolchains/SKILL.md": {
-      "sha256": "9e7808ef61726e6f73fec280cf80508352be60529248b972593731da64473903",
+      "sha256": "12b10624e5ae6b0497fa26d8f806558ea63c7643df7176567aeede696afba25b",
       "origin": "authored"
     },
     "software-development/spike/SKILL.md": {
-      "sha256": "53484681ef0fe66b014b99b3b137562c7c169710b10e3b6d95e9281b38dc3756",
+      "sha256": "c623003a532bc4e6c7b1ad31045a5497f3e406d585a99518398e2be6f739c10a",
       "origin": "stock-modified"
     },
     "software-development/svelte-native-desktop/SKILL.md": {
-      "sha256": "712eb8d42cfe44cf906b6c0c5723f419a50e8adce9b6603224e9ffe574ac090c",
+      "sha256": "3627bb679c4cb62d17f75422610dfe15a30c7edf1a2b7cc7ccfd83a03a9a1c63",
       "origin": "authored"
     },
     "software-development/svelte-native-desktop/references/renderer-quirks.md": {
-      "sha256": "e7bfb92077d3db9c7af0ffff1a22db7cfedc7d76643aac6e1fccc838985f6111",
+      "sha256": "aa325fa2cf3a2eb5ea6143d4b624b14ee1b4b8683da523bfdc43026fb8677184",
       "origin": "authored"
     },
     "software-development/svelte-native-desktop/templates/build-macos-app.ts": {
@@ -127,47 +127,47 @@
       "origin": "authored"
     },
     "software-development/sveltekit-worker-feature/SKILL.md": {
-      "sha256": "3ae379d3d66844156e107fc132552d761c1f87f4636d29089af4ef6b8bf758a7",
+      "sha256": "8449b6fbd67e713e743be244499cf1a066d8b257a01d7cd4803cecc4c8599101",
       "origin": "authored"
     },
     "software-development/terminology-rename/SKILL.md": {
-      "sha256": "995e6752f66d2a884667aafd3020cb270d528e252e9df6fa10efc5b2eeb87e5d",
+      "sha256": "633ddfabbad821b618e0df12ed4d2261efb99b31235d54cb2865a3f8230b22c4",
       "origin": "authored"
     },
     "software-development/tinyjs-page-harness/SKILL.md": {
-      "sha256": "91a4dd321cd65246c0c90f568046a38989ed5bc0352ccb48a1ed8183269da9fc",
+      "sha256": "1b8da0474cf47437552a22af1cbdff6be51f82cbfec4b952a0253449d59e95ce",
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/SKILL.md": {
-      "sha256": "3a8915ef008ea0a36b9b8fdb2f5597c5794627b574b3d11cc124c1d300a24baa",
+      "sha256": "03e0e7c3d7de36db90560fa8fb291d2c6707addaeaa3deee8662d35a245854d8",
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/references/design-tokens-and-contrast.md": {
-      "sha256": "f477a23fbe3172311cd9de810c3f27ccd08cc2121eed7358ffef9bfdffa0799e",
+      "sha256": "a78a8efc7a8aaae6ff56f9aab8865f0eb22e989419182e0fd232eb9a93b03d81",
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/references/device-storage-migration.md": {
-      "sha256": "bc870f4a22ab044e1e96f420125c39da1410e5c1b571e91f6217a43346ccf967",
+      "sha256": "fbb3eb87b8153a34cfb9b792bbc442f69dfa76471ea10f67cb96927bc975171e",
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/references/github-pages-project-site.md": {
-      "sha256": "1a8d4980782c7fd59846f72fe6bed54a9a63e07b6cc01c5b79d64c2373858a19",
+      "sha256": "493a6955d618a8d537916486c3b011dbea263d037b4401eeb449374e4369d9f3",
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/references/icon-sets.md": {
-      "sha256": "f2de5ff37075989eaa0d4967e19dddf9a3b4552a5271e8ecdf5675ab2f8404ac",
+      "sha256": "dc3210a4a01bea81f7f0a551fa6db3a9abc128b936f4f09735c0ec48b27011e8",
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/references/product-page-value-copy.md": {
-      "sha256": "bc4db74ed5a0b2cab5fd9a821bf8cce1ef8373f3bf70f084e85dfb2e869c7da2",
+      "sha256": "a0119fc4e055c5ec9f1099b165e7ee855ca47f89f2fdef3e2616d700e3588ec0",
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/references/quick-tunnel-preview.md": {
-      "sha256": "f092384422a4bd03245714f05032e8be22ab4de79548f52ce5a68efeac540f4e",
+      "sha256": "a64b4b6d957961ba934e418812164086a598edae64d65e0bf699882082f21577",
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/references/sveltekit-cloudflare-pages.md": {
-      "sha256": "3aa8ce05037145a2c450bb47357fa8bfb6c08a3947d360c8e8d662e2b2f67fc3",
+      "sha256": "cc84da3e35cd0431a431163badfb7699f245141387e54733401efbcee6f935d5",
       "origin": "authored"
     },
     "software-development/web-frontend-delivery/scripts/contrast.ts": {
@@ -183,11 +183,11 @@
       "origin": "authored"
     },
     "software-development/web-page-parity/SKILL.md": {
-      "sha256": "1f4952146a5e549ccee9cd7d043853e8b592a26e4c0916768bbe9263bb832c7f",
+      "sha256": "547171b95eac528aa258225b2134978f6418f4d884f503a27d00c64aaf78782f",
       "origin": "authored"
     },
     "software-development/web-page-parity/references/sveltekit-cloudflare-parity.md": {
-      "sha256": "7e84a73ba68d1cca5c70b2edc2b161b74dfcb4508964983e60c21e648dec7107",
+      "sha256": "59fa3a8441d904ffd6f112b679afa3977edd3b205dfc00114b1334efb35073d5",
       "origin": "authored"
     },
     "software-development/web-page-parity/scripts/measure-page.mjs": {

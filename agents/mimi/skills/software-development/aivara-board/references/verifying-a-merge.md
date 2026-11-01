@@ -11,7 +11,7 @@ git rev-parse <reviewed-head>^{tree}                      # the head the approva
 git rev-parse <merge-commit>^{tree}
 ```
 
-Equal trees: the content that merged is the content that was reviewed, so the approval still describes what landed. Then read the base branch itself for the symbol the change adds:
+Equal trees mean the reviewed content is what merged. Then read the base branch for the symbol the change adds:
 
 ```sh
 git log --oneline -3 origin/main
@@ -27,7 +27,7 @@ git fetch --prune
 git status --short                # must print nothing
 ```
 
-Read the issue and the column back — the merge closes the issue and the project automation sets `Finished`; never move the column by hand.
+The merge closes the issue and project automation sets `Finished`; never move the column by hand. Read both back:
 
 ```sh
 gh issue view <n> --json state,closedAt,stateReason
@@ -36,7 +36,7 @@ gh api graphql -f query='{ repository(owner:"aivara-se", name:"<repo>"){ issue(n
 
 ## Count a conflict between two open pull requests
 
-The merger orders the pair, so the count must be current and measured on both heads as they stand.
+The merger orders the pair, so measure on both heads as they stand.
 
 ```sh
 git worktree add --detach /root/scratch/<name> <head-A>
@@ -47,8 +47,8 @@ grep -c '^<<<<<<<' <file>
 git merge --abort
 ```
 
-Then `git worktree remove --force <dir>` and `git worktree prune` from the repository, and remove the scratch directory. Quote the count with the two heads it was measured on.
+Then `git worktree remove --force <dir>`, `git worktree prune`, and remove the scratch directory. Quote the count with the two heads it was measured on.
 
 ## When mergeability reads `unknown`
 
-`null` / `unknown` from `mergeable` / `mergeable_state` is a recompute in flight — something was just pushed or merged. Poll it a few times; if it stays `unknown`, stop reading mergeability and read `state` + `merged` + `mergedAt`: the pull request may already have merged.
+`null` / `unknown` is a recompute in flight after a push or merge. Poll a few times; if it stays, read `state` + `merged` + `mergedAt` — the pull request may already have merged.

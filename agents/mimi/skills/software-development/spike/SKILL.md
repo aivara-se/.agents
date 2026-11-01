@@ -7,32 +7,36 @@ license: MIT
 platforms: [linux, macos, windows]
 metadata:
   hermes:
-    tags: [spike, prototype, experiment, feasibility, throwaway, exploration, research, planning, mvp, proof-of-concept]
+    tags:
+      [
+        spike,
+        prototype,
+        experiment,
+        feasibility,
+        throwaway,
+        exploration,
+        research,
+        planning,
+        mvp,
+        proof-of-concept,
+      ]
     related_skills: [benchmarking, sketch, subagent-driven-development]
 ---
 
 # Spike
 
-Use this skill when the user wants to **feel out an idea** before committing to a real build — validating feasibility, comparing approaches, or surfacing unknowns that no amount of research will answer. Spikes are disposable by design. Throw them away once they've paid their debt.
-
-Load this when the user says things like "let me try this", "I want to see if X works", "spike this out", "before I commit to Y", "quick prototype of Z", "is this even possible?", or "compare A vs B".
+A spike answers feasibility before a real build: "let me try this", "is this even possible?", "compare A vs B". Spikes are disposable by design — throw them away once they have paid their debt.
 
 ## When NOT to use this
 
-- The answer is knowable from docs or reading code — just do research, don't build
-- The work is production path — use the `plan` skill instead
-- The idea is already validated — jump straight to implementation
-- The question is "how much does it cost" rather than "can it work" — `is X faster
-  than Y`, `what does 400 files add to the run` — use the `benchmarking` skill; a spike
-  answers feasibility, a benchmark answers price
+- The answer is knowable from docs or reading code — research, don't build.
+- The work is production path — plan it instead.
+- The idea is already validated — implement.
+- The question is price rather than feasibility (`is X faster than Y`) — use `benchmarking`.
 
-## If the user has the full GSD system installed
-
-If `gsd-spike` shows up as a sibling skill (installed via `npx get-shit-done-cc --hermes`), prefer **`gsd-spike`** when the user wants the full GSD workflow: persistent `.planning/spikes/` state, MANIFEST tracking across sessions, Given/When/Then verdict format, and commit patterns that integrate with the rest of GSD. This skill is the lightweight standalone version for users who don't have (or don't want) the full system.
+If `gsd-spike` is installed as a sibling skill, prefer it for the full GSD workflow (persistent `.planning/spikes/` state, MANIFEST tracking, Given/When/Then verdicts). This is the standalone version.
 
 ## Core method
-
-Regardless of scale, every spike follows this loop:
 
 ```
 decompose  →  research  →  build  →  verdict
@@ -42,54 +46,33 @@ decompose  →  research  →  build  →  verdict
 
 ### 1. Decompose
 
-Break the user's idea into **2-5 independent feasibility questions**. Each question is one spike. Present them as a table with Given/When/Then framing:
+Break the idea into **2-5 independent feasibility questions**, one spike each, as a table:
 
 | # | Spike | Validates (Given/When/Then) | Risk |
-|---|-------|----------------------------|------|
+| --- | --- | --- | --- |
 | 001 | websocket-streaming | Given a WS connection, when LLM streams tokens, then client receives chunks < 100ms | High |
 | 002a | pdf-parse-pdfjs | Given a multi-page PDF, when parsed with pdfjs, then structured text is extractable | Medium |
 | 002b | pdf-parse-camelot | Given a multi-page PDF, when parsed with camelot, then structured text is extractable | Medium |
 
-**Spike types:**
-- **standard** — one approach answering one question
-- **comparison** — same question, different approaches (shared number, letter suffix `a`/`b`/`c`)
+**Types:** standard (one approach, one question) and comparison (same question, different approaches, shared number with `a`/`b`/`c` suffix).
 
-**Good spike questions:** specific feasibility with observable output.
-**Bad spike questions:** too broad, no observable output, or just "read the docs about X".
+**Good questions** are specific feasibility with observable output. **Bad ones** are too broad, have no observable output, or are "read the docs about X".
 
-**Order by risk.** The spike most likely to kill the idea runs first. No point prototyping the easy parts if the hard part doesn't work.
+**Order by risk.** The spike most likely to kill the idea runs first.
 
-**Skip decomposition** only if the user already knows exactly what they want to spike and says so. Then take their idea as a single spike.
+**Skip decomposition** only when the user already names the single thing to spike.
 
-### 2. Align (for multi-spike ideas)
+### 2. Align (multi-spike ideas)
 
-Present the spike table. Ask: "Build all in this order, or adjust?" Let the user drop, reorder, or re-frame before you write any code.
+Present the table and ask: "Build all in this order, or adjust?" Let the user drop, reorder or re-frame before you write code.
 
 ### 3. Research (per spike, before building)
 
-Spikes are not research-free — you research enough to pick the right approach, then you build. Per spike:
-
-1. **Brief it.** 2-3 sentences: what this spike is, why it matters, key risk.
-2. **Surface competing approaches** if there's real choice:
-
-   | Approach | Tool/Library | Pros | Cons | Status |
-   |----------|-------------|------|------|--------|
-   | ... | ... | ... | ... | maintained / abandoned / beta |
-
-3. **Pick one.** State why. If 2+ are credible, build quick variants within the spike.
-4. **Skip research** for pure logic with no external dependencies.
-
-Use Hermes tools for the research step:
-
-- `web_search("python websocket streaming libraries 2025")` — find candidates
-- `web_extract(urls=["https://websockets.readthedocs.io/..."])` — read the actual docs (returns markdown)
-- `terminal("pip show websockets | grep Version")` — check what's installed in the project's venv
-
-For libraries without docs pages, clone and read their `README.md` / `examples/` via `read_file`. Context7 MCP (if the user has it configured) is also a good source — `mcp_*_resolve-library-id` then `mcp_*_query-docs`.
+Research enough to pick the right approach, then build. Use `web_search`, `web_extract` for real docs, and `terminal("pip show …")` for what is installed. For a library without doc pages, clone it and read `README.md` / `examples/`. Context7 MCP, if configured, is another source.
 
 ### 4. Build
 
-One directory per spike. Keep it standalone.
+One standalone directory per spike:
 
 ```
 spikes/
@@ -104,28 +87,13 @@ spikes/
     └── parse.py
 ```
 
-**Bias toward something the user can interact with.** Spikes fail when the only output is a log line that says "it works." The user wants to *feel* the spike working. Default choices, in order of preference:
+**Bias toward something the user can interact with.** Spikes fail when the only output is a log line saying "it works". In order of preference: a runnable CLI, a minimal HTML page, a small web server with one endpoint, a unit test with recognizable assertions.
 
-1. A runnable CLI that takes input and prints observable output
-2. A minimal HTML page that demonstrates the behavior
-3. A small web server with one endpoint
-4. A unit test that exercises the question with recognizable assertions
+**Depth over speed.** Never declare "it works" after one happy-path run. Test edge cases; follow surprising findings.
 
-**Depth over speed.** Never declare "it works" after one happy-path run. Test edge cases. Follow surprising findings. The verdict is only trustworthy when the investigation was honest.
+**Avoid** complex package management, build tools, Docker, env files and config systems. Hardcode everything.
 
-**Avoid** unless the spike specifically requires it: complex package management, build tools/bundlers, Docker, env files, config systems. Hardcode everything — it's a spike.
-
-**Building one spike** — a typical tool sequence:
-
-```
-terminal("mkdir -p spikes/001-websocket-streaming")
-write_file("spikes/001-websocket-streaming/README.md", "# 001: websocket-streaming\n\n...")
-write_file("spikes/001-websocket-streaming/main.py", "...")
-terminal("cd spikes/001-websocket-streaming && python main.py")
-# Observe output, iterate.
-```
-
-**Parallel comparison spikes (002a / 002b) — delegate.** When two approaches can run in parallel and both need real engineering (not 10-line prototypes), fan out with `delegate_task`:
+**Parallel comparison spikes — delegate.** When two approaches both need real engineering, fan out:
 
 ```
 delegate_task(tasks=[
@@ -144,57 +112,58 @@ Each spike's `README.md` closes with:
 ## Verdict: VALIDATED | PARTIAL | INVALIDATED
 
 ### What worked
+
 - ...
 
 ### What didn't
+
 - ...
 
 ### Surprises
+
 - ...
 
 ### Recommendation for the real build
+
 - ...
 ```
 
-**VALIDATED** = the core question was answered yes, with evidence.
-**PARTIAL** = it works under constraints X, Y, Z — document them.
-**INVALIDATED** = doesn't work, for this reason. This is a successful spike.
+**VALIDATED** = the core question answered yes, with evidence. **PARTIAL** = it works under constraints X, Y, Z — document them. **INVALIDATED** = it doesn't work, for this reason; that is a successful spike.
 
 ## Comparison spikes
 
-When two approaches answer the same question (002a / 002b), build them **back to back**, then do a head-to-head comparison at the end:
+When two approaches answer the same question, build them back to back, then compare:
 
 ```markdown
 ## Head-to-head: pdfjs vs camelot
 
-| Dimension | pdfjs (002a) | camelot (002b) |
-|-----------|--------------|----------------|
-| Extraction quality | 9/10 structured | 7/10 table-only |
-| Setup complexity | npm install, 1 line | pip + ghostscript |
-| Perf on 100-page PDF | 3s | 18s |
-| Handles rotated text | no | yes |
+| Dimension            | pdfjs (002a)        | camelot (002b)    |
+| -------------------- | ------------------- | ----------------- |
+| Extraction quality   | 9/10 structured     | 7/10 table-only   |
+| Setup complexity     | npm install, 1 line | pip + ghostscript |
+| Perf on 100-page PDF | 3s                  | 18s               |
+| Handles rotated text | no                  | yes               |
 
 **Winner:** pdfjs for our use case. Camelot if we need table-first extraction later.
 ```
 
 ## Frontier mode (picking what to spike next)
 
-If spikes already exist and the user says "what should I spike next?", walk the existing directories and look for:
+Walking existing spike directories, look for:
 
-- **Integration risks** — two validated spikes that touch the same resource but were tested independently
-- **Data handoffs** — spike A's output was assumed compatible with spike B's input; never proven
+- **Integration risks** — two validated spikes touching the same resource, tested separately
+- **Data handoffs** — spike A's output assumed compatible with spike B's input, never proven
 - **Gaps in the vision** — capabilities assumed but unproven
 - **Alternative approaches** — different angles for PARTIAL or INVALIDATED spikes
 
-Propose 2-4 candidates as Given/When/Then. Let the user pick.
+Propose 2-4 candidates as Given/When/Then and let the user pick.
 
 ## Output
 
-- Create `spikes/` (or `.planning/spikes/` if the user is using GSD conventions) in the repo root
-- One dir per spike: `NNN-descriptive-name/`
-- `README.md` per spike captures question, approach, results, verdict
-- Keep the code throwaway — a spike that takes 2 days to "clean up for production" was a bad spike
+- `spikes/` (or `.planning/spikes/` under GSD) in the repo root, one `NNN-descriptive-name/` directory per spike
+- `README.md` per spike: question, approach, results, verdict
+- Keep the code throwaway — a spike needing two days to "clean up for production" was a bad spike
 
 ## Attribution
 
-Adapted from the GSD (Get Shit Done) project's `/gsd-spike` workflow — MIT © 2025 Lex Christopherson ([gsd-build/get-shit-done](https://github.com/gsd-build/get-shit-done)). The full GSD system offers persistent spike state, MANIFEST tracking, and integration with a broader spec-driven development pipeline; install with `npx get-shit-done-cc --hermes --global`.
+Adapted from the GSD project's `/gsd-spike` workflow — MIT © 2025 Lex Christopherson ([gsd-build/get-shit-done](https://github.com/gsd-build/get-shit-done)).

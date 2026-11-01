@@ -1,7 +1,6 @@
 ---
 name: github
 description: "GitHub via gh CLI: PRs, issues, reviews, repos, auth."
-version: 2.0.0
 author: Ben Barclay (benbarclay), Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
@@ -14,16 +13,12 @@ metadata:
 
 # GitHub
 
-Work GitHub end to end with the `gh` CLI (REST fallback where noted): auth,
-issues, the PR lifecycle, issue-to-PR delivery, code review, and repo
-management. This skill consolidates six former skills; each workflow lives
-complete in its reference file — ALWAYS read the matching reference before
-starting that workflow, the body below only routes.
+Work GitHub with the `gh` CLI, REST where noted. Each workflow lives complete in its reference file. Read that file before you start; this body only routes.
 
 ## Routing
 
 | Task | Read first |
-|---|---|
+| --- | --- |
 | Auth broken / new machine / token or SSH setup / gh login | `references/auth.md` |
 | Create, triage, label, assign, close issues | `references/issues.md` |
 | Branch, commit, open PR, watch CI, merge | `references/pr-workflow.md` |
@@ -33,52 +28,30 @@ starting that workflow, the body below only routes.
 | Clone/create/fork repos, remotes, releases | `references/repo-management.md` |
 | A check is missing/pending, a workflow or job was renamed | `references/ci-troubleshooting.md` |
 
-Supporting assets: `scripts/gh-env.sh` + `scripts/git-credential-token.py`
-(auth helpers), `templates/` (PR bodies, bug report, feature request),
-`references/ci-troubleshooting.md`, `references/conventional-commits.md`,
-`references/github-api-cheatsheet.md`, `references/review-output-template.md`.
+Supporting assets: `scripts/gh-env.sh`, `scripts/git-credential-token.py`, `templates/`, `references/conventional-commits.md`, `references/github-api-cheatsheet.md`, `references/review-output-template.md`.
 
-## Core discipline (applies to every workflow)
+## Core discipline (every workflow)
 
-- Preflight once per session: `gh auth status` — if it fails, go to
-  `references/auth.md` before anything else. `gh` itself is not in my sandbox
-  image (a rebuild drops it while `~/.config/gh/hosts.yml` survives): on
-  `gh: command not found`, install the release tarball into
-  `/usr/local/bin` and the existing login works untouched.
-- Prefer `gh` over raw REST; drop to `gh api` only for endpoints the
-  porcelain lacks (the cheatsheet lists them).
-- An empty result from a porcelain read is not proof the resource is empty:
-  `gh issue view` and `gh pr view` can print nothing and still exit 0. Re-read
-  the raw endpoint (`gh api repos/{owner}/{repo}/issues/<n>`) before
-  concluding, and say which read you saw.
-- A pull request's head can move while you review it (the author pushes a fix mid-review): re-read the head SHA from the API immediately before submitting, and submit only when it still matches the SHA you actually ran — `HEAD=$(gh api repos/{owner}/{repo}/pulls/<n> --jq .head.sha)`, compare, then `gh pr review`. A review filed against a superseded SHA answers a question the branch no longer asks; when the head moves, redo the work at the new head rather than posting the old verdict.
-- Never submit `APPROVE` on a pull request whose branch carries a commit of yours (read `gh api repos/{owner}/{repo}/pulls/<n>/commits`, not the body): the approval has to come from a reviewer who has written nothing on that branch. Record what you found, submit it without the verdict you are not entitled to give, and name who must decide (the other reviewer on the record, or the operator).
-- Never report CI green without checking `gh pr checks` yourself; never
-  claim merged without verifying `state,mergedAt`. **An approval is not a
-  merge** — a PR a reviewer approved sits open until someone merges it, and a
-  second-hand "it is merged" is not evidence either. After the merge, read the
-  run it triggered (`gh run list --branch <base> -L 2`) and, where the change
-  is published, the address a user reaches it at, before calling it live.
-- A branch is not ready to push while it still carries its own attempts: fold a `fix` that
-  repairs the branch's previous commit into it, and fold superseded designs into one commit,
-  proving the rewrite with an identical `git rev-parse HEAD^{tree}` before and after
-  (`references/pr-workflow.md`).
-- A rebase onto a moved `main` can land a second copy of your own CI. If the branch adds a workflow for the gate and `main` gained one for the same gate meanwhile, both files survive the rebase and every pull request runs the gate twice; `gh pr checks` shows two jobs where one belongs. Compare before rebasing — `git diff --stat $(git merge-base HEAD origin/main) origin/main -- .github/workflows/` —  and when `main` already carries the gate, keep its file: move your steps into its job, delete the stopgap guard and the comments it no longer needs, drop your own workflow, then confirm one job runs.
-- A rewrite of the branch — amend, rebase, `--force-with-lease` — dismisses every approval on the pull request. That is GitHub's doing, not a rejection: after the rewrite, re-request review from the reviewers whose verdict matters, or the pull request sits blocked behind a state that no longer exists. `reviews[]` is a log, not a state — read the newest row per reviewer (`references/pr-workflow.md`, *Review on your own PR*). The same rewrite can clear the armed auto-merge, and `gh pr merge --auto` refuses a draft with a GraphQL error that never says so — read `gh pr view <n> --json isDraft,autoMergeRequest,reviewRequests` after the push, mark it ready, then re-arm and confirm `enabledAt` is set.
-- When a rebase conflicts on a file a peer pull request rewrote while you did, there is no common hunk to keep: re-apply what their change added into your structure, in your own words, before `git rebase --continue`. Taking either side wholesale drops rules one of the two changes needs, and the resolution commit hides which was dropped.
-- Write a PR body or a long review reply to a file and pass `--body-file <path>`: a `--body` argument carrying backticks and quotes is mangled by the shell, and `gh` fails with `accepts at most 1 arg(s)`. The file also makes the text re-editable for the next round. Write it outside the clone (`~/.pr-bodies/<repo>-<topic>.md`): a body file in the repository root is an untracked file that `git status` reports and a later `git add -A` sweeps into the commit.
-- **A push is proved by the remote ref, not by git's output.** A rejected push prints `! [remote rejected] <branch> -> <branch>`, which matches a grep for the branch and  reads as success: compare `git ls-remote origin <branch>` with `git rev-parse HEAD`, and read `gh pr create`'s `No commits between <base> and <branch>` as the push having never landed, not as a branch problem. GitHub answers a write with a 5xx from time to time — retry with backoff, then read the ref, and before re-creating a pull request read `gh pr list --head <branch>`, because the create may have landed behind the error.
-- Read full context before writing: `gh issue view --comments` /
-  `gh pr view --comments` — decisions live in threads, not titles.
-- A pull request whose base branch was rebased or force-pushed under it reports `CONFLICTING` on every file both sides touch, even when the content is identical: git matches commits by SHA, so the same change replayed onto the base is an unrelated commit, and both branches look like they are adding the same paths. Fix it by reparenting your own commits — `git rebase --onto <new-base> <old-base>`, where `<old-base>` is the commit your branch was built on — and check `git rev-parse HEAD^{tree}` against the tree you verified before pushing: an unchanged hash means the verification still holds, only the parent moved.
-- `gh pr create` performs two writes — the pull request and the review requests — and the second can fail after the first succeeded. On a GraphQL or reviewer error, read `gh pr view --json url,reviewRequests` before retrying, because a blind retry opens a duplicate PR; set the reviewers with `gh pr edit <n> --add-reviewer <a>,<b>` and confirm `reviewRequests` lists both. A `--reviewer` name that is not an account on the repository is dropped without an error — the create still exits 0 and prints the URL — so read `gh pr view <n> --json reviewRequests` and say in the reply which reviewer could not be added instead of leaving the record looking complete. Take `<n>` from the URL the create printed — never infer it from the last pull request, or `gh pr edit` adds your reviewers to someone else's open pull request.
-- **The clone may be another session's.** A background or parallel run of your own shares one checkout: before any `git checkout`, read the current branch and `git status`, because switching moves that session's work out from under it. Keep your change in its own worktree — `git worktree add ~/wt/<topic> <branch>` — and symlink the shared `node_modules` into it so the gate runs without a reinstall.
-- `gh api repos/{owner}/{repo}/branches/<base>/protection` answers 404 when protection lives in a **ruleset**, not a classic branch rule: read `gh api repos/{owner}/{repo}/rulesets` and then the ruleset by id before calling a PR landable or blocked — `allowed_merge_methods` and `required_linear_history` decide whether a merge commit can land at all.
-- Sweep for duplicates before creating anything:
-  `gh pr list --search` / `gh issue list --search`.
+- **Preflight once per session:** `gh auth status`; if it fails, read `references/auth.md` first. `gh` is absent from the sandbox image and a rebuild drops it while `~/.config/gh/hosts.yml` survives: on `gh: command not found`, install the release tarball into `/usr/local/bin` and the existing login works untouched.
+- **Prefer `gh` to raw REST**; use `gh api` only for endpoints the porcelain lacks.
+- **An empty porcelain read is not an empty resource:** `gh issue view` and `gh pr view` can print nothing and exit 0. Re-read `gh api repos/{owner}/{repo}/issues/<n>` and say which read you saw.
+- **The head moves while you review.** Read `HEAD=$(gh api repos/{owner}/{repo}/pulls/<n> --jq .head.sha)` just before `gh pr review` and submit only if it matches the SHA you ran; otherwise redo the work at the new head.
+- **Never `APPROVE` a PR whose branch carries a commit of yours.** Read `gh api repos/{owner}/{repo}/pulls/<n>/commits`, not the body. Report the findings without that verdict and name who must decide.
+- **Green comes from your own `gh pr checks`; merged from `state,mergedAt`.** An approval is not a merge, and a second-hand claim is not evidence. After the merge, read the run it triggered (`gh run list --branch <base> -L 2`) and, where published, the address a user reaches, before calling it live.
+- **Fold the attempts before you push:** a `fix` into the commit it repairs, superseded designs into one, proven by an identical `git rev-parse HEAD^{tree}` (`references/pr-workflow.md`).
+- **A rebase onto a moved `main` can duplicate your CI.** Compare `git diff --stat $(git merge-base HEAD origin/main) origin/main -- .github/workflows/`: if `main` carries the gate, keep its file, move your steps into its job, delete your own workflow and the stopgap guard, then confirm one job runs.
+- **A rewrite dismisses every approval** — GitHub's doing, not a rejection: re-request review after it. `reviews[]` is a log, not a state; read the newest row per reviewer (`references/pr-workflow.md`). A rewrite also clears armed auto-merge, and `gh pr merge --auto` refuses a draft with a GraphQL error that never says so: read `gh pr view <n> --json isDraft,autoMergeRequest,reviewRequests`, mark ready, re-arm, confirm `enabledAt`.
+- **A rebase conflict on a file a peer rewrote has no common hunk.** Re-apply what their change added, in your own words, before `git rebase --continue`: taking either side drops rules one change needs.
+- **Write bodies to a file and pass `--body-file`.** A `--body` with backticks and quotes is mangled and `gh` fails with `accepts at most 1 arg(s)`. Keep it outside the clone (`~/.pr-bodies/<repo>-<topic>.md`): one in the repo root is untracked and a later `git add -A` commits it.
+- **The remote ref proves a push, not git's output.** `! [remote rejected] <branch> -> <branch>` matches a grep for the branch and reads as success: compare `git ls-remote origin <branch>` with `git rev-parse HEAD`, and read `No commits between <base> and <branch>` as a push that never landed. On a 5xx, retry with backoff, then read the ref; read `gh pr list --head <branch>` before re-creating.
+- **Read the threads:** `--comments` on the issue and PR views; decisions live there, not in titles.
+- **A base rebased under your PR reports `CONFLICTING` on every shared file**, even with identical content: git matches by SHA, so a replay is an unrelated commit. Reparent with `git rebase --onto <new-base> <old-base>` and re-check `git rev-parse HEAD^{tree}`; an unchanged hash means the verification still holds.
+- **`gh pr create` writes twice** — the PR, then the review requests — and the second can fail after the first. Read `gh pr view --json url,reviewRequests` before retrying, or you open a duplicate. Repair with `gh pr edit <n> --add-reviewer <a>,<b>`. A reviewer who is not a repository account is dropped silently and the create still exits 0: name the name that failed. Take `<n>` from the URL it printed.
+- **The clone may be another session's:** read the branch and `git status` before any `git checkout`. Work in `git worktree add ~/wt/<topic> <branch>` and symlink the shared `node_modules`.
+- **Ruleset protection answers 404** at `.../branches/<base>/protection`: read `gh api repos/{owner}/{repo}/rulesets` and the ruleset by id. `allowed_merge_methods` and `required_linear_history` decide whether a merge commit can land.
+- **Sweep for duplicates first:** `gh pr list --search` / `gh issue list --search`.
 
 ## Verification
 
-- The workflow's own reference file defines done for that task.
-- Cross-cutting: every claim about remote state (CI, merge, release,
-  issue state) is backed by a fresh `gh` read, never memory.
+- The workflow's own reference file defines done.
+- Back every claim about remote state (CI, merge, release, issue) with a fresh `gh` read, never memory.
