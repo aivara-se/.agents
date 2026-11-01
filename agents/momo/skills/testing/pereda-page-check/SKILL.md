@@ -6,21 +6,32 @@ when-to-use: A Pereda (`aivara-se/pereda`) pull request claims page behaviour (a
 
 # Checking Pereda's page and backend
 
-Gate first: `bun test`, `tinyjs build`. Then exercise the claim.
+Gate first: `bun fmt --no-script --check .`, `bun test`, `bun run build`, and `bun run build:web` since the site joined the repository. Then exercise the claim.
 
 ## The frontend, in a real Chromium
 
-`browser_exec` fails here (`env: node: Permission denied`) and no playwright package is installed, but the binary is:
+`bun run build` bundles the page into `apps/desktop/.page/`; serve that directory (`python3 -m http.server 8901`) and the page needs no other file. It sidesteps the `libs/` and `src/shared` import roots that move between releases.
 
-- `/opt/playwright/chromium-1243/chrome-linux64/chrome`
-- Launch: `--headless=new --remote-debugging-port=N --no-sandbox --user-data-dir=<scratch>/profile`. Read `http://127.0.0.1:N/json/version` for `webSocketDebuggerUrl`, then drive with Node 26's `WebSocket` and `Target.createTarget` / `Target.attachToTarget` (flatten) / `Runtime.evaluate` (`awaitPromise: true, returnByValue: true, userGesture: true`).
-
-Copy `src/` to a scratch `site/` and serve it (`python3 -m http.server 8901`) so the URL is `/src/frontend/index.html`.
-
-- **Serve a root that holds `src/` whole:** `app.js` imports `../shared/*`; a root missing them 404s every module, the page renders nothing and raises no visible exception — it reads like an app bug.
-- Insert `<script src="tiny-stub.js"></script>` before the module script in `index.html`, and stub `tiny`: `system.os`, `hotkey.on`, `win.*`, `api.call` (fake `openLog`/`saveDay`/`exportNotes`), `api.on`, and `dialog.pickFolder()` resolved by hand through `window.__resolvePick(value)`.
+- No browser ships in the sandbox, but the network is up: `npm i playwright-core`, then `npx playwright-core install chromium`. The extractor can hang at 8 MB — unzip `/root/tmp/playwright-download-chromium-*.zip` into `$PLAYWRIGHT_BROWSERS_PATH/chromium-<rev>/chrome-linux/` and `chmod -R a+x` it. Launch with `executablePath` and `--no-sandbox`.
+- `browser_exec` refuses `127.0.0.1` (private address) and its browser is not this sandbox.
+- Stub `tiny` with `page.addInitScript` before `goto`: `system.os`, `hotkey.on`, `win.*`, `api.call` (fake `openLog` returns `{ today, days: [{ day, body, seq }], more }`, plus `saveDay`, `searchNotes`, `summariseNote`), `api.on`, `dialog.confirm`/`pickFolder`.
+- Press with `page.mouse.down()` / `up()`, not `click()`. Most claims are about a press whose mousedown blurs the note. To model a webview that does not focus the pressed button, blur the note in a capture-phase `mousedown` listener that calls `preventDefault()`.
 - Chrome blocks `file://` ES modules — use the http server.
 - Keys: `document.dispatchEvent(new KeyboardEvent('keydown', {...}))`. The handler is on `document`; `keyAction` reads `metaKey`/`ctrlKey`.
+
+## The web app, in the same Chromium
+
+- `bun run build:web` writes `apps/website/build`; serve it over http. Seed a day through the page's own worker: `const m = await import('<the chunk holding new Worker and postMessage>'); await m.r('saveDay', { day, body, seq: 1 })`, then `page.reload()`. A second import returns the same module, so one worker answers.
+- A row hung below a `position: relative` column is clipped when that column carries `overflow: hidden`; the clip removes it from the hit test. Read `document.elementsFromPoint` at the button's own rect, never its computed `visibility`: a row at `visibility: visible` was fully clipped and no press landed.
+
+## Prove the rule
+
+A CSS finding is one A/B: measure at the head, then `page.addStyleTag` the rule the diff removed and measure again. Name the property, the element and the frame count in the finding.
+
+## What a screenshot cannot show
+
+- No caret is painted into a Chromium screenshot on this box, headful under `xvfb-run` or headless: a focused `contenteditable` with `caret-color: #a9541c` reads 0 accent pixels. Read `getComputedStyle(node).caretColor` instead, and never accept a pixel count as proof that a caret is hidden.
+- `.cm-cursorLayer` exists only when CodeMirror's `drawSelection()` is installed. Pereda's note does not install it, so a rule naming that class is dead CSS.
 
 ## The backend, under the real runtime
 

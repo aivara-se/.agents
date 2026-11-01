@@ -89,6 +89,12 @@ gh pr edit <number> --repo <owner>/<repo> --add-reviewer <login>
 
 **A rejected push mid-review means the branch moved under you.** `git fetch`, then `git rebase origin/<branch>` — never `--force` a branch someone has read. Read their commits before resolving: one may be the fix your change replaces, so the body says which commit it supersedes and why the new shape covers the same ground.
 
+**`--force-with-lease` can refuse with `stale info` while the remote is exactly where you think.** The lease is compared against the local remote-tracking ref, which a plain `git fetch` does not always refresh for a branch created in this session. Fetch the refspec (`git fetch origin '+refs/heads/*:refs/remotes/origin/*'`) or pin the lease: `git push --force-with-lease=refs/heads/<branch>:<sha> origin HEAD:<branch>`.
+
+**A pull request that conflicts with its base starts no `pull_request` workflow at all.** `gh pr checks` prints `no checks reported`, which reads like a missing workflow; read `gh pr view <n> --json mergeable,mergeStateStatus` first. `CONFLICTING`/`DIRTY` means GitHub cannot build the test merge commit, so nothing runs. Rebase onto `origin/main`, push, and the run appears.
+
+**Write the body to a file before you create or edit the PR.** A body passed inline is shell text first — a backtick pair in Markdown is command substitution, so the PR lands carrying the output of the commands instead of the text that names them. Use `gh pr create --body-file <path>` and `gh pr edit <n> --body-file <path>`.
+
 **The body carries the evidence, or there is nothing to review.** What changed, what was verified and with which command and result, and what was left out. "Tests pass" without the command is a claim, not a verification record — see `templates/pr-body-feature.md`.
 
 ## 4. CI status

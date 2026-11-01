@@ -29,6 +29,7 @@ Test a decision record against its sources and itself, never against the decisio
 - It is true. You reproduced it, with the command and its output.
 - It is the change's to fix. Name the contract line it misses or breaks. Work the item never asked for is an issue.
 - It is a correction, not an addition: no new field, file, abstraction or gate. A fix that grows the change needs a criterion.
+- A check can come from a default-setup scan (CodeQL) that no workflow file owns: read `gh run list --branch <default>`.
 
 ## The verdict
 

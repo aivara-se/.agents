@@ -10,7 +10,7 @@ Good writing is short enough to finish, and it puts the answer first.
 
 ## Length
 
-- A chat message, issue comment or pull-request body is 150 words. Longer is a document: write the file and link it.
+- A message, issue comment or pull-request body is 150 words. Longer is a document: write the file, attach it in chat as `MEDIA:/absolute/path`, link it in a GitHub body.
 - Draft to about 130 words. A first draft runs long, and trimming it costs rounds.
 - Count the words with `wc -w <file>`. Do not estimate.
 - A `SKILL.md` is 900 words, a reference 750, an agent file 280.
@@ -43,6 +43,7 @@ Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-wo
 ## Where a fact lives
 
 - One fact, one home. The product, design and system documents each own their subject, and the others link to them.
+- A feature states its rules once. The product document owns what the person sees, the system document the mechanism, the ADR the decision and its cost.
 - An ADR stands alone and cites only earlier ADRs.
 - User behaviour is the product document. Serving and checks are the system document. Interface and visual choices are the design document.
 - Describe the pattern, not one instance: a page one agent has gets a general clause.
@@ -53,6 +54,7 @@ Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-wo
 
 ## Which document
 
+- Read the matching reference before the first draft. The shape is cheaper to follow than to cut out.
 - `references/writing-ste.md` — the controlled language every sentence here obeys.
 - `references/writing-messages.md` — chat, issue and pull-request comments.
 - `references/writing-reviews.md` — a review verdict.
