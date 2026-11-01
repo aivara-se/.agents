@@ -19,7 +19,7 @@ const BUDGETS: { match: RegExp; max: number }[] = [
 ];
 
 const RULE_WORDS = 30;
-// Simplified Technical English: 20 words for an instruction, 25 for a description.
+// A sentence is Simplified Technical English: 25 words. A rule bullet is a note, and keeps 30.
 const SENTENCE_WORDS = 25;
 const BANNED = [
   "simply",

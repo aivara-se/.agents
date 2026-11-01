@@ -14,7 +14,7 @@ Good writing is short enough to finish, and it puts the answer first.
 - Draft to about 130 words. A first draft runs long, and trimming it costs rounds.
 - Count the words with `wc -w <file>`. Do not estimate.
 - A `SKILL.md` is 900 words, a reference 750, an agent file 280.
-- One rule per bullet, 30 words or less. The reason is a clause; the story goes in the commit.
+- One rule per bullet, 30 words or less; a step in a document is 20. The reason is a clause; the story goes in the commit.
 
 ## Shape
 
@@ -27,7 +27,7 @@ Good writing is short enough to finish, and it puts the answer first.
 
 Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-word dictionary.
 
-- An instruction is 20 words or less, a description 25.
+- An instruction in prose is 20 words or less, a description 25.
 - One instruction per sentence, in the imperative, present tense.
 - Active voice with the actor named: "The job writes the row", not "the row is written".
 - One term for one item, every time. Choose the short word: start, not initiate.
