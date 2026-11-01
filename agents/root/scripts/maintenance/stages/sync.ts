@@ -1,5 +1,9 @@
-/** Stage 3: git and the org config — harvest, rebase, souls, archive, push. It
- *  returns true when it leaves a decision to the agent, which exits the pass with 2. */
+/** Stage 3: git and the org config. The script prepares one reviewable diff —
+ *  souls merged, archives written — and stops there. The agent rebases, rewrites
+ *  the harvested skills to house standard, commits, pushes `next` and refreshes
+ *  the `next -> main` pull request. Nothing here commits, rebases or pushes: one
+ *  owner for the rewrite means it cannot be left half-done.
+ *  Returns true when it leaves a decision to the agent, which exits the pass with 2. */
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { Ctx } from "../context";
@@ -9,11 +13,14 @@ import { lines, run } from "../shell";
 import { archiveSkills } from "./sync/archive";
 import { mergeSoul, seedBases } from "./sync/souls";
 
+/** What the agent does with each group the pass leaves in the tree. */
+const VERBATIM = "commit verbatim — a record, not prose";
+
 export function sync(ctx: Ctx): boolean {
   const { cfg: CFG, dry } = ctx;
   let conflict = false;
   say("");
-  say("3. SYNC");
+  say("3. SYNC (the script prepares the diff; the agent rebases, reviews, commits, pushes)");
   if (!existsSync(join(CFG.repo, ".git"))) {
     warn(`checkout missing at ${CFG.repo} — no org-config sync this pass`);
     return true;
@@ -28,37 +35,15 @@ export function sync(ctx: Ctx): boolean {
     warn("git fetch failed (network/auth) — working from the last fetched refs");
   else ok(`origin/main ${run(["git", "-C", CFG.repo, "log", "--oneline", "-1", "origin/main"]).out.trim()}`);
 
+  // The sha the push's lease must hold. Absent after a merge deleted the branch.
+  const base = run(["git", "-C", CFG.repo, "rev-parse", "--verify", "--quiet", `refs/remotes/origin/${CFG.branch}`]).out.trim();
+  if (base) info(`origin/${CFG.branch} ${base.slice(0, 7)} — the lease the push must hold`);
+  else info(`origin/${CFG.branch} is absent — the push recreates it`);
+
   // Baselines are seeded before the rebase: a rebase rewrites the commit the
   // last agreed version lived in, and an empty baseline reads as a conflict.
   const bases = process.env.MAINT_SYNC_BASES ?? join("/var", "lib", "agents-sync", "agents");
   if (!dry) seedBases(CFG.repo, bases);
-
-  const dirty = lines(run(["git", "-C", CFG.repo, "status", "--porcelain"]).out);
-  if (dirty.length === 0) ok("working tree clean — nothing to harvest");
-  else if (dry) plan(`harvest: would commit skill and soul edits among ${dirty.length} changed path(s)`);
-  else {
-    // Only the two trees the sync owns. Another session may be mid-write in the
-    // same checkout, and anything else would ride a force-push onto `next`.
-    run(["git", "-C", CFG.repo, "add", "--", "agents/", "skills/"]);
-    const staged = lines(run(["git", "-C", CFG.repo, "diff", "--cached", "--name-only"]).out);
-    if (staged.length === 0) info(`no skill or soul edit to harvest — ${dirty.length} other path(s) left in the tree`);
-    else if (run(["git", "-C", CFG.repo, "commit", "-q", "-m", "sync: harvest uncommitted local agents/skills changes"]).code === 0)
-      ok(`harvested ${staged.length} path(s): ${staged.slice(0, 6).join(", ")}${staged.length > 6 ? " …" : ""}`);
-    else warn("harvest commit failed");
-  }
-
-  const containsMain = run(["git", "-C", CFG.repo, "merge-base", "--is-ancestor", "origin/main", "HEAD"]).code === 0;
-  if (containsMain) ok(`${CFG.branch} already contains origin/main (${run(["git", "-C", CFG.repo, "rev-list", "--count", "origin/main..HEAD"]).out.trim()} commit(s) on top)`);
-  else if (dry) plan(`rebase: would rebase ${CFG.branch} onto origin/main (${run(["git", "-C", CFG.repo, "rev-list", "--count", "HEAD..origin/main"]).out.trim()} behind)`);
-  else {
-    const rebase = run(["git", "-C", CFG.repo, "rebase", "origin/main"], { timeout: 300_000 });
-    if (rebase.code === 0) ok(`rebased onto ${run(["git", "-C", CFG.repo, "log", "--oneline", "-1", "origin/main"]).out.trim()}`);
-    else {
-      run(["git", "-C", CFG.repo, "rebase", "--abort"]);
-      warn(`rebase conflict — aborted, ${CFG.branch} left as it was; bots read a branch short of main until it is resolved`);
-      conflict = true;
-    }
-  }
 
   say("");
   say("3a. SOULS (repo agents/<name>.md <-> profile SOUL.md)");
@@ -82,12 +67,6 @@ export function sync(ctx: Ctx): boolean {
         break;
     }
   }
-  if (!dry && lines(run(["git", "-C", CFG.repo, "status", "--porcelain", "--", "agents/"]).out).length > 0) {
-    run(["git", "-C", CFG.repo, "add", "agents/"]);
-    if (run(["git", "-C", CFG.repo, "commit", "-q", "-m", "sync: adopt profile soul improvements into agents/"]).code === 0)
-      ok(`committed soul adoption ${run(["git", "-C", CFG.repo, "log", "--oneline", "-1"]).out.trim()}`);
-    else warn("soul commit failed");
-  }
 
   say("");
   say("3b. SKILLS (profile skills -> agents/<name>/skills, archive only)");
@@ -104,35 +83,52 @@ export function sync(ctx: Ctx): boolean {
       conflict = true;
     }
   }
-  if (!dry && lines(run(["git", "-C", CFG.repo, "status", "--porcelain", "--", "agents/"]).out).length > 0) {
-    run(["git", "-C", CFG.repo, "add", "agents/"]);
-    if (run(["git", "-C", CFG.repo, "commit", "-q", "-m", "sync: archive profile skills under agents/<name>/skills"]).code === 0)
-      ok(`committed skill archive ${run(["git", "-C", CFG.repo, "log", "--oneline", "-1"]).out.trim()}`);
-    else warn("archive commit failed");
-  } else if (!dry) ok("skill archive unchanged");
 
   say("");
-  say("3c. PUSH " + CFG.branch);
-  // Compare shas, not rev-list counts: a deleted remote branch leaves no tracking ref.
-  const local = run(["git", "-C", CFG.repo, "rev-parse", CFG.branch]).out.trim();
-  const remote = run(["git", "-C", CFG.repo, "rev-parse", "--verify", "--quiet", `refs/remotes/origin/${CFG.branch}`]).out.trim();
-  if (dry) plan(`push: would push ${local.slice(0, 7)} to origin/${CFG.branch}`);
-  else if (!remote) {
-    if (run(["git", "-C", CFG.repo, "push", "origin", `${CFG.branch}:${CFG.branch}`], { timeout: 300_000 }).code === 0)
-      ok(`created origin/${CFG.branch} at ${local.slice(0, 7)}`);
-    else warn(`push refused — origin/${CFG.branch} is absent; local ${CFG.branch} left unpushed`);
-  } else if (remote !== local) {
-    if (run(["git", "-C", CFG.repo, "push", "--force-with-lease", "origin", `${CFG.branch}:${CFG.branch}`], { timeout: 300_000 }).code === 0)
-      ok(`pushed ${local.slice(0, 7)} to origin/${CFG.branch}`);
-    else warn(`push refused (lease held?) — local ${CFG.branch} differs from origin, left as is`);
-  } else ok(`origin/${CFG.branch} already at ${local.slice(0, 7)} — nothing to push`);
+  say("3c. REVIEW QUEUE (the script commits nothing)");
+  if (dry) {
+    plan("review: would list every path the agent must rewrite or commit");
+  } else {
+    const groups: Record<"skills" | "souls" | "archive" | "other", string[]> = { skills: [], souls: [], archive: [], other: [] };
+    for (const raw of lines(run(["git", "-C", CFG.repo, "status", "--porcelain"]).out)) {
+      const path = raw.slice(3).trim().replace(/^"|"$/g, "");
+      if (path.startsWith("skills/")) groups.skills.push(path);
+      else if (/^agents\/[^/]+\.md$/.test(path)) groups.souls.push(path);
+      else if (/^agents\/[^/]+\/skills(\.manifest\.json|\/)/.test(path)) groups.archive.push(path);
+      else groups.other.push(path);
+    }
+    if (groups.skills.length === 0) ok("no harvested skill edit to review");
+    else {
+      warn(`${groups.skills.length} skill path(s) to review and rewrite — never commit them as they are`);
+      for (const path of groups.skills.slice(0, 12)) say(`       ${path}`);
+      if (groups.skills.length > 12) say(`       … ${groups.skills.length - 12} more`);
+    }
+    if (groups.souls.length) info(`${groups.souls.length} soul path(s) to ${VERBATIM}: ${groups.souls.join(" ")}`);
+    if (groups.archive.length) info(`${groups.archive.length} archive path(s) to ${VERBATIM}`);
+    if (groups.other.length) info(`${groups.other.length} path(s) outside agents/ and skills/ left untouched: ${groups.other.slice(0, 6).join(" ")}`);
+  }
 
   say("");
-  say("3d. STATE");
+  say("3d. HAND-OFF (the run's contract — anything short of it is a failed run)");
+  say(`  base: ${base || "(no remote branch)"}`);
+  say("  1. rebase next onto origin/main; a conflict is resolved by rewriting both sides to writing/coding, never by taking one");
+  say("  2. rewrite the review queue to house standard and fold it, with the souls and the archive, into one commit");
+  say(`     archives and souls verbatim; the message says what changed and why`);
+  if (base) say(`  3. git push --force-with-lease=${CFG.branch}:${base} origin ${CFG.branch}`);
+  else say(`  3. git push -u origin ${CFG.branch}   (no remote branch yet — plain create)`);
+  say("  4. verify: next == origin/next, HEAD..origin/main = 0, origin/main..next > 0");
+  say("  5. create or refresh the next -> main pull request: title and body describe exactly what it carries");
+  say("  6. cannot finish? abort the rebase and leave next exactly as you found it — a half-synced next is worse than a late one");
+
+  say("");
+  say("3e. STATE (before the agent's rebase)");
   const ahead = run(["git", "-C", CFG.repo, "rev-list", "--count", "origin/main..HEAD"]).out.trim();
   const behind = run(["git", "-C", CFG.repo, "rev-list", "--count", "HEAD..origin/main"]).out.trim();
   info(`${CFG.branch} is ${ahead} commit(s) ahead of origin/main, ${behind} behind`);
   for (const line of lines(run(["git", "-C", CFG.repo, "log", "--oneline", "origin/main..HEAD"]).out)) say(`       ${line}`);
-  if (Number(ahead) > 0) info(`paths touched: ${run(["git", "-C", CFG.repo, "diff", "--name-only", "origin/main...HEAD"]).out.trim().split("\n").join(" ")}`);
+  if (base) {
+    const replaced = run(["git", "-C", CFG.repo, "rev-list", "--count", "origin/main..origin/" + CFG.branch]).out.trim();
+    info(`origin/${CFG.branch} carries ${replaced} commit(s) not in main — the push replaces them with the rebased ${ahead}`);
+  }
   return conflict;
 }
