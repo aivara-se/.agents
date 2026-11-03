@@ -17,7 +17,7 @@ A repeat, or a wake that arrives after the state moved on, is answered by readin
 
 ## The read pass
 
-1. Fetch first with `git fetch origin`, never a single refspec: the clone is a snapshot of another session's work, and a stale `origin/main` invents commits in the diff.
+1. Fetch first with `git fetch origin`, never a single refspec. The clone is a snapshot of another session's work, so a stale `origin/main` invents commits in the diff.
 2. Read the item whole: body, every comment, every review.
 3. Read the diff at the head, and any open pull request touching the same surface.
 4. Read the repository's entry file and its product, system and decision documents.
