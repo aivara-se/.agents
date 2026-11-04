@@ -20,6 +20,7 @@ when-to-use: Any change that adds or alters behaviour, any bug fix, and any chan
 - A cap is four tests: at the limit, past it, a delivery that spends nothing, and one cap not touching another.
 - A flow that must ignore shared state is tested with that state at its limit.
 - Three traps that green the suite and fail in production: `references/test-traps.md`.
+- A scanner, a grep gate: a check that reads other work is proven on a planted positive and a plausible negative. A pattern that cannot match proves nothing.
 - Deterministic: no clock, no randomness, no network, no file ordering, no locale.
 
 ## Where they live
