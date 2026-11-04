@@ -20,6 +20,18 @@ A set is current when its text, its consumers' copies and later decisions agree.
 - **A deliberate deviation is not a bug.** The merged body says why. Grade the copy as un-swept; never re-add what the operator deleted.
 - **Coherent prose proves nothing.** Score it against consumers and later decisions: a well-written, gate-green document can describe an organisation that no longer exists.
 
+## Changing the standard itself
+
+A request to change what `PRODUCT.md` and `SYSTEMS.md` hold is a design pass over the whole set, not a rewrite of one file.
+
+- **Measure before you propose.** `wc -w` per file, then per section (`re.split(r'(?m)^## ', text)`); the argument is the number, and the caps come from what the content needs.
+- **Make the per-section caps sum to the stated total.** A cap table beside a total that does not add up fails the first lint run and reads as carelessness.
+- **Enforce shape, not prose.** Heading set, order, per-section caps, dead links, repeated sentences. A style check on adjectives is satisfied by deleting the rule.
+- **Break the repetition between the two documents.** A sentence that answers two questions belongs in one, and the shorter document links to it.
+- **A product document carries what an agent may change alone**: everything the two documents do not fix, inside the scope, except a dependency, the data model and an external interface. Scope alone does not grant autonomy.
+- **A word that leaves a document has a destination** — an ADR, an issue, a test, a changelog. Deleting it makes the rewrite a loss and the next reader repeats the decision.
+- **Migrate worst-first.** The largest file pays for the checker's first red run; then one documents-only pull request per repository.
+
 ## Repairing it
 
 On request, land one documents-only pull request per repository — donor first, then each adopter — reviewed by the operator alone, auto-merge armed on the head you pushed.

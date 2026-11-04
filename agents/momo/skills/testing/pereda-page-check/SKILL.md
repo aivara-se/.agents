@@ -8,6 +8,10 @@ when-to-use: A Pereda (`aivara-se/pereda`) pull request claims page behaviour (a
 
 Gate first: `bun fmt --no-script --check .`, `bun test`, `bun run build`, and `bun run build:web` since the site joined the repository. Then exercise the claim.
 
+`bun test` needs `bun install --frozen-lockfile` in a fresh worktree, or the workspace imports fail and the run reads 61 pass, 3 fail. Never read that as the head's result.
+
+`bun fmt` infers no parser for `.svelte`: the tree check skips those files in silence and exits 0, while naming one exits 2 with "No parser could be inferred". Append junk to a `.svelte` file to confirm before you trust a formatting claim about one.
+
 ## The frontend, in a real Chromium
 
 `bun run build` bundles the page into `apps/desktop/.page/`; serve that directory (`python3 -m http.server 8901`) and the page needs no other file. It sidesteps the `libs/` and `src/shared` import roots that move between releases.
@@ -21,7 +25,8 @@ Gate first: `bun fmt --no-script --check .`, `bun test`, `bun run build`, and `b
 
 ## The web app, in the same Chromium
 
-- `bun run build:web` writes `apps/website/build`; serve it over http. Seed a day through the page's own worker: `const m = await import('<the chunk holding new Worker and postMessage>'); await m.r('saveDay', { day, body, seq: 1 })`, then `page.reload()`. A second import returns the same module, so one worker answers.
+- `bun run build:web` writes `apps/website/build`; serve it over http on `127.0.0.1`.
+- Seed a day before the app loads. Only one access handle may hold the OPFS file: a worker started beside the running page fails with "Access Handles cannot be created if there is another open Access Handle". Open a same-origin document that boots no app script (`/robots.txt`), run `new Worker('/_app/immutable/workers/worker-<hash>.js', { type: 'module' })`, post `{ id, name: 'saveDay', args: [{ day, body, seq: 1 }] }`, terminate it, then `page.goto('/')`. The reply carries `{ day, seq, today }`.
 - A row hung below a `position: relative` column is clipped when that column carries `overflow: hidden`; the clip removes it from the hit test. Read `document.elementsFromPoint` at the button's own rect, never its computed `visibility`: a row at `visibility: visible` was fully clipped and no press landed.
 
 ## Prove the rule

@@ -111,6 +111,19 @@ A container has its own PID and filesystem namespace: it cannot start the host's
 
 Name the invariant each shape costs before recommending one, and keep the container as the question rather than the goal.
 
+## Evaluating an outside design
+
+A request to read another system and "see what we can learn" is a design pass with a foreign source. The distance between its job and ours is the finding, not its feature list.
+
+- **Read the source's numbered design documents, in order, not its README.** A framework's README is a pointer list; its `docs/000-…` series carries the philosophy, the domain, the authorization model and the execution model, each building on the one before. Fetch one file at `raw.githubusercontent.com/<owner>/<repo>/<branch>/<path>` rather than the HTML page.
+- **Read its rejected-concepts table before its code.** Why a design refused a concept is the transferable part: it names a cost we would pay too, in its own words.
+- **Quote the source's own stated limit back at it.** A prototype says plainly what it cannot do — "a GitHub App cannot be the agent, because the agent reads its own notifications" — and that sentence settles a question in our design faster than any inference from its code.
+- **State each lesson against a clause of ours.** Name the ADR, edge case or acceptance item the lesson retires or closes. A take with no clause is a feature request, and the reviewer cannot judge it.
+- **Separate take from refuse, and give the refuse a reason.** A framework for authorizing work is the wrong shape for a notifier; say which of its concepts our tree already carries under another name, such as a session key that is its Thread and its Ticket.
+- **Measure every mechanism in our unit of cost** — a run, a wake, an API request — and split durable facts (a cap, a digest, a held delivery, a live run) from durable history (a ticket that lives for days and is asked questions).
+- **Check who the platform attributes an act to.** A merge belongs to the account that armed it, so an App that merges sends the red-branch wake to the App and no agent hears it.
+- **Do not commit the note.** A repository has no home for a research note: attach it, and offer the records the operator's stated change needs. The decision they have already said they will take is the ADR to write, not the analysis to file.
+
 ## Pitfalls
 
 - **A wake cannot steer a run in flight, so no candidate may mean "stop".** A wake starts a new child whose whole input is the reason; the running session has no inbox, so an "unassigned" or "cancelled" wake starts a further session that knows nothing of it. Test every candidate against "the agent re-reads and decides": a state change only an in-flight run could act on is a process problem, not a version. A session is nameable and resumable, a process has a pid, and only a gateway chat session has an inbox a message reaches.
