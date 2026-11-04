@@ -30,6 +30,6 @@ Settle three forks, or the draft is a rewrite:
 
 ## Shipping a version
 
-- Grep the product and system documents for the previous version number before you write the changelog. The acceptance line and any promise scoped to it go stale in the same edit.
-- Check the "what it does not do" list for the item this version built, and the roadmap for the line it shipped.
-- Add one changelog line in the voice of the feature, not a file list.
+- Grep the product and system documents for the previous version number before you write the release. The acceptance line and any promise scoped to it go stale in the same edit.
+- Check `## Scope` for the item this version built; it leaves `Not this version`.
+- The product document keeps no changelog and no roadmap. What shipped, and when, is the release record.
