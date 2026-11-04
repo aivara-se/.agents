@@ -21,6 +21,21 @@ Unit tests cover pure logic. A screen, a keyboard, a service worker and speech e
 - Errors: collect `page.on("console")` entries of type `error` and `page.on("pageerror")`, and assert none.
 - Assets: `page.setContent()` plus `page.screenshot({ type: "png" })` at the target sizes renders icons and evidence with no image library.
 
+## Prove a visual fix
+
+- Build both trees. Put the base commit in its own worktree (`git worktree add ../before origin/main`) and build it there, then build the fixed tree as usual.
+- Serve each build on its own port: `python3 -m http.server 8787 -d <app>/build`. Localhost is a secure origin, so a service worker or OPFS behaves as in production.
+- Drive both with one script and one input. Read the changed text from the DOM as well as shooting it, with `page.$eval(sel, (n) => n.textContent.trim())`.
+- The pair is evidence only when the fix is the one thing that differs. Same viewport and `deviceScaleFactor`, a fresh context per origin, the same data typed into each.
+- Give each half a caption and compose the two into one image:
+
+```bash
+montage -background '#fff' -pointsize 24 -label before a.png -label after b.png -tile 2x1 -geometry +16+16 pair.png
+convert pair.png -resize 2400x -depth 8 -strip pair.png
+```
+
+- Look at the composed image before you send it. Crop to what changed when the window is mostly empty.
+
 ## Pitfalls
 
 - A check that asserts nothing happened must start clean. A suppression test that begins on a screen already holding text fails for the wrong reason. Reload first, and assert the screen is empty, not merely unchanged.
