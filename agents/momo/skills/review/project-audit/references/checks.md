@@ -22,6 +22,7 @@ One section per check. Each says what it reads, what makes a finding, the false 
 - **Reads**: relative links in markdown, `{{SLOT}}` leftovers, and `bun run <name>` references against the root `package.json` scripts.
 - **Fails**: a link to a file outside the tree, a slot still unfilled, a script the repository does not declare.
 - **False positives, both seen**: an example link written inside a code span, and `bun run scripts/x.ts` read as a package script. Strip code spans and fences first; end the captured name at a non-word character.
+- **Also reads**: a named path the prose asserts, such as `scripts/check-docs.ts` running from a workflow. `git log --all --oneline -- <path>` at the pinned sha settles never-existed against deleted; absence is a finding, not a false positive. The full procedure for a document's claims is `claim-audit`.
 - **Closes**: correct the document, or the script name.
 
 ## open

@@ -24,13 +24,19 @@ A set is current when its text, its consumers' copies and later decisions agree.
 
 A request to change what `PRODUCT.md` and `SYSTEMS.md` hold is a design pass over the whole set, not a rewrite of one file.
 
-- **Measure before you propose.** `wc -w` per file, then per section (`re.split(r'(?m)^## ', text)`); the argument is the number, and the caps come from what the content needs.
+- **Measure with the gate, not `wc -w`.** The checker counts prose, list text and table cells, and drops headings, fenced code, link targets, HTML comments, table rules and list markers — so `wc` overstates a bulleted section by one word per bullet. Run the checker for the number a cap is judged on; use `wc` only for the before/after argument.
 - **Make the per-section caps sum to the stated total.** A cap table beside a total that does not add up fails the first lint run and reads as carelessness.
 - **Enforce shape, not prose.** Heading set, order, per-section caps, dead links, repeated sentences. A style check on adjectives is satisfied by deleting the rule.
 - **Break the repetition between the two documents.** A sentence that answers two questions belongs in one, and the shorter document links to it.
 - **A product document carries what an agent may change alone**: everything the two documents do not fix, inside the scope, except a dependency, the data model and an external interface. Scope alone does not grant autonomy.
-- **A word that leaves a document has a destination** — an ADR, an issue, a test, a changelog. Deleting it makes the rewrite a loss and the next reader repeats the decision.
+- **A word that leaves a document has a destination** — an ADR, an issue, a test, the release record. Deleting it makes the rewrite a loss and the next reader repeats the decision.
 - **Migrate worst-first.** The largest file pays for the checker's first red run; then one documents-only pull request per repository.
+- **Draft to the cap, then cut.** Run the checker and trim the section it names; keep a few words of headroom in each, and move a fact that does not fit to its destination rather than squeeze the rule.
+- **Pin the numbers to the document.** A test that parses the standard's cap table and compares it with the checker's constants fails when one moves without the other; the two homes then stay one fact.
+- **A present-tense enforcement claim is a finding until the tree carries it.** `git ls-tree` and `git grep` for every script, workflow and path the section names: a standard can describe a checker no commit ever added, and call a workflow shared when no reusable workflow exists. When the operator answers with a new name for it, the instruction is build it under that name.
+- **Date a present-tense rule or it is false at merge.** The standard binds a document written after it merges; an existing document comes into line at its next revision. Name the repositories still out of line, with their measured word counts.
+- **A checker's adoption follows the documents.** Wired into a required `validate` job, it turns every unrelated pull request red in a repository whose documents are not yet rewritten. Each repository calls the shared workflow in the pull request that brings its documents into line.
+- **A machine-run check needs its unit.** "Twelve words repeated" and a per-section cap are unimplementable until the text says what counts as a word and which markdown is excluded; state the shingle length, the normalization and the failure message.
 
 ## Repairing it
 
@@ -39,7 +45,7 @@ On request, land one documents-only pull request per repository — donor first,
 - **Donor contradictions go first.** A merged body's rationale can leave an adoption step prescribing what it moved.
 - **Re-adopt in the donor's section order.** Purpose, convention line, _Where a fact lives_, house rules, tooling, _Skills_, _Verify before pushing_, _Version Control_. Add what is missing; never reflow the rest.
 - **Every removed section has a destination.** Focus goes to `PRODUCT.md`, a tree map to `SYSTEMS.md` (or a body line saying why there is none). Delete `version N, adopted from <sha>` — the commit records it.
-- **Read house rules out of the repository.** Use `PRODUCT.md`'s _What it never does_ and `SYSTEMS.md`'s store and failure sections. A prohibition with no sentence behind it does not go in.
+- **Read house rules out of the repository.** Use `PRODUCT.md`'s `## Scope` Never list and `SYSTEMS.md`'s state and failure sections. A prohibition with no sentence behind it does not go in.
 - **Prove the copy before pushing.** `actionlint` on a workflow change, a `{{`-slot count, `git diff --check`, the repository's gate — bun: frozen install, check, format, test, build; Go: `gofmt`, `vet`, `test` under `TMPDIR=$HOME/tmp`.
 - **A false document the new text points at is in scope.** An entry file pointing at a README that still names the old host needs one pull request carrying both, or the pointer sends the reader to the lie.
 - **A branch opened before another merge reads `BEHIND`.** `git fetch`, `git rebase origin/main`, `git push --force-with-lease`, re-request review: the ruleset requires a current branch, and that push is sanctioned.
