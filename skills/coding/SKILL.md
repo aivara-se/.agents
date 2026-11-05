@@ -17,8 +17,7 @@ Run the repository's formatter and accept its output.
 - Never pick between two readings in silence. Say which you took, and why.
 - A frozen document that contradicts the task is a blocker. Name the file, the line and the input, in one question.
 - A merged ADR that assumes a missing capability is the operator's call. Name the ADR, the platform and the options; do not build the surface.
-- Sync the base branch with `git pull --ff-only`, then read the tree before you assume another agent landed it.
-- Cut the work branch from `origin/main` in a fresh worktree: an existing clone may hold another agent's unlanded work.
+- Sync the base branch with `git pull --ff-only`. Cut the work branch from `origin/main` in a fresh worktree: a clone may hold unlanded work.
 - Never run `git checkout origin/main -- .`: it dirties the index while HEAD stays behind.
 - Build in the order the architecture document numbers. The reviewer compares against it.
 - Reuse the service's vocabulary. A new outcome is a value in the existing field unless the design says otherwise.
@@ -40,7 +39,9 @@ Run the repository's formatter and accept its output.
 ## A formatter rollout
 
 - One config file and one pinned version per repository, checked by a step in the job the branch requires — never a second job.
-- A repo that already has a formatter keeps it. When its house rules forbid a second one, scope it out and ask; reinterpreting the rule is not yours.
+- Read the step's history before proposing a formatter: a config file is not proof the tool runs.
+- `bun fmt` already covers Markdown; alignment follows the config. Report drift only when its own check disagrees.
+- A repo that already has a formatter keeps it. When house rules forbid a second, scope it out and ask; reinterpreting the rule is not yours.
 - A formatter that changes quoting breaks a test asserting on its own source text; match either quote rather than pin the style.
 - Order, commands and the proof: `references/formatter-rollout.md`.
 
@@ -53,14 +54,12 @@ Run the repository's formatter and accept its output.
 ## Public surface
 
 - Private by default. Changing a public interface is a decision: say who consumes it and why.
-- Every function, class and constant carries a block comment: what it is for, and what the signature cannot say.
-- Never a JSDoc block. Types are the type system's job.
+- Every function, class and constant carries a block comment: what it is for, and what the signature cannot say. Never JSDoc.
 
 ## The pull request
 
 - One version, one pull request, one branch, merged bottom-up.
-- Read `gh pr view <n> --json state` before you push. Auto-merge can land it while you edit.
-- A push after `MERGED` carries no pull request. Open a new one for what remains.
+- Read `gh pr view <n> --json state` before you push: auto-merge can land it, and a push after `MERGED` carries no pull request.
 - Ask `thani-sh` and one peer whose role owns the risk: MaMa architecture, MeMe durability, MiMi a measurement, MoMo untrusted input.
 - Confirm the request landed: `gh pr view <n> --json reviewRequests`. A login that does not exist is dropped in silence; add it with `gh pr edit --add-reviewer`.
 - Read the reviews before you report done. A request for changes is the next step.
