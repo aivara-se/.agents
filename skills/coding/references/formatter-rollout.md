@@ -18,9 +18,8 @@ Run it as one change per repository, all from `origin/main`.
 14. To answer "does it cover this class" without a new tool: `bun fmt --no-script --list-files . | grep -i '\.md$'`. Then dirty one file; `--check .` exits 1.
 15. `bun fmt` lists Markdown in dot-directories (`.github/PULL_REQUEST_TEMPLATE.md`) and honours `proseWrap`. A line that stays long under `"never"` is not a missed file.
 16. Read the step's history before proposing a second formatter: `git log -S prettier -- .github/workflows`. A swapped formatter leaves its config behind.
-17. A table is aligned only when the aligned form fits `printWidth`. Prettier, and `bun fmt` under emulation, print it as written past that.
-18. So one file holds a padded table and a tight one, and `--check` passes on both. Report drift only when `bun x prettier@<version> --check <file>` disagrees.
-19. Table style follows the config: `.prettierrc.json` gives conditional alignment; `bunfig.toml [fmt]` alone pads every table.
-20. A repository that ignores its docs (`prettierignore`) keeps the author's hand-padding. Read its config before comparing two repositories.
+17. A table is reprinted to one width per column, whatever `printWidth` says: Bun's formatter and Prettier pad a compact table, and strip extra padding.
+18. So a compact table fails `--check` and a padded one passes, under `.prettierrc.json` and `bunfig.toml` alike. Report drift only when the check disagrees.
+19. A repository that ignores its docs (`prettierignore`) keeps the author's hand-padding. Read its config before comparing two repositories.
 
 Expect two breakages. A test that reads its own source for a literal breaks when the quote style changes — match either quote. A hand-written `bun:test` type shim must declare any matcher a new assertion uses, or `svelte-check` fails while `bun test` passes.
