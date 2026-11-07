@@ -44,14 +44,14 @@ Empty means no required review and no required check: the pull request reads `me
 - Branch `docs/<slug>`, carrying `PRODUCT.md` at the root, where `aivara-se/.template` puts it (`dispatch`'s `docs/` layout is that repository's own), and a short `README.md` pointing at it. Nothing runs yet: no run section, no fake gate.
 - Commit under the agent's identity; title `docs: ...`; body at most 150 words: what is decided, what follows.
 - Request the operator alone; a documents-only change is theirs to review.
-- Do **not** add `AGENTS.md`, `SYSTEMS.md` or ADRs before the product is settled: house rules and the check command depend on the stack, `SYSTEMS.md` on the product. Name them in the body as the next artefacts. Once settled, add `SYSTEMS.md` and the first ADRs to the same branch and body. A product changed after review reissues from a clean branch, never an in-place amend.
+- Do **not** add `SYSTEMS.md` or ADRs before the product is settled: the check and the architecture depend on the stack. `AGENTS.md` is the same file from the first commit: copy it, never write it. Name them in the body as the next artefacts. Once settled, add `SYSTEMS.md` and the first ADRs to the same branch and body. A product changed after review reissues from a clean branch, never an in-place amend.
 - Report the link in the same turn.
 
 ## After the product is agreed
 
 1. `SYSTEMS.md` — where it runs, how a write becomes a record, what is checked. Read `writing`'s `references/writing-system-doc.md` first; SYSTEMS is shape, not code: no config inventory, no DDL, no file-by-file functions.
 2. `docs/adrs/NNN-…` — one decision per file, before the code it decides.
-3. `AGENTS.md` from `aivara-se/.template`, with the real gate and every slot filled.
+3. `AGENTS.md` copied unchanged from `aivara-se/.github/docs/ENTRY.md`, and the `agents` job that proves it.
 4. The first code, with its `validate` workflow.
 
 A revival starts from the idea and the product document, not the predecessor's code; its data is not imported unless the product says so.

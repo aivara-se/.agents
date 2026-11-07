@@ -31,7 +31,7 @@ Hardest first, `file:line`, both halves of the conflict quoted. Then what is alr
 On "create a PR", only the mechanical bucket lands. Contradictions that change what an agent does stay out and are named in the body as decisions, each with both sides.
 
 - **The reviewer is the operator alone.** A corpus cleanup is documents-only, so `thani-sh` and no peer: `gh pr edit <n> --add-reviewer thani-sh`, then read `gh pr view <n> --json reviewRequests` back. Do not ask first, and do not add a peer because `AGENTS.md` says "one peer" — that clause is for implementation.
-- **Add the check for the rule you enforced.** A rule only prose enforces drifts back: front-matter shape, `name` equal to the directory, the slot grep. Put them in `validate.yml`, run the extracted shell before pushing, and confirm it green on the pull request.
+- **Add the check for the rule you enforced.** A rule only prose enforces drifts back. The front matter is `---` on lines 1 and 5, the keys `name`, `description` and `when-to-use` in order, and a `name` equal to the directory. Put them in `validate.yml`, run the extracted shell before pushing, and confirm it green on the pull request.
 
 ## Pitfalls
 
@@ -40,5 +40,5 @@ On "create a PR", only the mechanical bucket lands. Contradictions that change w
 - **A corpus drifts by addition.** Every incident adds a clause, so the newest text is the most project-specific. Read recent commits and the longest bullets first.
 - **A rule that names a virtue does not bind.** "Keep it small" and "stay in scope" can sit in two skills while the loop still grows, because no actor runs them at decision time. Report the missing per-item gate: quote the task line it serves, post the full list once, verify in a second round; a third is the operator's.
 - **Forbidding a skill to point at another guarantees duplication.** Cross-cutting rules (the request-changes gate, review routing) get copied into two skills and diverge. Report where the rule should live, not a wording fix.
-- **An `agents/<bot>.md` finding is a live SOUL.** Repository text reaches a running agent only when its `SOUL.md` is copied again. A cleanup PR may land a duplicated fact (skills list, stale path), never a change to a role, boundary or voice — that is the agent's own pull request, and the copy timing is the operator's.
+- **An `agents/<bot>.md` finding is a live SOUL.** Repository text reaches a running agent only when its `SOUL.md` is copied again. A cleanup PR may land a duplicated fact (skills list, stale path), never a change to a role, boundary or voice — that is the agent's own pull request, and the copy timing is the operator's. The same holds for `agents/<bot>/skills/`: the harvest copies that text from the profile, so the next sync overwrites a fix here.
 - **Do not open the cleanup PR on the audit turn.** "Check and list" is read-only; end by offering the mechanical PR and the open decisions.

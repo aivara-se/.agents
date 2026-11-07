@@ -1,31 +1,32 @@
-# aivara-se agent configuration
+# Agent Instructions
 
-Who each agent in this organisation is, and the procedures they all work by. `README.md` says how the two reach a profile.
+This file is identical in every `aivara-se` repository. Edit `aivara-se/.github`; a differing copy fails.
 
-## Layout
+## Read first
 
-- `agents/` — one file per agent: the whole of that profile's `SOUL.md`. `agents/<name>/skills/` beside it is that profile's own skills, loaded through `skills.create_dir`.
-- `skills/` — one directory per skill, each holding a `SKILL.md`.
-- `README.md` — what is here, how it is consumed, and how a skill is written.
+- `README.md` — what this is, how to run it, and how to check it.
+- `PRODUCT.md` (root or `docs/`) — who it serves, and what would make it done.
+- `SYSTEMS.md`, where present — how it is shaped and what it depends on.
+- `DESIGN.md` — the interface values, where present.
+- `docs/adrs/` — a decision per file, written before the code it decides.
+- `SETTINGS.md`, `aivara-se/.github/docs` — every repository's baseline.
 
-The tree is the index. A new skill is a new directory with a `SKILL.md`, and every `SKILL.md` under `skills/` is read by every agent. Nothing in this file lists a skill.
+Link to a document; never restate it. A per-repository rule belongs in `SYSTEMS.md`.
 
-## House Rules
+## House rules
 
-- The entry file a repository adopts is `aivara-se/.template`, never this repository's own `AGENTS.md`.
-- Never leave a slot (`{{...}}`) unfilled in a copy of the template. No slot exists in this repository.
-- Never write a secret, a token, a host path or a personal name into this repository.
-- Change a skill here once, rather than copying it into a profile or a repository. A profile's own skills are the exception: they live under `agents/<name>/skills/` and load from there. A host path or a personal name in them is that profile's. A secret is never exempt.
-- An agent file is complete on its own: copy it over `SOUL.md` and nothing is lost.
+- Never commit a secret; a configuration file names one, holding no value.
+- Never report "tests pass" without the command and the tree.
+- Never add a second package manager, lockfile, formatter or test runner; use the one it carries.
+- A script that runs commands is TypeScript on `bun`; shell only for a few lines.
+- Open the skill whose `when-to-use` covers the work, in `aivara-se/.agents/skills`; no copy exists.
+- Never edit a merged ADR. Supersede it, naming the clauses it overrides.
 
-## Version Control
+## Version control
 
-- `main` is the default branch; work lands through a pull request.
-- A pull request asks the operator and one peer agent for review.
-
-## Checks
-
-```sh
-find skills -name SKILL.md | sort                # every skill on disk
-head -4 skills/*/SKILL.md                        # name, description, when-to-use in each
-```
+- Branch: lowercase and hyphens, one per task — `docs/`, `feat/`, `fix/`, `chore/` and a short name.
+- Commit: Conventional Commits, lowercase, single line, no scope.
+- Never commit to `main`; never force-push a branch another person has seen; keep history linear.
+- Commit under your own name.
+- Land a branch and a pull request. The body says what changed, what was verified, what was left out. Leave the tree clean.
+- The operator reviews a documents-only change alone; an implementation adds a peer.
