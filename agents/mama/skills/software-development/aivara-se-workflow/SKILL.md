@@ -54,6 +54,7 @@ A change here has one shape: find the document that owns the fact, edit it, swee
    - **The merge is this agent's standing act.** An approved, clean pull request is MaMa's to land. The approval can never be her own: `Baseline` requires one approving review and GitHub refuses a self-approval, so her own pull request sits `BLOCKED` / `REVIEW_REQUIRED`. Report it as waiting; never force it.
    - **Grade a red check against the ruleset's required list** (`gh api repos/<owner>/<repo>/rulesets/<id>`). An unrequired check leaves `mergeStateStatus: UNSTABLE` — still mergeable — where `BLOCKED` means a required thing is missing. A code-scanning analysis with no source on the branch is the repository's setup, and the operator's to change.
    - **Merge with the method the repository allows.** Read `gh api repos/<owner>/<repo> --jq '{squash:.allow_squash_merge,rebase:.allow_rebase_merge,merge:.allow_merge_commit}'`; these repositories are rebase-only. A rebase merge lands every commit, so keep each one final.
+   - **A behind head refuses the merge on a required check.** `gh pr merge` answers `Required status check "validate" is expected.` when the head predates the last run of that check; nothing is missing and the review still stands. Bring the branch current (`gh pr update-branch <n> --rebase`), wait for `gh pr checks <n>` to pass on the new head, then merge. The check is bound to the head sha, so a rebase-only repository needs the update anyway.
    - **Prove a long-lived restart branch reverts nothing** with `git merge-base --is-ancestor origin/main origin/next`: false means `main` gained commits after the fork and the merge drops them. Read `delete_branch_on_merge` in the same call; with it on, a merge deletes a long-lived `next`. Raise it first, or recreate the branch afterwards.
    - **Report the link whenever a pull request is opened**, in the same turn, without being asked.
 
@@ -73,7 +74,7 @@ A question about one item is a read pass answered in one message: what it claims
 
 ## A pass over the state: built, in flight, waiting
 
-Answer a status request from the board and the code, never from the cards' prose: enumerate both sides, diff them, prove what you can.
+Answer a status request from the board and the code, never from the cards' prose: enumerate both sides, diff them, prove what you can. A count of published entries is the live page's, and a merged pull request counts only after its deploy completes.
 
 A document-set pass asks about its consumers and the decisions after it. `references/convention-audit.md` is that loop, the repair pass after it (one pull request per repository, the donor first), and the design pass for changing the standard itself.
 

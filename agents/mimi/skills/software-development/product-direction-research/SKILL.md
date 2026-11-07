@@ -31,7 +31,7 @@ The deliverable is a decision package: what the stack covers, the one stage noth
    ```sh
    gh api graphql -f query='{ organization(login:"aivara-se"){ projectV2(number:2){ title items(first:60){ totalCount nodes{ content{ ... on Issue { number title repository{name} } } fieldStatus:fieldValueByName(name:"Status"){ ... on ProjectV2ItemFieldSingleSelectValue { name } } } } } } }'
    ```
-   Trust `totalCount`: empty `nodes` with a non-zero count is an alias error, not an empty board.
+   Trust `totalCount`, and check the returned `title` is `Development` before you trust an empty list: projects are renumbered on a rebuild, so zero items under another title is a different board, not an empty one. Resolve the number from `projectsV2(first:20){ nodes{ number title } }`.
 3. **Map phases to artifacts, not intentions.** Intake, spec, build, review, verify, release, operate, learn — name the artifact covering each. The gap is the phase with no artifact, not the weakest one.
 4. **Read the ADR that created the gap.** A deliberate omission ("the run is not tracked") names the boundary the next project moves. Quote the decision.
 5. **Ground each phase claim in 3–5 numbered sources**, preferring primary research with sample sizes. Keep only findings that change the ranking; extend `references/agent-sdlc-evidence.md` rather than re-searching.
