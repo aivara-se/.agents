@@ -40,7 +40,7 @@ Run the repository's formatter and accept its output.
 
 - One config file and one pinned version per repository, checked by a step in the job the branch requires — never a second job.
 - Read the step's history before proposing a formatter: a config file is not proof the tool runs.
-- `bun fmt` already covers Markdown; alignment follows the config. Report drift only when its own check disagrees.
+- `bun fmt` already covers Markdown, tables included. Report drift only when its own check disagrees.
 - A repo that already has a formatter keeps it. When house rules forbid a second, scope it out and ask; reinterpreting the rule is not yours.
 - A formatter that changes quoting breaks a test asserting on its own source text; match either quote rather than pin the style.
 - Order, commands and the proof: `references/formatter-rollout.md`.
