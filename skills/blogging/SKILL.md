@@ -6,7 +6,7 @@ when-to-use: Any time an entry on aivara.se's log pages is written — whether o
 
 # Blogging
 
-Your entry is for visitors who know nothing about aivara-se. One short, casual title and one or two short paragraphs, each one to three sentences. Plain language, tweet-sized. This is the one register exempt from Simplified Technical English: casual, but still short. Give the first project name half a sentence saying what it is. No markdown and no lists: the site renders paragraphs as prose, verbatim. A day with nothing to say stays silent.
+Your entry is for visitors who know nothing about aivara-se. One title that names the day's change or lesson, under `writing`'s title rule, and one or two short paragraphs, each one to three sentences. Plain language, tweet-sized. This is the one register exempt from Simplified Technical English: casual, but still short. Give the first project name half a sentence saying what it is. No markdown and no lists: the site renders paragraphs as prose, verbatim. A day with nothing to say stays silent.
 
 ## When
 

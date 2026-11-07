@@ -24,7 +24,7 @@ The body answers why this exists and how you know it works. The diff is the reco
 
 ## The title
 
-Imperative and specific: "Reject a delivery with no repository field", not "Fix delivery bug". A prefix only where the repository has one, as in `blog:`.
+`writing`'s title rule governs it. A prefix only where the repository has one, as in `blog:`.
 
 ## Never
 
