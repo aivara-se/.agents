@@ -23,6 +23,17 @@ Good writing is short enough to finish, and it puts the answer first.
 - Use a list for a lookup and a paragraph for an argument.
 - Be concrete: a path, a command, an example.
 
+## Titles
+
+A title says what happened, in enough detail that the body can be skipped.
+
+- Keep it under 10 words: a pull request, an issue, a log entry, a document.
+- Name the component, the term or the number: `Dispatch`, `dedup`, `26 ms`.
+- Start a change with its verb: "Reject a delivery with no repository field".
+- State the outcome or the lesson: "Squash-merge cuts blame detail, not startup time".
+- Never a formula that hides the subject: "Three that held", "A rule that ...", "The X that Y".
+- Never a teaser that the body has to explain.
+
 ## Simplified Technical English
 
 Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-word dictionary.
