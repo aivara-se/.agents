@@ -33,6 +33,7 @@ metadata:
 - A page reproduced inside another codebase that must read as the original, which is still live.
 - A **major-version upgrade**: migrate with `framework-major-migration`, verify here.
 - A change to what an installed offline app keeps on the device — `references/device-storage-migration.md`.
+- An app that must install on a phone and open offline (a PWA): the manifest, the worker and the cache are the deliverable — `references/pwa-delivery.md`.
 - A small control on an existing screen: the ask is a feature, the risk is a redesign.
 - Not for a change that ships nothing a browser fetches; the gate sequence covers it.
 
@@ -114,6 +115,8 @@ One pass over each route's response:
 - **Do not add a fact, a rule or a section to a document nobody asked you to change.** Offer the line; do not add it. "True and useful" is not the test, the operator's ask is. On request, revert it in a commit of its own.
 - **A drag that ends over a tappable row fires a click on it.** Record the travel distance on `pointerdown`→`pointerup`, and ignore taps for ~350ms after a drag longer than ~8px, then assert both halves in the browser. A tolerance in CSS px is not the guard: the click is dispatched after the pointer is released, so only a time gate catches it.
 - **A tap target inside a row must not change the row's height.** A marker in the time column keeps the baseline and the columns still; one on its own line, a badge above the label or a border on the row moves every sibling and is a redesign.
+- **An installable app is proved by the browser's verdict, not by the manifest text.** On the served build, `Page.getAppManifest` must report no error and `Page.getInstallabilityErrors` must be empty, then the network goes offline and a reload must render the app's own node. Poll for that node: a `controllerchange` reload can still be in flight when a fixed sleep ends. The recipe is `references/pwa-delivery.md`.
+- **A cache-first worker that calls `skipWaiting` deletes the old build's cache under a page that is still running, and its lazy route chunks then miss.** Reload the page on `controllerchange`, guarded by `navigator.serviceWorker.controller` at mount so the first install does not reload. The trade and the code shape are in `references/pwa-delivery.md`.
 
 ## References
 
@@ -124,5 +127,6 @@ One pass over each route's response:
 - `references/quick-tunnel-preview.md` — a link the operator can open when the host builds only the default branch.
 - `references/product-page-value-copy.md` — the value-first page: argument order, copy rules, layout checks.
 - `references/device-storage-migration.md` — seed version, orphaned rows, the user's own row, transactions, a versioned key.
+- `references/pwa-delivery.md` — installability checks, a manifest that serves a root and a subpath, a precache list written from the build output, cache-first navigation, the update reload and the offline proof.
 - `scripts/contrast.ts` — ratio and panel calculator: `bun run scripts/contrast.ts <text-hex> <surface-hex> [...]`.
 - `scripts/render-check.mjs` — Chromium over CDP: console errors, the `500` page, horizontal overflow, `<h1>` and section boxes, a screenshot. `node scripts/render-check.mjs <url> [width] [out.png] [expressionFile]`, with `CHROME=` for a non-default binary. It attaches to `about:blank` and navigates after enabling `Runtime`, or the hydration errors are gone before the listener attaches.

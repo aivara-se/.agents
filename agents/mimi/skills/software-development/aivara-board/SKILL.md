@@ -1,12 +1,12 @@
 ---
 name: aivara-board
 description: Use when working an aivara-se Development board card.
-when-to-use: Picking up, starting or reading a card on the aivara-se Development project (project 2), including the Status move an agent makes for its own card.
+when-to-use: Picking up, starting or reading a card on the aivara-se Development project (resolve its number from the project list first), including the Status move an agent makes for its own card.
 ---
 
 # The aivara-se board
 
-One GitHub project: org `aivara-se`, number `2` (`Development`). A card is an issue; its column is the project's `Status` single-select field. Columns: `Backlog`, `Refined`, `Started`, `Finished`.
+One GitHub project: org `aivara-se` titled `Development`. Read its number from the project list; do not trust the number written below. A card is an issue; its column is the project's `Status` single-select field. Columns: `Backlog`, `Refined`, `Started`, `Finished`.
 
 The dispatcher **never** writes a field but the assignee and **never** moves a card. An agent moves **its own** card to `Started` when it starts building. Change nothing else by hand.
 
@@ -16,6 +16,8 @@ The dispatcher **never** writes a field but the assignee and **never** moves a c
 gh api graphql -f query='{ organization(login:"aivara-se"){ projectV2(number:2){ id title fields(first:30){ nodes{ ... on ProjectV2SingleSelectField { id name options { id name } } } } } } }'
 ```
 
+**Check the `title` the query returns before you read any items.** A project is renumbered when the operator rebuilds or renames one, so a number that once named `Development` can point at a different board whose item list is legitimately empty. If the title is not `Development`, list `projectsV2(first:20){ nodes{ number title } }`, take the number that matches, and use its ids — every id below is per project and dies with a rebuild.
+
 Ids are per project, not per card: project `PVT_kwDOCHeWGM4BkzFY`, Status field `PVTSSF_lADOCHeWGM4BkzFYzhjiWv8`, options `4fe3df6b` Backlog / `f75ad846` Refined / `47fc9ee4` Started / `98236657` Finished. Re-ask when a mutation is rejected; a rebuilt board changes them.
 
 The items query is the read the service makes — `repository { nameWithOwner }`, `fieldValueByName(name:"Status")`, `assignees(first:1)`:
@@ -24,7 +26,7 @@ The items query is the read the service makes — `repository { nameWithOwner }`
 gh api graphql -f query='{ organization(login:"aivara-se"){ projectV2(number:2){ title items(first:60){ totalCount nodes{ content{ ... on Issue { number title repository{name} state } } status:fieldValueByName(name:"Status"){ ... on ProjectV2ItemFieldSingleSelectValue { name } } } } } } }'
 ```
 
-A card is `owner/name#number`, never the number alone. Read `totalCount` before `nodes`: empty `nodes` is a fact only when the count agrees. Zero against a non-zero count means a dropped alias or fragment — re-ask before reporting an empty board.
+A card is `owner/name#number`, never the number alone. Read `totalCount` before `nodes`: empty `nodes` is a fact only when the count agrees. Zero against a non-zero count means a dropped alias or fragment — re-ask before reporting an empty board. Zero under an unexpected `title` is a different board, not an empty one.
 
 ## Move a card to Started
 
@@ -44,7 +46,7 @@ Nothing auto-adds an issue: create it, add the item, set `Status` to `Backlog` �
 
 ```sh
 url=$(gh issue create --repo aivara-se/<repo> --title "<one line>" --body-file <path>)
-item=$(gh project item-add 2 --owner aivara-se --url "$url" --format json --jq '.id')
+item=$(gh project item-add <number> --owner aivara-se --url "$url" --format json --jq '.id')   # the number the project list gives for `Development`
 ```
 
 ```sh

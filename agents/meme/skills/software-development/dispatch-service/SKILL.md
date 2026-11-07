@@ -23,6 +23,7 @@ Go, standard library only, module `github.com/aivara-se/dispatch`. `internal/rec
   - `What vX does not do` and `Edge cases vX leaves unhandled`: a bullet saying "only X is read", or that a refusal wakes nobody, goes false first — delete it, add the new version's gaps;
   - the Acceptance bullets, subscription list, storage lines, `SYSTEMS.md`'s payload-field sentence, README's summary and delivery paragraph.
 - Check every reason string in `SYSTEMS.md` against the strings `receiver.go` builds: a count and a list that disagree are one defect.
+- **`PRODUCT.md` and `SYSTEMS.md` carry per-section word caps** (Behaviour 250, Scope 110, Architecture 180) and the org checker enforces them: run `bun run scripts/validate-docs.ts <repo> --require` in `~/github/aivara-se/dotgithub` before pushing. Behaviour sits at its cap, so a new rule is bought by folding a restated rule into the general one it repeats, not by writing longer bullets.
 - `AGENTS.md`'s _Current Project Focus_ is the operator's steering, not docs catch-up: name its stale lines in the PR body. Its _Repository Structure_ map is the opposite — fix a line the change falsifies in the same PR.
 
 ### What is built

@@ -15,5 +15,11 @@ Run it as one change per repository, all from `origin/main`.
 11. Without `--no-script`, a `fmt` script in `package.json` receives the arguments. Then `fmt: prettier --write .` answers `--check` by rewriting the file and exiting 0.
 12. Reformat the tree in the same pull request. Then confirm the check fails on a file you dirty on purpose; exit 1 is the proof.
 13. Prove the change is style only: build the base in one worktree and the branch in another, then `diff -rq` the output trees. Only hashed asset names and collapsible whitespace may differ; any changed string or class is a real defect.
+14. To answer "does it cover this class" without a new tool: `bun fmt --no-script --list-files . | grep -i '\.md$'`. Then dirty one file; `--check .` exits 1.
+15. `bun fmt` lists Markdown in dot-directories (`.github/PULL_REQUEST_TEMPLATE.md`) and honours `proseWrap`. A line that stays long under `"never"` is not a missed file.
+16. Read the step's history before proposing a second formatter: `git log -S prettier -- .github/workflows`. A swapped formatter leaves its config behind.
+17. A table is reprinted to one width per column, whatever `printWidth` says: Bun's formatter and Prettier pad a compact table, and strip extra padding.
+18. So a compact table fails `--check` and a padded one passes, under `.prettierrc.json` and `bunfig.toml` alike. Report drift only when the check disagrees.
+19. A repository that ignores its docs (`prettierignore`) keeps the author's hand-padding. Read its config before comparing two repositories.
 
 Expect two breakages. A test that reads its own source for a literal breaks when the quote style changes — match either quote. A hand-written `bun:test` type shim must declare any matcher a new assertion uses, or `svelte-check` fails while `bun test` passes.

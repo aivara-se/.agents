@@ -10,10 +10,14 @@ Good writing is short enough to finish, and it puts the answer first.
 
 ## Length
 
-- A message, issue comment or pull-request body is 150 words. Longer is a document: write the file, attach it in chat as `MEDIA:/absolute/path`, link it in a GitHub body.
+- A message, issue comment or pull-request body is 150 words.
+- Longer is a document: write the file, attach it in chat as `MEDIA:/absolute/path` on its own line, and link it in a GitHub body.
 - Draft to about 130 words. A first draft runs long, and trimming it costs rounds.
 - Count the words with `wc -w <file>`. Do not estimate.
 - A `SKILL.md` is 900 words, a reference 750, an agent file 280.
+- A product or system document is budgeted too: a fixed heading set, a cap per section, a total that is their sum.
+- The cap is a ceiling, not a target. A rule squeezed out of the document is invented at the point of use.
+- A cap quoted in more than one place is swept in the same edit: the example message, every total.
 - One rule per bullet, 30 words or less; a step in a document is 20. The reason is a clause; the story goes in the commit.
 
 ## Shape
@@ -22,6 +26,7 @@ Good writing is short enough to finish, and it puts the answer first.
 - Then the evidence, then what you need.
 - Use a list for a lookup and a paragraph for an argument.
 - Be concrete: a path, a command, an example.
+- A template's headings are a closed set: none that describes the document itself, and none that splits one question across two headers.
 
 ## Simplified Technical English
 
