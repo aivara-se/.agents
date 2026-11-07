@@ -1,12 +1,12 @@
 # The `aivara-se` agent configuration
 
-Every agent in this organisation reads the same instructions. The skills live here once. The entry file a repository adopts lives in `aivara-se/.template`.
+Every agent in this organisation reads the same instructions. The skills live here once. The entry file a repository carries is `aivara-se/.github/docs/ENTRY.md`.
 
 ## Layout
 
 ```
 README.md    this file
-AGENTS.md    the entry file for an agent working in this repository
+AGENTS.md    the entry file, identical to the standard
 agents/      one file per agent: the whole of its profile text; <name>/ holds its own documents and tools
 skills/      one directory per skill, each holding a SKILL.md
 scripts/     what maintains this repository, such as the prose gate
@@ -26,10 +26,24 @@ A profile loads them through `skills.create_dir`, which points here. This direct
 
 A stock Hermes skill stays in the profile. Only what this agent authored or changed lives here.
 
+## House rules
+
+- Never write a secret, a token, a host path or a personal name into this repository.
+- Change a skill here once, rather than copying it into a profile or a repository. A profile's own skills are the exception: they live under `agents/<name>/skills/` and load from there. A host path or a personal name in them is that profile's. A secret is never exempt.
+- An agent file is complete on its own: copy it over `SOUL.md` and nothing is lost.
+- `AGENTS.md` is never edited here. A rule change is a pull request to `aivara-se/.github/docs/ENTRY.md`.
+
 ## Adding or changing a skill
 
 Follow `skills/writing/references/writing-skills.md`.
 
 ## Checks
 
-The commands an agent runs here are in `AGENTS.md`.
+```sh
+bun fmt --no-script --check .
+bun run scripts/check-prose.ts
+find skills -name SKILL.md | sort                # every skill on disk
+head -4 skills/*/SKILL.md                        # name, description, when-to-use in each
+```
+
+The same commands run in `.github/workflows/validate.yml`, whose job is named `validate`. The `agents` job beside it proves `AGENTS.md` is the standard.
