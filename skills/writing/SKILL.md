@@ -49,7 +49,7 @@ Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-wo
 - Describe the pattern, not one instance: a page one agent has gets a general clause.
 - A code comment explains why. Delete a comment that repeats the line below it.
 - When a change makes a document untrue, fix that document in the same change.
-- Do not name the current release in prose. Put the version in the changelog.
+- Do not name the current release in prose. What shipped, and when, is the release record.
 - Quote an ADR's condition word for word.
 
 ## Which document
