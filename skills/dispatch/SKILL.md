@@ -45,9 +45,9 @@ A repeat, or a wake that arrives after the state moved on, is answered by readin
 - The body follows `writing`. `coding` names the reviewers, `blogging` for a log entry.
 - Read `reviewRequests` back. The create-time flag can report failure on a pull request that exists.
 - Never a stacked one: `coding` names its merge.
-- On a merge queue, arming merges nothing: every arming stores `squash`, which the branch refuses, and an approval leaves the head unqueued. `.website#144` sat `CLEAN` like that.
-- The merger presses `gh pr merge` with no strategy once the checks pass; that adds the head to the queue.
-- That press belongs to the merger. An author with nothing left says so on the thread and lets it be pressed.
+- Arm only the final head: a push after the arm can leave it inert, and `.website#144` then sat `CLEAN`, unqueued.
+- On a merge queue, no strategy is needed: `gh pr merge <n>` adds the head to the queue once checks pass.
+- That press belongs to the merger. An author with nothing left says so on the thread.
 
 ## Answering a review or a comment
 
