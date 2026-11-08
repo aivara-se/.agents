@@ -13,10 +13,12 @@ Good writing is short enough to finish, and it puts the answer first.
 - A message, issue comment or pull-request body is 150 words.
 - Longer is a document: write the file, attach it in chat as `MEDIA:/absolute/path` on its own line, and link it in a GitHub body.
 - Draft to about 130 words. A first draft runs long, and trimming it costs rounds.
-- Count the words with `wc -w <file>`. Do not estimate.
+- Draft a capped file at 85% of the cap — an agent file at 240, a `SKILL.md` at 760. Cutting a full draft back costs a round per cut.
+- Count the words with `wc -w <file>`. Do not estimate: it charges each backticked name a word, so a rule-dense file runs longer than it reads.
 - A `SKILL.md` is 900 words, a reference 750, an agent file 280.
 - A product or system document is budgeted too: a fixed heading set, a cap per section, a total that is their sum.
 - The cap is a ceiling, not a target. A rule squeezed out of the document is invented at the point of use.
+- Meet a budget by cutting filler. A rule the operator named stays; if the budget still fails, ask which clause pays.
 - A cap quoted in more than one place is swept in the same edit: the example message, every total.
 - One rule per bullet, 30 words or less; a step in a document is 20. The reason is a clause; the story goes in the commit.
 

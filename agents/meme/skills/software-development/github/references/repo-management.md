@@ -60,8 +60,6 @@ git push origin main
 gh repo sync $GH_USER/repo-name
 ```
 
-With curl, POST `/repos/owner/repo-name/forks`, wait for GitHub to create it, then clone your copy.
-
 With curl, POST `/repos/owner/repo-name/forks`, wait a few seconds for GitHub to create it, then clone your copy.
 
 The `gh` form adds and names the `upstream` remote for you; with plain git you add it by hand (above).

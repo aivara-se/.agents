@@ -12,6 +12,8 @@ git checkout -b feat/add-user-authentication
 
 Prefixes: `feat/`, `fix/`, `refactor/`, `docs/`, `ci/`. Commit as `type(scope): short description`, wrapped at 72 characters. Types: `feat`, `fix`, `refactor`, `docs`, `test`, `ci`, `chore`, `perf`.
 
+**Never amend a commit you did not write.** `git commit --amend --no-edit` keeps whatever `HEAD` is, so a commit another run landed between your edit and your commit becomes yours, under its message, and the push rewrites history nobody agreed to rewrite. Read `git log -1 --format='%h %s'` and amend only when that is your own commit; otherwise commit on top.
+
 ## 2. Open the PR
 
 ```bash
@@ -46,6 +48,8 @@ gh run view <RUN_ID> --log-failed
 ```
 
 Without `gh`, download `/actions/runs/$RUN_ID/logs` as a zip, unzip it, read the `.txt` files. Fix with `patch`/`write_file`, commit, push, re-check. Three attempts, then ask the user.
+
+**A run named by the workflow's path failed to load.** `gh pr checks` prints `no checks reported`, `gh run list` shows the path instead of the workflow `name:`, and `gh run view` says _This run likely failed because of a workflow file issue_. The job never started, so there is no log to read: look for a `uses:` naming a reusable workflow, ref or action that is not on the default branch yet.
 
 ## 5. Merge
 

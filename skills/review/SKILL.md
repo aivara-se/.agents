@@ -19,7 +19,9 @@ What to check, and which verdict each check earns. How the review reads is `writ
 7. Look at what checks cannot see in the lines it wrote or made false: swallowed errors, a widened surface, a new dependency, a credential.
 8. Read the prose: a sentence over the limit gets a comment, not a block.
 
-A line the item does not carry is not a contract line. Unchanged code in a touched file is not this change's.
+A line the item does not carry is not a contract line. Unchanged code in a touched file is not this change's — but a line the change makes false is.
+
+Grep the repository for the claim, not only the diff. One fact lives in several files, and a change that corrects one copy leaves the others false. Zero hits for a path the diff stops naming mean the change dropped its last pointer: the finding is the missing home.
 
 Test a decision record against its sources and itself, never against the decision you would have made. An accepted ADR is immutable: a change overrides it with a new ADR naming the clauses it replaces. Only the operator can sanction an edit in place.
 
@@ -30,6 +32,7 @@ Test a decision record against its sources and itself, never against the decisio
 - It is the change's to fix. Name the contract line it misses or breaks. Work the item never asked for is an issue.
 - It is a correction, not an addition: no new field, file, abstraction or gate. A fix that grows the change needs a criterion.
 - A check can come from a default-setup scan (CodeQL) that no workflow file owns: read `gh run list --branch <default>`.
+- The title obeys `writing`: under ten words, the component named, the verb first. Name the replacement when a formula opener hides it.
 
 ## The verdict
 
@@ -43,9 +46,12 @@ Never approve what you did not run, or your own branch. An approval can be the m
 
 An approval is one commit's, and a force-push can drop that commit: re-read `headRefOid` after you post, and review the head that replaced it.
 
+Two pull requests on one file merge as one, not two: the first landing makes the second `CONFLICTING`. Order them by their diffs, the small insert first, and re-read `mergeable` after each lands.
+
 ## The loop
 
 - Rounds converge. The first finds, the second verifies the findings and what the fix broke. A subject new in round two is an issue; a third is the operator's.
+- A defect the first round missed in the same diff is still this change's: correct it before the merge, not after.
 - A reasoned refusal is an answer. Weigh it, and approve when it holds.
 - Hand a point back once, with `gh pr edit <n> --add-reviewer <login>`.
 - Still apart? The operator decides.
