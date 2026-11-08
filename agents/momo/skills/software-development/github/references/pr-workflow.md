@@ -104,15 +104,42 @@ Then fix with `patch` or `write_file`, commit, push, and re-check. Loop at most 
 
 ## 6. Merge
 
-```bash
-# Squash merge + delete branch (cleanest for feature branches)
-gh pr merge --squash --delete-branch
+Read the branch's rules before the command: a required merge queue changes what `gh pr merge` means.
 
-# Enable auto-merge (merges when all checks pass)
-gh pr merge --auto --squash --delete-branch
+```sh
+gh api repos/<owner>/<repo>/rulesets --jq '.[].id'
+gh api repos/<owner>/<repo>/rulesets/<id> --jq '.rules[]|{type,parameters}'
+```
+
+The interesting rules: `merge_queue` (no strategy is allowed), `required_linear_history`, `required_status_checks.strict_required_status_checks_policy`, `dismiss_stale_reviews_on_push` (a rebase throws your approval away), `require_last_push_approval` (an approval older than the head does not count).
+
+Without a queue, pass the method the repository allows:
+
+```bash
+gh pr merge <n> --squash --delete-branch
+gh pr merge <n> --auto --squash --delete-branch   # arms it until the checks pass
 ```
 
 Merge methods: `"merge"` (merge commit), `"squash"`, `"rebase"`. Auto-merge must be enabled in the repository settings, and REST cannot set it — it is a GraphQL mutation (`enablePullRequestAutoMerge` with `mergeMethod: SQUASH`).
+
+### A required merge queue
+
+`gh pr merge <n>` with no strategy enqueues the pull request when the required checks have passed, and arms auto-merge when they have not. Two things make that look broken:
+
+- A strategy flag prints `The merge strategy for main is set by the merge queue`, exits 0, and enqueues nothing. Read that line as a refusal, not as success.
+- `mergeStateStatus` is a racy read: `CLEAN`, then `UNKNOWN` while GitHub recomputes, then `MERGED`. Poll `state`; one sample proves nothing.
+
+Read the queue, and enqueue directly when the porcelain did not take it:
+
+```sh
+gh api graphql -f query='query{repository(owner:"<owner>",name:"<repo>"){mergeQueue(branch:"<base>"){entries(first:10){nodes{position state pullRequest{number}}}}}}'
+gh api repos/<owner>/<repo>/pulls/<n> --jq .node_id
+gh api graphql -f query='mutation{enqueuePullRequest(input:{pullRequestId:"<node_id>"}){mergeQueueEntry{position state}}}'
+```
+
+`Pull request is already in the queue` answers a second attempt; that is the enqueue working. `autoMergeRequest` set by another login is not the queue: a pull request can sit armed and `CLEAN` with an empty queue.
+
+The queue rebases each entry onto a temporary `merge_group` ref and lands it only when the required check passes there. A workflow that triggers on `pull_request` alone reports nothing for that ref, so the entry waits out the check timeout instead of merging — check the workflow's triggers before blaming the queue. Confirm the landing with `mergedAt` and the default branch's new head; state can read `OPEN` while the queue is still building.
 
 Without `gh`, `PUT /repos/$OWNER/$REPO/pulls/$PR_NUMBER/merge` with `"merge_method": "squash"`, then `git push origin --delete $BRANCH` and `git checkout main && git pull origin main && git branch -d $BRANCH`.
 
@@ -126,6 +153,18 @@ Without `gh`, `PUT /repos/$OWNER/$REPO/pulls/$PR_NUMBER/merge` with `"merge_meth
 | Request review | `gh pr edit N --add-reviewer user` | `curl -X POST .../pulls/N/requested_reviewers -d '{"reviewers":["user"]}'` |
 | Close PR | `gh pr close N` | `curl -X PATCH .../pulls/N -d '{"state":"closed"}'` |
 | Check out someone's PR | `gh pr checkout N` | `git fetch origin pull/N/head:pr-N && git checkout pr-N` |
+
+### Reporting the open work
+
+The operator asks for this repeatedly, so answer it from the repositories, not from search: `search/issues?q=org:<org> is:pr is:open` lags by minutes and misses a pull request opened in the same minute.
+
+```sh
+for r in $(gh repo list <org> --limit 100 --json nameWithOwner,isArchived --jq '.[]|select(.isArchived|not)|.nameWithOwner'); do
+  gh pr list -R "$r" --state open --json number,title,isDraft,reviewDecision,mergeable,mergeStateStatus,reviewRequests,statusCheckRollup
+done
+```
+
+Split on what still needs an action, and say what that action is: ready is `APPROVED` with `mergeStateStatus: CLEAN` and every rollup entry `SUCCESS`; blocked is `REVIEW_REQUIRED` (name the login in `reviewRequests`), `CHANGES_REQUESTED` (name the reviewer who holds it, including you), `CONFLICTING`/`DIRTY` (it needs a rebase first), or a draft. `mergeable: UNKNOWN` means GitHub has not recomputed yet — re-query before you call it blocked.
 
 ### When `gh pr edit` refuses
 

@@ -11,6 +11,7 @@ Never open with "I'll now", "Great question", "Just to confirm", "As discussed" 
 ## The body
 
 - Facts, then the ask: a number, a command, a file path. Not an adjective.
+- A link is the full URL on its own line: `https://github.com/OWNER/REPO/pull/N`, never `REPO#N`.
 - One decision per message. Two questions get one answered.
 - Disagreement answers the point: which of true, in scope or worth it the ask fails, in a line.
 - Answer a thread in the thread, and a mention in place, not in chat.
