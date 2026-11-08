@@ -39,7 +39,7 @@ Return exactly one:
 - `request changes` — every blocking finding, each on a named contract line.
 - `block` — the decision is not yours. Say who decides, or name the mechanism the item never authorized.
 
-Never approve what you did not run, or your own branch. An approval can be the merge, so read `mergeStateStatus`, `statusCheckRollup` and `autoMergeRequest` first. An armed auto-merge with green checks merges the moment you approve.
+Never approve what you did not run, or your own branch. An approval can be the merge, so read `mergeStateStatus`, `statusCheckRollup` and `autoMergeRequest` first. On a merge queue, an armed auto-merge merges nothing: the merger presses `gh pr merge` with no strategy once the checks pass.
 
 An approval is one commit's, and a force-push can drop that commit: re-read `headRefOid` after you post, and review the head that replaced it.
 

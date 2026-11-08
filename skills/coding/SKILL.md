@@ -63,7 +63,7 @@ Run the repository's formatter and accept its output.
 - Ask `thani-sh` and one peer whose role owns the risk: MaMa architecture, MeMe durability, MiMi a measurement, MoMo untrusted input.
 - Confirm the request landed: `gh pr view <n> --json reviewRequests`. A missing login is dropped in silence; add it with `gh pr edit --add-reviewer`.
 - Read the reviews before reporting done. A request for changes is the next step.
-- Arm it as you open it: `gh pr merge <n> --auto`; a merge queue fixes the strategy. Never arm a draft or spike.
+- Never arm a draft or spike: arming a queued branch merges nothing, and the merger presses `gh pr merge <n>`.
 - A stacked pull request is never armed. Merge it with `gh api -X PUT repos/<owner>/<repo>/pulls/<n>/merge-async -f sha=<head> -f merge_method=rebase`, then poll its `uuid`.
 - The body follows `writing`, in Simplified Technical English, and is never a file list.
 

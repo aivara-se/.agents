@@ -44,11 +44,10 @@ A repeat, or a wake that arrives after the state moved on, is answered by readin
 - Branch, commit and push as the entry file requires, never on the default branch.
 - The body follows `writing`. `coding` names the reviewers, `blogging` for a log entry.
 - Read `reviewRequests` back. The create-time flag can report failure on a pull request that exists.
-- Arm auto-merge on the head you pushed, at open time while checks still run. Never a stacked one: `coding` names its merge.
-- Arming later, once the head is approved and green, merges on the spot under your token, unless the branch has a merge queue.
-- On a merge queue, give no strategy: `--auto --rebase` stored `squash` and merged nothing.
-- `gh pr merge --auto` alone queues the head once checks pass; the queue's rule sets the method.
-- That press belongs to the merger. An author with nothing left but arming says so and lets it be armed.
+- Never a stacked one: `coding` names its merge.
+- On a merge queue, arming merges nothing: every arming stores `squash`, which the branch refuses, and an approval leaves the head unqueued. `.website#144` sat `CLEAN` like that.
+- The merger presses `gh pr merge` with no strategy once the checks pass; that adds the head to the queue.
+- That press belongs to the merger. An author with nothing left says so on the thread and lets it be pressed.
 
 ## Answering a review or a comment
 
