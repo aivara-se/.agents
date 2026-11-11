@@ -25,6 +25,7 @@ Use for a story, script or beat sheet that must become comic panels or pages. Us
 Three bibles. Nothing downstream starts until a human approves them.
 
 - **Character sheet.** One turnaround per character: front, three-quarter, profile, full body, neutral light, plain background. Write one descriptor block — age, build, hair, eyes, scars, outfit — and reuse it word for word.
+- **Variant sheet.** A change the reader will see — a haircut, a new uniform, an injury, an inherited coat — is a second turnaround from the same descriptor block with that one clause changed. Every panel after the change references the variant sheet, not the base. One sheet cannot carry two looks; the model blends them. Take the change from a sentence the story states and quote it in the description: an invented variant drifts from the text and from the panels either side of it.
 - **Location plate.** One establishing shot per set. Later shots reference the plate and state the camera and the light: "same room, camera from the kitchen door, late afternoon". Never rebuild a set from text alone.
 - **Style plate.** One image that fixes line, palette and rendering. One style block in every prompt, one model and one seed family per series.
 
@@ -68,7 +69,20 @@ Pre-generate the character sheets and location plates and pass them in. They rai
 
 Deliver 1080 px wide, one column, vertical scroll. A 1K panel already meets the width, so 4K buys nothing. Stack panels; no spreads, no facing pages, no page turns. Body text 32 px or more, safe margin 40 px. Export WebP slices of 1600 to 2000 px. A 1080 x 1920 slice is a spec of 3.6 x 6.4 in at 300 dpi; the same fractional boxes reflow to print. The only page-mode shape that fits is a 1:4 strip at 4K, 1024 x 4096, four panels stacked; review it before shipping.
 
-Use page mode for covers, one-shots, social strips and layout drafts. Do not use it for a series that must hold a face. Take the creative decisions in the layout plan, not in the pixels: the agent picks panel count, shapes, sizes, bleeds and reading flow; code renders each panel and composes the page.
+Use page mode for covers, one-shots, social strips, layout drafts and any product whose deliverable IS the page: a novel adapted into a comic book, one image call per page. Panel mode holds a face better; page mode holds a book together. Take the decision from the brief, not from taste.
+
+Take the creative decisions in the layout plan, not in the pixels: the agent picks panel count, shapes, sizes, bleeds and reading flow; code renders each panel and composes the page.
+
+## A whole-page product
+
+When the deliverable is a book of pages, the page is the unit of work, of review and of cost.
+
+- **One call draws one page.** Ask for a complete page: four to six panels, black gutters and borders, read top to bottom. 1K portrait is 832 × 1248 (2:3) on Gemini's image models and 1024 × 1536 on an OpenAI endpoint; both are a page, neither is print.
+- **Compress by source words, not by a fraction of beats.** One page stands for about 200 words of prose. Cut at sentence boundaries and give every sentence to exactly one page, in order: a novel must be covered, never silently abridged. Flatten the planned pages and compare against the sentence list — that is a unit test, not a promise.
+- **The page carries its own cast.** Repeat the character and location descriptor blocks from the approved catalog in the page prompt, word for word, and send the plates as reference images. Page mode has no per-panel conditioning, so this is the only lever short of a LoRA.
+- **Lettering stays outside the image.** Store a script per page — one caption and up to three spoken lines with speakers — and forbid text in the prompt. The page can then be re-lettered without a redraw.
+- **Drift is expected; the review loop is the QA.** Offer redraw per page with an editable prompt and a free-text note, and make approval a gate. A vision compare per chapter catches the face that changed.
+- **A page prompt names the beat, the place, the cast and the panel plan.** "Page 4 of chapter 2" alone returns a random page; the model needs the moment, not the address.
 
 ## Rules that hold
 

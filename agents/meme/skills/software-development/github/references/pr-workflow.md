@@ -153,7 +153,7 @@ Read the landing state in one call: `gh pr view N --json state,mergeable,reviewD
 
 Match the method the base history already uses: a linear base whose commits carry the branch's own messages means **rebase**; a base of `type: subject (#N)` rows means squash. Read it with `git log --oneline --graph <base>` first. A squash flattens the story the branch wrote; a rebase rewrites every SHA, so re-read the landed SHA before quoting one.
 
-**An approval is not a merge.** `gh pr view N --json state,mergedAt` is the only evidence a PR landed. The merge starts the rest: read the run it triggers (`gh run list --branch <base> -L 2`) and, where the change is published, the address a user reaches (`curl -s -o /dev/null -w '%{http_code}' <url>`). An Actions read can lag the run's real state — `queued`/`in_progress` on a finished run is a stale read, so re-query before reporting it stuck.
+**An approval is not a merge.** `gh pr view N --json state,mergedAt` is the only evidence a PR landed. The merge starts the rest: read the run it triggers (`gh run list --branch <base> -L 2`) and, where the change is published, the address a user reaches (`curl -sL -w '%{http_code}' <url>` — a static host 301s a directory URL to its trailing slash, and a bare `-s` reads that as a failed deploy — then grep the served page for a string the change introduced: a `200` proves the host answered, not that this change is live). An Actions read can lag the run's real state — `queued`/`in_progress` on a finished run is a stale read, so re-query before reporting it stuck.
 
 ```bash
 gh pr merge N --rebase --delete-branch
@@ -187,6 +187,34 @@ git rev-parse HEAD^{tree}                     # must equal the tree above
 - Do not run `git rebase --onto origin/main <old-base>` on a branch that already contains a merge commit: the replayed range includes the merge's other side, so git re-applies the base's own commits and conflicts on files you never touched. Rebuild from `origin/main`.
 - When both sides appended to a file, take the base version and re-apply your hunk at its position. Taking your copy wholesale deletes what the base added.
 - Push once with `--force-with-lease=<branch>:<old-head>`, then re-request the reviewer: the push dismissed the approval, and `require_last_push_approval` wants a verdict at the new head.
+
+### Why is this PR not landing?
+
+A queue review is a state read, not a diff read. Enumerate the whole org and prove the count before naming anything:
+
+```bash
+gh search prs --owner <org> --state open --json repository,number,title,author
+for r in $(gh api /orgs/<org>/repos --jq '.[].full_name'); do
+  printf '%s ' "$r"; gh pr list -R "$r" --state open --limit 100 --json number --jq length
+done
+```
+
+The two totals must agree. `gh search` returns at most 30 per page and skips a repository the token cannot read, so a per-repository count is the completeness check.
+
+Then read the blocker per pull request in one call: `gh pr view <n> -R <repo> --json mergeable,mergeStateStatus,reviewDecision,autoMergeRequest,reviewRequests,statusCheckRollup,headRefOid`.
+
+| State | Meaning | Action |
+| --- | --- | --- |
+| `BEHIND` | Strict required checks: the head lacks the base tip | `gh pr update-branch <n> --rebase`, wait for the new run, re-request review (the push dismissed it) |
+| `BLOCKED` / `REVIEW_REQUIRED` | A verdict is missing, not a check | `reviewRequests` names who owes it; a documents-only change waits on the operator alone |
+| `CLEAN` + `APPROVED` + armed, still open | The arm is inert: a method the ruleset forbids, or an arm taken before the head's checks went green | Read `autoMergeRequest.mergeMethod` against `allowed_merge_methods`, then `gh pr merge <n> --disable-auto` and press `gh pr merge <n> --rebase`; exit 0 with `The merge strategy for main is set by the merge queue` is an enqueue — prove it with a `mergeQueue` entry |
+| `UNKNOWN` | GitHub has not computed the merge | `git fetch origin <head-sha>` then `git merge-tree --write-tree origin/main <head-sha>`; exit 0 is clean |
+| `gh pr checks` empty | The workflow never loaded, so nothing ran | `gh run list --commit <head-sha>`; see `references/ci-troubleshooting.md` |
+
+- **Two green pull requests can still conflict with each other.** `git merge-tree --write-tree <head-a> <head-b>` merges both heads against their common ancestor: a non-zero exit lists the stages. Order the landings and name the one-line resolution in the reply; a rebase onto the first reveals the same conflict later, at a worse moment.
+- **A body's "byte-identical at `<sha>`" proves nothing about the merge.** That sha is often a pull-request head that changed before it merged. Hash the head's file against the upstream `main` the check will compare with (`curl -s https://raw.githubusercontent.com/<org>/<repo>/main/<path> | sha256sum`) and compare with `git show <head>:<path> | sha256sum`; a stale copy lands and then fails its own new check.
+- **`update-branch` can answer `Could not resolve head ref`.** The branch is gone while the pull request is open: `delete_branch_on_merge` fired under it, or a parallel session tidied it. The commit survives at `refs/pull/<n>/head` — `git fetch origin <head-sha>`, `git push origin <head-sha>:refs/heads/<branch>`, then update. Read `state,mergedAt` before touching the ref: a branch that vanished this way often means the pull request merged since your triage read, and recreating it then leaves a stray branch to delete.
+- Report ready-but-unmerged separately from blocked: the operator reads "waiting on your press" and "cannot merge" as different work.
 
 ## 8. Stacked pull requests
 

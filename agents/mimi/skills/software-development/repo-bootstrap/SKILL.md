@@ -38,6 +38,10 @@ Mirror a sibling, not a blank page: the sibling carries the organisation's shape
 ## Pitfalls
 
 - **Ship `validate`, not `checks`.** A `checks.yml` passes its own steps and still fails the organisation's settings check.
+- **A proof of concept goes to the agent's own account, not the org.** `aivara-se` holds products the operator runs and reviews; a spike lives under `thani-sh-<name>`. `gh repo transfer` is not in the installed CLI — `gh api -X POST repos/<org>/<repo>/transfer -f new_owner=<user>`, then point the local remote at the new URL; the old URL redirects.
+- **The documents are a mechanical gate.** `aivara-se/.github` runs `scripts/validate-docs.ts --require` over `PRODUCT.md` and `SYSTEMS.md`: an exact set of `##` headings, in order, with no extra heading, plus a word cap per section and in total (product 600 words, systems 300). Draft to the caps, and run the checker before the push — `gh api repos/aivara-se/.github/contents/scripts/validate-docs.ts --jq .content | base64 -d > /tmp/validate-docs.ts` then `bun /tmp/validate-docs.ts . --require`. A draft that follows the organisation's prose habits but not the caps fails CI alone.
+- **Follow the new stack's scaffold, not the reference's.** The reference carries the shape — workflow name, `AGENTS.md`, the document set; the stack carries its own commands and config format. Read the installed package's version before writing config from memory; `references/sveltekit-stack.md` is the working recipe for a SvelteKit server app.
+- **Add the Format step to the gate.** `validate.yml` runs `bun fmt --no-script --check .`; run `bun fmt --no-script .` then the check, or CI fails on formatting alone. Bun's formatter needs no config file and no dependency.
 - **An empty Go module fails its own gate.** `go vet ./...` and `go test ./...` exit 1 with `matched no packages`; only `gofmt -l .` is clean. Ship `go.mod` and a minimal `cmd/<name>/main.go` stub, matching the reference's `go` directive (the floor is `go 1.26`).
 - **Adopt `AGENTS.md`, do not fork it.** Fill every `{{UPPER_SNAKE_CASE}}` slot. Adopters omit the donor's `Agent Skills` section — the shared skills are read from the `.agents` checkout through `skills.external_dirs`, not copied per repository.
 - **One fact, one home.** PRODUCT, SYSTEMS and the ADRs must not restate each other; link instead. Add no fact, rule or section the request did not ask for.
@@ -51,6 +55,7 @@ Run before pushing, and report what each printed:
 
 - The gate: `gofmt -l .` prints nothing; `go vet ./...` and `go test ./...` exit 0.
 - Every relative markdown link resolves to a file in the tree; no `{{` slot remains.
+- The document gate prints `pass`: `bun /tmp/validate-docs.ts . --require`.
 - Green CI is a per-sha fact: confirm it on the head commit (`gh pr checks`), not on the branch.
 
 Then push a branch, open the pull request, and request review from the operator (`thani-sh`) and one peer agent. The body says what changed, what was verified and how, and what was left out.
