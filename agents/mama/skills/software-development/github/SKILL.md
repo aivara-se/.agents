@@ -28,7 +28,7 @@ Work GitHub end to end with `gh` (REST fallback where noted). Each workflow live
 | Carry an ISSUE to a verified PR (full delivery loop) | `references/issue-to-pr.md` |
 | Review a PR, or answer a review on your own ("check this PR"): diffs, replies, verdict | `references/code-review.md` |
 | Break work into tasks with sub-issues, and put them on a Projects v2 board | `references/sub-issues-and-projects.md` |
-| Clone/create/fork repos, remotes, releases | `references/repo-management.md` |
+| Clone/create/fork repos, remotes, releases; Pages source, rulesets | `references/repo-management.md` |
 
 Supporting assets: `scripts/gh-env.sh` + `scripts/git-credential-token.py` (auth helpers), `templates/` (PR bodies, bug report, feature request), `references/ci-troubleshooting.md`, `references/conventional-commits.md`, `references/github-api-cheatsheet.md`, `references/review-output-template.md`.
 

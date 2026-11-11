@@ -12,22 +12,23 @@ Run the repository's formatter and accept its output.
 
 - Build the smallest thing the task asks for. Name a gap you leave in the body.
 - A rare case that needs a new concept is not a requirement. Record it, unless a normal caller hits it and it throws.
-- A merged design outranks the code: implement it, and name the documents you left unedited.
-- Two surfaces carry every behaviour twice. Fix one, then read the other against the same promise, and name the surface it binds.
+- A merged design outranks the code: implement it and name the documents you left unedited.
+- Two surfaces carry every behaviour twice: fix one, then read the other against the same promise and name the surface it binds.
 - Never pick between two readings in silence. Say which you took, and why.
 - A frozen document that contradicts the task is a blocker. Name the file, the line and the input, in one question.
 - A merged ADR that assumes a missing capability is the operator's call. Name the ADR, the platform and the options; do not build the surface.
-- Sync the base branch with `git pull --ff-only`. Cut the work branch from `origin/main` in a fresh worktree: a clone may hold unlanded work.
+- Cut the work branch from `origin/main` in a fresh worktree, synced with `git pull --ff-only`: a clone may hold unlanded work.
 - Never run `git checkout origin/main -- .`: it dirties the index while HEAD stays behind.
 - Build in the order the architecture document numbers. The reviewer compares against it.
-- Reuse the service's vocabulary. A new outcome is a value in the existing field unless the design says otherwise.
+- Reuse the service's vocabulary: a new outcome is a value in the existing field unless the design says otherwise.
 - A change wider than its ask: `references/hidden-scope.md`.
 
 ## Structure
 
 - YAGNI before DRY. The third copy earns the abstraction; two blocks that differ in one constant are one function with a parameter.
-- When a new flow joins a handler, walk every piece of state it touches, decide per piece, and pin it with a test.
-- A condition that covers a class the switch handles makes the later branches dead. Fold the old target in first, and test each one.
+- When a new flow joins a handler, walk every piece of state it touches and pin each decision with a test.
+- A condition that covers a class the switch handles makes later branches dead. Fold the old target in first, and test each one.
+- A removed control goes down the chain: its prop, the caller's handler, the service method no caller reaches. A leftover method reads as live code.
 
 ## Dependencies and scripts
 
@@ -39,10 +40,7 @@ Run the repository's formatter and accept its output.
 ## A formatter rollout
 
 - One config file and one pinned version per repository, checked by a step in the job the branch requires — never a second job.
-- Read the step's history before proposing a formatter: a config file is not proof the tool runs.
-- `bun fmt` already covers Markdown, tables included. Report drift only when its own check disagrees.
-- A repo that already has a formatter keeps it. When house rules forbid a second, scope it out and ask; reinterpreting the rule is not yours.
-- A formatter that changes quoting breaks a test asserting on its own source text; match either quote rather than pin the style.
+- A repo that already has a formatter keeps it; where house rules forbid a second, scope it out and ask.
 - Order, commands and the proof: `references/formatter-rollout.md`.
 
 ## Errors and data
@@ -63,20 +61,22 @@ Run the repository's formatter and accept its output.
 - Ask `thani-sh` and one peer whose role owns the risk: MaMa architecture, MeMe durability, MiMi a measurement, MoMo untrusted input.
 - Confirm the request landed: `gh pr view <n> --json reviewRequests`. A missing login is dropped in silence; add it with `gh pr edit --add-reviewer`.
 - Read the reviews before reporting done. A request for changes is the next step.
-- Never arm a draft or spike. Arm the final head: a later push can leave the arm inert. A merge queue needs no strategy.
-- A stacked pull request is never armed. Merge it with `gh api -X PUT repos/<owner>/<repo>/pulls/<n>/merge-async -f sha=<head> -f merge_method=rebase`, then poll its `uuid`.
-- The body follows `writing`, in Simplified Technical English, and is never a file list.
+- Never arm a draft or spike. Arm the final head: a later push can leave the arm inert.
+- A stacked pull request is never armed: merge it with `gh api -X PUT repos/<owner>/<repo>/pulls/<n>/merge-async -f sha=<head> -f merge_method=rebase`, then poll its `uuid`.
+- The body follows `writing` and is never a file list.
+- A change to `PRODUCT.md` or `SYSTEMS.md` runs the docs check: `bun run scripts/validate-docs.ts ../<repo> --require`, in a clone of `aivara-se/.github`. Its cap is per section, unseen by the gate.
 
 ## After a review
 
-- A request for changes is a proposal. Ask whether it is true, in scope, and worth the cost. If not, answer on the thread.
+- A request for changes is a proposal: ask whether it is true, in scope, and worth the cost. If not, answer on the thread.
 - When it holds, apply it and ask that reviewer again.
-- A push re-runs the gate and drops approvals; an approval belongs to a commit, not a branch. Rebase as the base moves, then re-request.
+- A push re-runs the gate and drops approvals: an approval belongs to a commit, not a branch. Rebase as the base moves, then re-request.
 - A rebase that meets another agent's doc commit conflicts on summaries, not facts. Keep their new bullets, and recount any number.
 - A rebase against a revert keeps the revert. Keep only the lines your change still owns.
 
 ## Done
 
 1. The formatter, linter and whole gate are clean on the final tree.
-2. Read the diff as the reviewer will, and take out what the task did not ask for.
+2. Read the diff as the reviewer will; take out what the task did not ask for.
 3. A fix is the smallest diff that removes the cause, not a guard around it.
+4. The gate is blind to `.gitignore` and `.env` patterns: prove an ignore edit with `git check-ignore -v <path>`, never a green check.

@@ -13,7 +13,7 @@ gh api --method POST repos/O/R/issues/<parent_number>/sub_issues \
   -F sub_issue_id=<child_id>
 ```
 
-Get the id once at creation: `gh api repos/O/R/issues/<n> --jq .id`.
+Get the id once at creation: `gh api repos/O/R/issues/<n> --jq .id`. Both id fields take the database id, never the issue number, and they need `-F`: `-f` sends every value as a string, so the edge answers `422 … is not of type integer` and the call reads as a bad endpoint.
 
 - A child belongs to **one** parent; a second attach moves it, silently.
 - The child's own payload reports `parent_issue: null` and a zero `sub_issues_summary` even when the link exists. Verify from the **parent's** `sub_issues` list, never from the child.

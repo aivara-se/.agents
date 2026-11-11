@@ -95,7 +95,7 @@ Two silent traps:
 
 **A storage change needs the upgrade path.** A fresh profile only exercises seeding: write the _old_ shape into IndexedDB (or `localStorage`) from the page, reload, read it back — the only way to see whether a re-seed kept the user's data and dropped rows the new build no longer ships. Return the database inside `Runtime.evaluate` with `new Promise` + `awaitPromise: true`: `indexedDB.open(name)` → `transaction([...])` → `getAll()` in `onsuccess`, resolving in `transaction.oncomplete`.
 
-**Photograph it and send the file.** `Page.captureScreenshot` after `Emulation.setDeviceMetricsOverride` at phone size, written to a PNG and attached to the reply. Say what was measured beside it; the numbers are the evidence.
+**Photograph it and send the file.** `Page.captureScreenshot` after `Emulation.setDeviceMetricsOverride` at phone size. It returns base64, not a path: write the bytes with `writeFile` from the same script that drove CDP, into the sandbox that will read them. A screenshot path handed back by a browser running in another sandbox is not readable by the image tool, and the failure looks like a corrupt file rather than a missing one. Say what was measured beside the picture; the numbers are the evidence.
 
 ## What to read
 

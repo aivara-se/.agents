@@ -92,6 +92,36 @@ gh workflow run deploy.yml -f environment=staging
 
 REST equivalents: `/actions/workflows`, `/actions/runs`, `/actions/runs/{id}/rerun-failed-jobs`, `/actions/workflows/{id}/dispatches`. Failed logs download as a zip from `/actions/runs/{id}/logs`.
 
+## Pages
+
+```bash
+gh api repos/O/R/pages --jq '{build_type,source,html_url,cname}'
+gh api -X PATCH repos/O/R/pages -f build_type=workflow     # admin only
+gh api repos/O/R/pages/builds/latest --jq '{status,commit,created_at}'
+```
+
+`build_type` is `legacy` (a branch build) or `workflow` (Actions). Only a `workflow` site accepts `actions/deploy-pages`.
+
+**A green deploy job does not prove Pages serves that artifact.** A repository can hold `build_type: legacy` and still run a workflow that deploys, so every push starts two builders and the last one to finish wins. Read the API field as the authority, not the run's conclusion, and check content separately: one path the head added returns 200 and one it removed returns 404.
+
+**A custom domain makes the `github.io` host a redirect.** With `cname` set, `https://O.github.io/R/<anything>` answers `301` to the custom domain — the root, a file that exists and a file that does not all read 301 — so a probe without redirects proves nothing about the content. Take the host from `gh api repos/O/R/pages --jq .cname`, then probe `curl -sL https://<cname>/<path>`; read the `location` header once to learn where the site actually lives.
+
+**`https_certificate: null` with an `http://` `html_url` is not a broken site.** When a proxy (Cloudflare or another CDN) terminates TLS in front of Pages, GitHub issues no certificate of its own and its `html_url` stays plain HTTP. Prove the address over HTTPS before reporting a fault; the null field means GitHub holds no certificate, not that the site is down.
+
+**After switching `build_type` to `workflow`, a deploy that predates the switch still reports success.** Dispatch the workflow once, then require a `/deployments` entry whose `created_at` is later than the patch before calling the site served by the new source.
+
+## Rulesets
+
+Rulesets carry the branch policy for an organisation and are admin-only.
+
+```bash
+gh api repos/O/R/rulesets --jq '.[] | "\(.id) \(.name)"'
+gh api repos/O/R/rulesets/<id> --jq '{rules:[.rules[].type],bypass_actors}'
+gh api -X PUT repos/O/R/rulesets/<id> --input ruleset.json
+```
+
+**A ruleset update sends the whole object**, not one rule: name, target, enforcement, conditions and every rule with its parameters. The endpoint replaces the ruleset rather than patching a member, so an omitted rule is not kept. Read the type list back before reporting.
+
 ## Branch protection and gists
 
 ```bash

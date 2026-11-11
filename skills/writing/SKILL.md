@@ -11,12 +11,12 @@ Good writing is short enough to finish, and it puts the answer first.
 ## Length
 
 - A message, issue comment or pull-request body is 150 words.
-- Longer is a document: write the file, attach it in chat as `MEDIA:/absolute/path` on its own line, and link it in a GitHub body.
-- Draft to about 130 words. A first draft runs long, and trimming it costs rounds.
-- Draft a capped file at 85% of the cap — an agent file at 240, a `SKILL.md` at 760. Cutting a full draft back costs a round per cut.
-- Count the words with `wc -w <file>`. Do not estimate: it charges each backticked name a word, so a rule-dense file runs longer than it reads.
+- Longer is a document: write the file, attach it in chat as `MEDIA:/absolute/path`, and link it in a GitHub body.
+- Draft to about 130 words: trimming a long draft costs rounds.
+- Draft a capped file at 85% of the cap — an agent file at 240, a `SKILL.md` at 760.
+- Count with `wc -w <file>`, never an estimate: each backticked name is a word, so a rule-dense file runs longer than it reads.
 - A `SKILL.md` is 900 words, a reference 750, an agent file 280.
-- A product or system document is budgeted too: a fixed heading set, a cap per section, a total that is their sum.
+- A product or system document is budgeted too: a fixed heading set, a cap per section, their sum as total.
 - The cap is a ceiling, not a target. A rule squeezed out of the document is invented at the point of use.
 - Meet a budget by cutting filler. A rule the operator named stays; if the budget still fails, ask which clause pays.
 - A cap quoted in more than one place is swept in the same edit: the example message, every total.
@@ -56,7 +56,6 @@ Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-wo
 - No contraction, `i.e.` or `e.g.`: write "do not", "that is", "for example".
 - The rules bind prose only: code, identifiers, paths, commands and quoted output keep their form.
 - Two registers are exempt: the public blog and the site copy keep their own voice.
-- `references/writing-ste.md` holds the numbers, the rewrites and the exemptions.
 
 ## Where a fact lives
 
@@ -66,14 +65,14 @@ Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-wo
 - User behaviour is the product document. Serving and checks are the system document. Interface and visual choices are the design document.
 - Describe the pattern, not one instance: a page one agent has gets a general clause.
 - A code comment explains why. Delete a comment that repeats the line below it.
-- When a change makes a document untrue, fix that document in the same change.
+- When a change makes a document untrue, fix it in the same change and `git grep` the tree for the old name. It survives in workflows and `.gitignore`.
 - Do not name the current release in prose. What shipped, and when, is the release record.
 - Quote an ADR's condition word for word.
 
 ## Which document
 
 - Read the matching reference before the first draft. The shape is cheaper to follow than to cut out.
-- `references/writing-ste.md` — the controlled language every sentence here obeys.
+- `references/writing-ste.md` — the controlled language, its numbers, rewrites and exemptions.
 - `references/writing-messages.md` — chat, issue and pull-request comments.
 - `references/writing-reviews.md` — a review verdict.
 - `references/writing-pull-requests.md` — the body of a pull request.

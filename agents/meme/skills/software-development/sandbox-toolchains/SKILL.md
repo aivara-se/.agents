@@ -36,6 +36,7 @@ metadata:
 - `/tmp` is mounted **noexec**, so anything compiled to `$TMPDIR` and then run fails with `fork/exec /tmp/...: permission denied` though the compile succeeded. Set `GOTMPDIR=/root/.cache/go-tmp` for Go (persisted in `~/.bashrc`) and `TMPDIR=/root/tmp` for anything else. Do not symlink `/tmp` or run as another user.
 - A missing binary usually means the login survives: check `~/.config/gh`, `~/.cache` and `~/.npmrc` before authenticating again. Re-installing over a live config is free; a login flow is not.
 - Upgrading node in place keeps the old `lib/node_modules` if you copy only `bin/`. Copy `bin/`, `lib/node_modules`, `include/node` and `share/` in one step, then re-read `npm -v`: a mismatched npm surfaces later, in an unrelated install.
+- A bun tarball install can leave `bunx` out of `/usr/local/bin`, and a repository script that calls `bunx` then fails with `command not found: bunx`. Symlink it: `ln -sf /usr/local/bin/bun /usr/local/bin/bunx`. Fix the sandbox, never the repository's script.
 - `~/.bashrc` may not exist; `grep -q || echo` creates it. Confirm with `bash -lc 'go env GOTMPDIR'` rather than trusting the append.
 - `set -e` at the top of each install block, one tool per terminal call: a failing download aborts only that tool and the progress made survives.
 

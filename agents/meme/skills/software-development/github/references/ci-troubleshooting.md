@@ -25,6 +25,15 @@ curl -sL -H "Authorization: token ***" \
 | Permission | `could not read Username for 'https://github.com'`, `Resource not accessible by integration`, `403 Forbidden` | Add a `permissions:` block; check the secret exists (`gh secret list`). Fork PRs get no secrets by design. |
 | Timeout | `The operation was canceled.`, `has exceeded the maximum execution time` | Add `timeout-minutes`, fix the slow call, or split the job. |
 
+## A toolchain download answers 504
+
+`oven-sh/setup-bun` fails with `Downloading a new version of Bun: ...` then `Unexpected HTTP response: 504` three times. Nothing in the tree caused it: the job never reached the code. GitHub's release CDN serves some assets and times out on others, and the set changes minute by minute.
+
+- Do not pin another version. The runner answers 504 for the pinned version too, while an unrelated host fetches that same file with a 200 — your own probe says nothing about the runner's egress. This pull request earns a close.
+- Re-run the failed run and watch it: `gh run rerun <id>`, then read `run_attempt`. A later attempt that succeeds is the CDN recovering, not a flake in the code, so say which attempt deployed.
+- Name the commit whose deploy is pending and keep the site check: after the green run, `curl -sI` the published address, and compare the served page with a local `bun run build` at the same head (the SvelteKit `version` id always differs; the rest must match).
+- `gh pr close` takes `--comment`, not `--comment-file`: post with `gh pr comment --body-file`, then close.
+
 ## The aggregate check disagrees with the run
 
 `gh pr checks <n>` reads the check-suite record, which can lag the run or flip back to `queued`/`in_progress` after the job finished. Do not report the PR as pending on that alone:
@@ -36,6 +45,18 @@ gh api repos/{owner}/{repo}/commits/<sha>/check-runs --jq '.check_runs[] | [.nam
 ```
 
 Report what the run itself says (`completed`/`success`), name the aggregate as lagging, and re-read once after a minute instead of polling the same stale number.
+
+## A run exists but has no jobs
+
+```bash
+gh run list --commit <sha> --json databaseId,name,conclusion,createdAt
+gh api repos/{owner}/{repo}/actions/runs/<id>/jobs --jq '.jobs | length'
+```
+
+`name` printing the workflow's file path, `conclusion: failure`, and zero jobs means the workflow never loaded: there is no log to read and `--log-failed` has nothing to show. The usual cause is a `uses:` naming a reusable workflow, local action or ref that did not exist on the default branch at the moment the run was created, so the pull request's head predates the prerequisite's merge.
+
+- Fix the reference if it is wrong, then push a new head. The load is evaluated when a run is created; a run that never started does not pick up the merged workflow later, so `update-branch`, a rebase or an empty commit is what re-triggers the check.
+- Read the run's `created_at` against the prerequisite's `mergedAt`: a failure timestamped before that merge is a stale load, not a defect in the branch. Say which merge it was waiting on.
 
 ## Check identity: workflow name, job name, required check
 
