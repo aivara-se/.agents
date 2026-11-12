@@ -51,6 +51,28 @@ Without `gh`, download `/actions/runs/$RUN_ID/logs` as a zip, unzip it, read the
 
 **A run named by the workflow's path failed to load.** `gh pr checks` prints `no checks reported`, `gh run list` shows the path instead of the workflow `name:`, and `gh run view` says _This run likely failed because of a workflow file issue_. The job never started, so there is no log to read: look for a `uses:` naming a reusable workflow, ref or action that is not on the default branch yet.
 
+### Resolving a conflicting head
+
+A PR whose base moved is fixed on its own branch, never by opening a second one. When another worktree already holds the branch, `git worktree add -B <branch>` fails with `already used by worktree at <path>`; take a detached worktree and push to the branch ref, so no other session's `HEAD` moves:
+
+```bash
+git fetch origin
+git worktree add --detach "$HOME/tmp/pr<N>" origin/<branch>
+cd "$HOME/tmp/pr<N>"
+git rebase origin/main            # a merge commit instead, if the repository allows one
+# resolve every hunk, then
+git -c core.editor=true rebase --continue
+git ls-remote origin refs/heads/<branch>          # the old head, before the push
+git push --force-with-lease=refs/heads/<branch>:<old-sha> origin HEAD:refs/heads/<branch>
+git worktree remove --force "$HOME/tmp/pr<N>"
+```
+
+- **Resolve the hunk, not the block.** One side often carries lines the base added beside the line your branch edited; replacing the whole `<<<<<<< … >>>>>>>` block with one side's text deletes the other side's additions, and the result still reads as your change. After resolving, run `git diff origin/main -- <file>` and read every line that only `-` marks.
+- **Both sides can be right.** Where the base reworded a sentence and your branch added a clause to it, the resolved line is the base's sentence plus the clause, not either side alone.
+- **Re-run the gate on the resolved tree**, not the pre-rebase one, and read the check result at the new head sha.
+- **A push dismisses approvals** when the ruleset sets `dismiss_stale_reviews_on_push`. Re-request every login that had one, then read `gh pr view <N> --json reviewRequests` back.
+- **Re-read the body.** A verified-at block still naming the pre-rebase sha is stale after the first push.
+
 ## 5. Merge
 
 ```bash
