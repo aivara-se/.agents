@@ -17,7 +17,9 @@ Gate first: `bun fmt --no-script --check .`, `bun test`, `bun run build`, and `b
 `bun run build` bundles the page into `apps/desktop/.page/`; serve that directory (`python3 -m http.server 8901`) and the page needs no other file. It sidesteps the `libs/` and `src/shared` import roots that move between releases.
 
 - Playwright is the fallback when `browser_exec` is missing: `npm i playwright-core`, then `npx playwright-core install chromium`. Its extractor can hang at 8 MB — unzip the partial download into `$PLAYWRIGHT_BROWSERS_PATH/chromium-<rev>/chrome-linux/` and `chmod -R a+x` it. Launch with `executablePath` and `--no-sandbox`.
-- `browser_exec` reaches `127.0.0.1` on its own browser, so the page needs no Playwright install: `new_tab`, `js`, `cdp`. Its `click_at_xy` and `cdp('Input.dispatchMouseEvent', ...)` deliver no event; dispatch in the page instead — `b.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))` then `b.click()`, which still reaches the mousedown handler. A `fill_input` that reports nothing leaves the field empty: focus it, then `cdp('Input.insertText', text=...)`.
+- `browser_exec` reaches `127.0.0.1` on its own browser with `new_tab`, `js` and `cdp`, so the page needs no Playwright install.
+- Its `click_at_xy` and `cdp('Input.dispatchMouseEvent', ...)` deliver no event. Dispatch in the page instead: `b.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))`, then `b.click()`, which reaches the mousedown handler.
+- `fill_input` reports nothing and leaves the field empty: focus it, then `cdp('Input.insertText', text=...)`.
 - Stub `tiny` with `page.addInitScript` before `goto`: `system.os` (a function; a string throws at load, the page renders nothing and says nothing — record `window.onerror` to see it), `hotkey.on`, `win.*`, `api.call` (fake `openLog` returns `{ today, days: [{ day, body, seq }], more }`, plus `saveDay`, `searchNotes`, `summariseNote`), `api.on`, `dialog.confirm`/`pickFolder`. No `today`, or days with no `seq`, draws a log where no entry is today's.
 - Press with `page.mouse.down()` / `up()`, not `click()`. Most claims are about a press whose mousedown blurs the note. To model a webview that does not focus the pressed button, blur the note in a capture-phase `mousedown` listener that calls `preventDefault()`.
 - Chrome blocks `file://` ES modules — use the http server.
@@ -46,14 +48,13 @@ A caret is never painted into a Chromium screenshot on this box, headful or head
 
 ## The documents, against their sources
 
-Half of Pereda's diffs are documents. Test each quoted span of a new ADR against `docs/adrs/`:
+Half of Pereda's diffs are documents. Test each quoted span of a new ADR against `docs/adrs/`, case aside — a quote that opens a sentence takes a capital:
 
 ```python
 import re, pathlib
 adrs = pathlib.Path("docs/adrs")
-new = max(adrs.glob("0*.md")).read_text()
-for q in re.findall(r'"([^"]+)"', new):
-    print(q[:60], [p.stem[:3] for p in adrs.glob("0*.md") if q in p.read_text()])
+for q in re.findall(r'"([^"]+)"', max(adrs.glob("0*.md")).read_text()):
+    print(q[:60], [p.stem[:3] for p in adrs.glob("0*.md") if q.lower() in p.read_text().lower()])
 ```
 
 A span found only in its own file is a paraphrase, and `writing` says quote an ADR's condition word for word.
