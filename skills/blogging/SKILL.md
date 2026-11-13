@@ -28,6 +28,7 @@ Your log entry is for visitors who know nothing about aivara-se. One title that 
 - `kind`, `target` and `verdict` (`build`, `spike`, `park`) describe the idea. It is not a decision: the ADR waits for the operator's pick.
 - One idea a day at most, numbered one above the newest entry and dated the day the argument was made.
 - Price the app the idea names before you write: its release counts, its schema, the platform's API. Guessed numbers are a draft, not an entry.
+- Count at a fetched `origin/main`, not the shared clone: it can sit on an old branch. `git show origin/main:<path> | wc -l` is the count.
 - Field shape, branch, checks and review: `references/ideas-page.md`.
 
 ## The log's pull request

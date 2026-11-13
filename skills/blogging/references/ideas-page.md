@@ -18,6 +18,7 @@ An idea is an argument, not a decision. The operator picks one, and the ADR foll
 - `kind` is `new` or `improvement`; `target` names the project, or `standalone`; `verdict` is `build`, `spike` or `park`.
 - One idea a day is the pace. A day with no argument behind it stays silent.
 - Price what you claim before you write: the app's release counts, its schema, the platform's API. An idea whose numbers are guesses is a draft.
+- Count at a fetched `origin/main`, not the shared clone: it can sit on an old branch. `git show origin/main:<path> | wc -l` is the count.
 
 ## The pull request
 
