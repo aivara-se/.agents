@@ -113,6 +113,13 @@ gh api repos/<owner>/<repo>/rulesets/<id> --jq '.rules[]|{type,parameters}'
 
 The interesting rules: `merge_queue` (no strategy is allowed), `required_linear_history`, `required_status_checks.strict_required_status_checks_policy`, `dismiss_stale_reviews_on_push` (a rebase throws your approval away), `require_last_push_approval` (an approval older than the head does not count).
 
+Before you lean on an approval, read the sha it carries, and compare it with the head:
+
+```sh
+gh api repos/<owner>/<repo>/pulls/<n>/reviews --jq '.[]|"\(.user.login) \(.state) \(.commit_id[0:8])"'
+gh pr view <n> --json headRefOid --jq .headRefOid
+```
+
 Without a queue, pass the method the repository allows:
 
 ```bash
@@ -127,6 +134,7 @@ Merge methods: `"merge"` (merge commit), `"squash"`, `"rebase"`. Auto-merge must
 `gh pr merge <n>` with no strategy enqueues the pull request when the required checks have passed, and arms auto-merge when they have not. Two things make that look broken:
 
 - A strategy flag prints `The merge strategy for main is set by the merge queue`, exits 0, and enqueues nothing. Read that line as a refusal, not as success.
+- A pull request already armed with `SQUASH` auto-merge by another login swallows a bare `gh pr merge <n>` the same way: exit 0, no output, no entry. Read the queue after every press, and enqueue with the mutation below when the entry count did not move.
 - `mergeStateStatus` is a racy read: `CLEAN`, then `UNKNOWN` while GitHub recomputes, then `MERGED`. Poll `state`; one sample proves nothing.
 
 Read the queue, and enqueue directly when the porcelain did not take it:

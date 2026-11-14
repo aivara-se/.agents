@@ -13,15 +13,15 @@ What to check, and which verdict each check earns. How the review reads is `writ
 1. Write the item's contract before the diff, in the item's own words. Name what it must do, what it must never do, and what it calls out of scope.
 2. Read the body and the thread: what was claimed, what the task asked, what the operator said there.
 3. Read the diff twice, for what it does and for what the body says. The gap is a finding. Work it could have done instead is a follow-up.
-4. Run it at a pinned sha (`headRefOid`), not at the branch. A fix or a rebase moves the head under you.
+4. Run it at the pinned sha (`headRefOid`), not the branch: a rebase moves the head under you. Run the gate in a clean tree.
 5. Re-read `headRefOid` before you post. A review attaches to the head that exists then, not the one you named.
 6. Test the claim: the empty input, the bug reproduced on the parent, the new test failing with the fix removed.
 7. Look at what checks cannot see in the lines it wrote or made false: swallowed errors, a widened surface, a new dependency, a credential.
 8. Read the prose: a sentence over the limit gets a comment, not a block.
 
-A line the item does not carry is not a contract line. Unchanged code in a touched file is not this change's — but a line the change makes false is.
+A line the item does not carry is not a contract line. Unchanged code is not this change's — but a line the change makes false is.
 
-Grep the repository for the claim, not only the diff. One fact lives in several files, and a change that corrects one copy leaves the others false. Zero hits for a path the diff stops naming mean the change dropped its last pointer: the finding is the missing home.
+Grep the repository for the claim, not only the diff. One fact lives in several files, so a change that corrects one copy leaves the others false. Zero hits for a path the diff stops naming mean the change dropped its last pointer.
 
 Test a decision record against its sources and itself, never against the decision you would have made. An accepted ADR is immutable: a change overrides it with a new ADR naming the clauses it replaces. Only the operator can sanction an edit in place.
 
@@ -42,11 +42,13 @@ Return exactly one:
 - `request changes` — every blocking finding, each on a named contract line.
 - `block` — the decision is not yours. Say who decides, or name the mechanism the item never authorized.
 
-Never approve what you did not run, or your own branch. An approval can be the merge, so read `mergeStateStatus`, `statusCheckRollup` and `autoMergeRequest` first. On a merge queue, an approval does not queue the head: a press of `gh pr merge` does.
+Never approve what you did not run, or your own branch. An approval can be the merge, so read `mergeStateStatus`, `statusCheckRollup` and `autoMergeRequest` first.
 
 An approval is one commit's, and a force-push can drop that commit: re-read `headRefOid` after you post, and review the head that replaced it.
 
-Two pull requests on one file merge as one, not two: the first landing makes the second `CONFLICTING`. Order them by their diffs, the small insert first, and re-read `mergeable` after each lands.
+A branch you rebased is a branch you pushed: under `require_last_push_approval` your approval stops counting. The head reads `REVIEW_REQUIRED` with your `APPROVED` review listed, and re-approving clears nothing. Let the author rebase, or get another login's approval.
+
+Two pull requests on one file merge as one, not two: the first landing makes the second `CONFLICTING`. Order them by their diffs, the small insert first, and re-read `mergeable` after each lands. A resolved conflict keeps both sides apart: git holds the shared opening line above the markers. The second side arrives without its own, so pasting the two together splices them into one object. Count the entries and read the seam; a file that parses need not hold both changes.
 
 ## The loop
 

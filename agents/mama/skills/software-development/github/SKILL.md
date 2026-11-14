@@ -24,7 +24,7 @@ Work GitHub end to end with `gh` (REST fallback where noted). Each workflow live
 | Create, triage, label, assign, close issues | `references/issues.md` |
 | Decide whether GitHub delivers an event/action, or what a payload carries | `references/webhook-events-probing.md` |
 | Run or design a GitHub App: permissions, JWT, installation tokens, app delivery log | `references/github-apps.md` |
-| Branch, commit, open PR, watch CI, merge | `references/pr-workflow.md` |
+| Branch, commit, open PR, watch CI, resolve conflicts, merge | `references/pr-workflow.md` |
 | Carry an ISSUE to a verified PR (full delivery loop) | `references/issue-to-pr.md` |
 | Review a PR, or answer a review on your own ("check this PR"): diffs, replies, verdict | `references/code-review.md` |
 | Break work into tasks with sub-issues, and put them on a Projects v2 board | `references/sub-issues-and-projects.md` |
@@ -37,7 +37,7 @@ Supporting assets: `scripts/gh-env.sh` + `scripts/git-credential-token.py` (auth
 - **Preflight.** `gh auth status` once per session; on failure read `references/auth.md` first. In a rebuilt sandbox the binary can be missing while `~/.config/gh/hosts.yml` survives: reinstall the tarball, never `gh auth login` — the stored token is still valid (see `sandbox-toolchain`).
 - **Porcelain first.** Prefer `gh`; drop to `gh api` only for endpoints the porcelain lacks (the cheatsheet lists them).
 - **No unverified state.** Never report CI green without `gh pr checks`; never call a pull request merged without verifying `state,mergedAt`.
-- **Threads carry the decision.** Read `gh issue view --comments` or `gh pr view --comments` before writing.
+- **Threads carry the decision.** Read `gh issue view --comments` or `gh pr view --comments` before writing. To read them as data, ask for the field: `gh pr view <N> --json comments` — `gh pr view` refuses `--comments` and `--json` in the same call.
 - **Sweep duplicates.** `gh pr list --search` / `gh issue list --search`, plus `git fetch origin` and `gh pr list --state all --head <branch>` before cutting a branch: a pull request can exist on a branch whose title search missed it, and a second one for one decision spends review rounds reconciling it.
 - **A 404 on a repository write is a permission wall.** Check `gh api repos/O/R --jq '.permissions'` — the setting needs `admin: true`. See `references/repo-management.md`.
 - **Deletion is admin-only.** Inventory the targets and check permission once. If `gh issue delete` reports `Viewer not authorized`, stop, preserve the list, and offer closing or project removal instead; never report deletion without a readback.

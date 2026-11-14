@@ -6,7 +6,7 @@
 - The version in the file is the trigger. Raise `version` in `tinyjs.json` on the branch that carries the work; merging that pull request is the release. No `release: v` commit.
 - When the work is already on `main` without a bump, the operator may ask for the bump alone. Open a `chore:` pull request that raises `version` and adds the changelog entry for what landed since the last tag.
 - The release moves the minor, not the patch: `1.12.0` to `1.13.0`. The operator's "next 1.x" means that number.
-- A bump also updates every current-state sentence that names the binary — the no-network line, the acceptance header, the roadmap — in the product and system documents. Changelog entries keep their own versions, so grep the old number and change only the sentences that mean the shipped build.
+- A bump also updates every current-state sentence that names the binary — the no-network line, the acceptance header, the roadmap — in the product and system documents. Changelog entries keep their own versions, so grep the old number and edit the current-state lines one by one; a blanket replace rewrites the changelog heading too and leaves two entries claiming the new version and none the old. Then read the changelog back.
 - A push that leaves the version alone publishes nothing: the run finds `v<version>` tagged and stops ("already tagged and released; nothing to publish"). A docs push after a release is safe.
 - Tag only after every build succeeds.
 - A pull request opened with `GITHUB_TOKEN` starts no other workflows. Where a required check exists, open it with `RELEASE_TOKEN` (`repo` and `workflow` scope) or it waits for a check that never runs.

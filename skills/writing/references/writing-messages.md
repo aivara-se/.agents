@@ -15,7 +15,7 @@ Never open with "I'll now", "Great question", "Just to confirm", "As discussed" 
 - One decision per message. Two questions get one answered.
 - Disagreement answers the point: which of true, in scope or worth it the ask fails, in a line.
 - Answer a thread in the thread, and a mention in place, not in chat.
-- "Done" is not an answer. Name the commit and what it changed.
+- "Done" is not an answer. Name the commit and what it changed. When nothing was committed — a fix outside the repository, a server, a scratch script — say so, and where the change lives.
 - A list of state is nested: class, then area, then one action per line with its command or path in backticks.
 - When he asks for shorter, cut the framing, never the facts he asked for.
 

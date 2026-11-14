@@ -40,3 +40,4 @@ convert pair.png -resize 2400x -depth 8 -strip pair.png
 
 - A check that asserts nothing happened must start clean. A suppression test that begins on a screen already holding text fails for the wrong reason. Reload first, and assert the screen is empty, not merely unchanged.
 - One `console` error fails the "no console error" check, and a missing asset logs one. Guard the code that requests it rather than weakening the check.
+- **A property a `transition` carries reads its old value until the transition ends.** A row that leaves on `visibility 0s var(--t-soft)` is still `visible` a millisecond after its blur. An immediate read then asserts the state before the change. Read `transitionDuration` for the element, wait it, then assert; never shorten the app's fade to satisfy an impatient check.
