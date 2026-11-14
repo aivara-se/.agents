@@ -48,7 +48,8 @@ A repeat, or a wake that arrives after the state moved on, is answered by readin
 - Read `reviewRequests` back: the create-time flag can report failure on a pull request that exists.
 - Never a stacked one: `coding` names its merge.
 - Arm the final head: a later push can leave the arm inert and the head `CLEAN`, unqueued. Arming an approved, green head merges on the spot.
-- On a merge queue, no strategy: `gh pr merge <n>` queues the head once checks pass.
+- On a merge queue, no strategy: `gh pr merge <n>` queues the head once checks pass. A strategy flag is refused, and the refusal does not mean nothing happened.
+- A queued head reports `autoMergeRequest: null`. Read `mergeQueueEntry {position state}` in GraphQL, or a queued pull request looks unarmed.
 - A required check that cannot load merges on nothing, armed or not. Name the missing file in the body, and arm once it lands.
 - That press belongs to the merger. An author with nothing left says so on the thread.
 

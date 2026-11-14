@@ -39,7 +39,7 @@ when-to-use: Any change to a tinyjs app — backend, page, tinyjs.json, build, b
 - Flush on a short debounce, on blur, when the window hides and before a day switch. A failed flush blocks the switch, so text never lands on another date.
 - A note that is read-only until edited keeps its textarea and sets `readOnly`; `disabled` drops it from focus, selection and the action row. Edit clears `readOnly`, focuses and puts the caret at the end; blur sets it again.
 - A read-only CodeMirror note still draws the webview's insertion caret while it has focus. `caret-color: transparent` on `.cm-content` is the switch, and the editing class turns it back on. Without `drawSelection()` CodeMirror builds no `.cm-cursorLayer`, so a rule aimed at that class does nothing.
-- An overlay that replaces the log blurs the editor before its trigger's click handler runs. Read on the trigger's `mousedown` whether the note was being written, and restore it on close. Otherwise the note comes back read-only.
+- An overlay that replaces the log blurs the editor before its trigger's click handler runs. Read on the trigger's `mousedown` whether the note was being written, and restore it on close. Otherwise the note comes back read-only. Every path added later into the same overlay carries its own timing: a keydown reaches the page before the blur, so read the flag in the key's branch; a pointer's click runs after it.
 - Key a window-wide fade on `:focus-within` and the body class that says a writable note has the caret. Never key it on a persistent `today` or `editing` class: today carries that class while another entry is written, so it would stay bright.
 
 ## A page that renders its own text

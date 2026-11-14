@@ -16,12 +16,11 @@ Run the repository's formatter and accept its output.
 - Two surfaces carry every behaviour twice: fix one, then read the other against the same promise and name the surface it binds.
 - Never pick between two readings in silence. Say which you took, and why.
 - A frozen document that contradicts the task is a blocker. Name the file, the line and the input, in one question.
-- A merged ADR that assumes a missing capability is the operator's call. Name the ADR, the platform and the options; do not build the surface.
 - Cut the work branch from `origin/main` in a fresh worktree, synced with `git pull --ff-only`: a clone may hold unlanded work.
 - Never run `git checkout origin/main -- .`: it dirties the index while HEAD stays behind.
 - Build in the order the architecture document numbers. The reviewer compares against it.
 - Reuse the service's vocabulary: a new outcome is a value in the existing field unless the design says otherwise.
-- A change wider than its ask: `references/hidden-scope.md`.
+- A change wider than its ask: `references/hidden-scope.md`. A request against a merged ADR, an ADR with no capability, contradicting answers: `references/spec-conflicts.md`.
 
 ## Structure
 
@@ -57,6 +56,7 @@ Run the repository's formatter and accept its output.
 ## The pull request
 
 - One version, one pull request, one branch, merged bottom-up.
+- A follow-up amends the commit below it until a review exists (`references/spec-conflicts.md`).
 - Read `gh pr view <n> --json state` before you push: auto-merge can land it, and a push after `MERGED` carries no pull request.
 - Ask `thani-sh` and one peer whose role owns the risk: MaMa architecture, MeMe durability, MiMi a measurement, MoMo untrusted input.
 - Confirm the request landed: `gh pr view <n> --json reviewRequests`. A missing login is dropped in silence; add it with `gh pr edit --add-reviewer`.
