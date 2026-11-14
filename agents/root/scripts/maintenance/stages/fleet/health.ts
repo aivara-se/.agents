@@ -219,9 +219,25 @@ export function health(ctx: Ctx) {
   if (gateway) ok(`gateway running (pid ${gateway})`);
   else warn("no hermes gateway process found — profiles cannot serve chat");
 
-  if (run(["pgrep", "-f", "hermes dashboard"]).code === 0)
-    ok("hermes-dashboard: running");
-  else warn("hermes-dashboard: NOT running — remote dashboard access is down");
+  // The dashboard is the gateway's own webapp on loopback. The standalone
+  // `hermes dashboard` process is retired, so the port is the check.
+  const webapp = run([
+    "curl",
+    "-s",
+    "-o",
+    "/dev/null",
+    "-w",
+    "%{http_code}",
+    "--max-time",
+    "6",
+    CFG.webapp,
+  ]).out.trim();
+  if (webapp && webapp !== "000")
+    ok(`dashboard webapp: serving at ${CFG.webapp} (HTTP ${webapp})`);
+  else
+    warn(
+      `dashboard webapp: no answer at ${CFG.webapp} — remote dashboard access is down`,
+    );
   if (run(["pgrep", "-x", "cloudflared"]).code === 0)
     ok("cloudflared: running");
   else warn("cloudflared: NOT running — remote dashboard access is down");
@@ -239,8 +255,9 @@ export function health(ctx: Ctx) {
     ok(`cloudflared tunnel: ${ready} ready edge connection(s)`);
   else warn("cloudflared tunnel: 0 ready connections");
 
-  // The dashboard must refuse on the public IP and gate its login over the public host.
+  // The webapp must refuse on the public IP and gate its login over the public host.
   if (CFG.probePublicIp) {
+    const port = new URL(CFG.webapp).port || "80";
     const ip = run([
       "curl",
       "-s",
@@ -258,13 +275,13 @@ export function health(ctx: Ctx) {
         "%{http_code}",
         "--max-time",
         "6",
-        `http://${ip}:9119/`,
+        `http://${ip}:${port}/`,
       ]).out.trim();
       if (code === "000")
-        ok(`dashboard: not reachable on the public IP (${ip}:9119 refused)`);
+        ok(`dashboard: not reachable on the public IP (${ip}:${port} refused)`);
       else
         warn(
-          `dashboard EXPOSED at ${ip}:9119 (HTTP ${code}) — it must stay loopback-only`,
+          `dashboard EXPOSED at ${ip}:${port} (HTTP ${code}) — it must stay loopback-only`,
         );
     }
   }
