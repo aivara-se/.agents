@@ -8,7 +8,7 @@ Use when the behaviour lives in the page — modes, focus, layout, opacity — a
 - With a global Playwright, `NODE_PATH=$(npm root -g)` resolves `require('playwright')` from a script outside the repository. Launch with `--no-sandbox` when the check runs as root.
 - Stop the harness server by its recorded pid. `pkill -f '<port>'` also matches the shell carrying the pattern, so the command kills itself.
 - `page.addInitScript` defines `window.tiny` before the module runs: `api.call(name, params)` answers fixed payloads, `api.on` stores handlers, plus `hotkey.on`, `dialog.confirm`, `win` and `system.os`.
-- The built `.page/` is the other entry: its bundle already resolves package imports, so a workspace app needs no served `src` graph. Copy it beside `stub.js`, put `<script src="stub.js">` above the module tag, and serve with the content types above.
+- The built `.page/` is the other entry: its bundle already resolves package imports, so a workspace app needs no served `src` graph. Serve the directory and define the bridge with `page.addInitScript` — it runs before the module and needs no markup edit, so the next build cannot drop it. A copied `stub.js` with a `<script src>` above the module tag is the fallback when the harness must be shared as a page.
 - The third entry is the app's own dev server: `bun scripts/page.ts --serve` answers on `devUrl` with the workspace resolved, and nothing is copied. Run `bun install` in that worktree first, or esbuild answers 503 on `@pereda/*`.
 - Stub the backend's rules, not only its values: the log's page (today first even when empty), the search bound (today excluded), the save reply's `today`, the jump's page of days. Convenient arrays prove the page reads fields, not that it handles the contract.
 - Expose the fake store and `__emit(event)` on `window`, so a check can seed a note or fire a menu event.
@@ -20,6 +20,7 @@ Use when the behaviour lives in the page — modes, focus, layout, opacity — a
 - Geometry with `getBoundingClientRect()`: a control's edge within a pixel of its owner's, and the owner's height identical before and after focus — the proof a row is out of flow.
 - Paint with `getComputedStyle`: `opacity`, `visibility`; wait past the CSS transition before reading.
 - For a fade, record every frame from a `requestAnimationFrame` loop that reads `opacity`, `hidden` and `className`, then act and read the array back: two or more fractional values prove a transition ran, one value then `hidden` proves it did not.
+- Check the state the page boots in before sampling a transition: an app whose today's note holds the caret boots inside the writing state, so the faded value is the first frame and no ramp appears. Leave the state, wait past its own transition, then re-enter it inside the sample.
 - A surface that hides in one frame while its neighbours fade lost the rule that gave it a transition, usually by leaving the parent that owned it.
 - A view that replaces a scroll container: set `scrollTop`, open the view, close it, compare `scrollTop` and `activeElement`; hiding only the contents returns at the top.
 - Pin the negative case: a query that must exclude today gets today's note seeded, and the result list asserted empty.
@@ -30,12 +31,12 @@ Use when the behaviour lives in the page — modes, focus, layout, opacity — a
 
 - A `visibility: hidden` control is not clickable; focus its owner first, then click.
 - A fade-out's hit test is half its behaviour: blur the editor, then read `getComputedStyle(row).pointerEvents` in the same frame. `none` there means the press that caused the blur can never reach the button; the row must stay hit-testable until `visibility` flips at the transition's end.
-- Every frontend build rewrites `index.html`, so a stub `<script>` tag in a copied `.page/` is gone after the next build; re-add it when you copy.
+- Every frontend build rewrites `index.html`, so a script-tag stub in a copied `.page/` is gone after the next build; re-add it when you copy. `addInitScript` is the preferred form for exactly this reason.
 - `document.hasFocus()` is true in headless Chromium, so a fade gated on window focus shows there. Read that as a contract check; the Xvfb run covers the real window.
 - A stubbed `saveDay` that ignores the counter hides stale-write behaviour; answer the counter the page sent.
 - Capture `dialog.confirm`'s arguments in the stub and assert the title, detail and button labels: the native dialog is the one part the harness cannot show.
 - Keep `docs/screenshot.png` honest by capturing it from the same harness: seed the shipped entries, wait for fonts, shoot at the size in `tinyjs.json` and once at the narrow breakpoint.
-- Keep the harness and its `node_modules` outside the repository: it is a check, not a dependency.
+- Serve on your own port, and read one known file back to prove which tree is being served: a preview left on a fixed port by an earlier session answers 200 with an old build, and every check then measures the wrong tree.
 
 ## What it does not prove
 

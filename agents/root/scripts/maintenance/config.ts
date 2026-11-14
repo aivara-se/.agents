@@ -19,6 +19,7 @@ export function loadConfig(
     branch: "next",
     keep: Number(env.MAINT_KEEP ?? "8"),
     dashboard: env.MAINT_DASHBOARD_URL ?? "",
+    webapp: env.MAINT_WEBAPP_URL ?? "http://127.0.0.1:9120/",
     tunnelReady: env.MAINT_TUNNEL_READY ?? "http://127.0.0.1:20241/ready",
     probePublicIp: env.MAINT_PUBLIC_IP_PROBE === "1",
     staleTurnSeconds: 6 * 3600,
