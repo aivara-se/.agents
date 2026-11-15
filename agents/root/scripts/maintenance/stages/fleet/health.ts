@@ -14,6 +14,22 @@ import {
 import { act, info, ok, plan, warn } from "../../report";
 import { lines, run } from "../../shell";
 
+/**
+ * Parse the webapp address once. A bare `host:port` is accepted the way curl
+ * accepts it, and an absent port falls back to the protocol's own default.
+ * Null when the value cannot be read, so the caller warns instead of throwing.
+ */
+function webappUrl(raw: string): URL | null {
+  const withScheme = /^[a-z][a-z0-9+.-]*:\/\//i.test(raw)
+    ? raw
+    : `http://${raw}`;
+  try {
+    return new URL(withScheme);
+  } catch {
+    return null;
+  }
+}
+
 function containerFor(profile: string, home: string | null): string | null {
   const listed = lines(
     run([
@@ -232,12 +248,16 @@ export function health(ctx: Ctx) {
     "6",
     CFG.webapp,
   ]).out.trim();
-  if (webapp && webapp !== "000")
-    ok(`dashboard webapp: serving at ${CFG.webapp} (HTTP ${webapp})`);
-  else
+  const webappCode = Number(webapp);
+  if (!webapp || webapp === "000" || !Number.isFinite(webappCode))
     warn(
       `dashboard webapp: no answer at ${CFG.webapp} — remote dashboard access is down`,
     );
+  else if (webappCode >= 500)
+    warn(
+      `dashboard webapp: ${CFG.webapp} answers HTTP ${webapp} — the gateway's webapp is failing`,
+    );
+  else ok(`dashboard webapp: serving at ${CFG.webapp} (HTTP ${webapp})`);
   if (run(["pgrep", "-x", "cloudflared"]).code === 0)
     ok("cloudflared: running");
   else warn("cloudflared: NOT running — remote dashboard access is down");
@@ -256,8 +276,13 @@ export function health(ctx: Ctx) {
   else warn("cloudflared tunnel: 0 ready connections");
 
   // The webapp must refuse on the public IP and gate its login over the public host.
-  if (CFG.probePublicIp) {
-    const port = new URL(CFG.webapp).port || "80";
+  const appUrl = webappUrl(CFG.webapp);
+  if (CFG.probePublicIp && !appUrl)
+    warn(
+      `dashboard: no port readable from ${CFG.webapp} — public-IP probe skipped`,
+    );
+  if (CFG.probePublicIp && appUrl) {
+    const port = appUrl.port || (appUrl.protocol === "https:" ? "443" : "80");
     const ip = run([
       "curl",
       "-s",
