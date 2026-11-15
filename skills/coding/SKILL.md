@@ -56,10 +56,10 @@ Run the repository's formatter and accept its output.
 ## The pull request
 
 - One version, one pull request, one branch, merged bottom-up.
-- A follow-up amends the commit below it until a review exists (`references/spec-conflicts.md`).
+- A follow-up amends the commit below it while no pull request exists (`references/spec-conflicts.md`).
 - Read `gh pr view <n> --json state` before you push: auto-merge can land it, and a push after `MERGED` carries no pull request.
 - Ask `thani-sh` and one peer whose role owns the risk: MaMa architecture, MeMe durability, MiMi a measurement, MoMo untrusted input.
-- Confirm the request landed: `gh pr view <n> --json reviewRequests`. A missing login is dropped in silence; add it with `gh pr edit --add-reviewer`.
+- Confirm the request landed: `gh pr view <n> --json reviewRequests`. A missing login is dropped; add it with `gh pr edit --add-reviewer`.
 - Read the reviews before reporting done. A request for changes is the next step.
 - Never arm a draft or spike. Arm the final head: a later push can leave the arm inert.
 - A stacked pull request is never armed: merge it with `gh api -X PUT repos/<owner>/<repo>/pulls/<n>/merge-async -f sha=<head> -f merge_method=rebase`, then poll its `uuid`.

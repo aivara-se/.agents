@@ -8,4 +8,4 @@ Stop, and settle the paper before the code.
 - **A reversed UI decision is still a decision.** No ADR, no code.
 - **A batch of answers is one spec.** Read the answers against each other, and when two contradict, ask which wins before you build either.
 - **A follow-up on the same unmerged change amends it.** `git commit --amend`, then `git push --force-with-lease`. A commit that reverses the one above it is a work-in-progress pair, and a second ADR contradicts the first.
-- **Amend only while no pull request exists and no reviewer has read the branch.** After that a fix is a new commit, and an ADR whose decision grew is rewritten under its file name and links.
+- **Amend only while no pull request exists.** After that a fix is a new commit, and an ADR whose decision grew is rewritten under its file name and links.
