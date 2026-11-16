@@ -33,6 +33,18 @@ Parity is a measurement problem, not a taste problem: port the reference's own s
 5. **Measure both** with `scripts/measure-page.mjs` at the same viewport, diff the values in code, and report how many are identical and each difference with its cause. A difference caused by new copy or a deliberate removal is not a defect — say so instead of normalising it.
 6. **Verify on the deployed artifact, not only localhost.** The host's redirect table, adapter and prerender output are what production runs.
 
+## Matching a sibling screen's language
+
+"Make B look like A" inside one app is parity of _language_, not of layout: same world, same chrome, same surfaces, different content.
+
+- **Inventory the language, not the layout.** Ground (a flat colour or a picture), chrome (A's own art: banner, markers, band), surface (card, strip, pill) and type. Reuse the app's shared components and A's own sprites; do not copy A's screen file, or you keep two copies of one screen.
+- **Carry the identity the user came from.** The sprite they tapped, the number they were on, the state they left it in. A restyle that only changes colours is decoration, and the child cannot tell which tower this screen belongs to.
+- **A picture under the content breaks every bare text node.** Contrast pairs measured on the flat ground do not transfer: text drawn outside a surface — a caption under a board, the coach's second voice below its bubble — is the first casualty. Give each one a surface, and quote the measured pair for that surface, before you judge the screen.
+- **Reuse the app's existing scrim and vignette values** — the modal sheet's alpha over the same picture, the map's edge fade — instead of inventing a second constant for the same job.
+- **A band that content scrolls under must be opaque edge to edge.** A card on the column lets a paragraph slide through the 16px margin beside it; the band is the clip, so there is no mask.
+- **Budget the chrome against the smallest viewport's floor.** A new band or pill costs the one element that may not shrink (a board, a table). Measure `maxScroll` at 360×640; when a surface pushes the page past one screen, fold a line into an existing card rather than adding a block.
+- **Judge the transition, not the screenshot.** Walk from A into B in the same run: the match is the hand-off, and a screen that looks right alone can still break it.
+
 ## Measuring: what counts as evidence
 
 - Read geometry text-first: `getBoundingClientRect()` for position and size, `getComputedStyle()` for the property that decides it, `document.documentElement.scrollHeight <= innerHeight` for one screen, `scrollWidth <= innerWidth` for no horizontal scroll. Quote the numbers: a one-screen claim without `scrollHeight` is a guess, and a centring claim is `|centre − viewport/2| ≤ 1`.

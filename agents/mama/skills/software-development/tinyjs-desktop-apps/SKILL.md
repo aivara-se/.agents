@@ -69,6 +69,7 @@ Not for a web app, a Tauri app, or a general Electron question.
 
 - **A menu item is not cross-platform on a frameless or transparent window.** Windows draws no menu bar for one, so `menu.set` succeeds and nothing is visible. Give Windows a page-drawn control, or record the gap in the product document — never write "everywhere".
 - **An unavailable feature must leave a trace, or it reads as unimplemented.** A menu that returns `[]` when `availability()` says `'unsupported'` removes every hint. A person on the wrong OS version then reports it as broken, not absent. Keep a disabled item that names the state ("needs macOS 26"), and feature-detect `app.macos?.ai` first: the surface can be `undefined` on a launcher built without the FoundationModels shim.
+- **`app.macos.ai` takes one prompt and answers whole.** There is no session, no streaming and a small context: `generate(prompt, { instructions })`. A multi-turn surface carries the last few exchanges into the prompt and shows the reply when it is complete. Design the interaction around that shape before drawing it, or the feature ships as a spinner.
 - No `node:*` modules and no package that needs them; txiki.js is not Node. A TypeScript backend bundles npm packages with esbuild only when they avoid Node's built-ins.
 - `import.meta.url` throws in a built app. Find shipped files through `app.paths().resources` and `executables`.
 - A hidden or covered webview throttles timers. Do continuous work in the backend and push events to the page.

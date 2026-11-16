@@ -21,6 +21,17 @@ PY
 5. **Sweep the documents the decision falsifies, in the same change.** A rule the product document still promises and the decision withdraws is deleted, not left beside its replacement; the system document's mechanism section, the design document's values — creating `DESIGN.md` when the repository carries none — the README's commands and the entry file's map follow. **An older ADR is immutable once merged: a contradicting decision is a new ADR naming the clauses it overrides.** `000` makes presence in `main` the status, so editing rewrites the history a reader relies on. The new ADR names the record and the clause ("this overrides `002`'s one-event bullet and its no-API consequence, and narrows `003`'s "never delayed" to one bounded read; everything else stands"); the falsified clause stays as what was believed then. A configuration list growing is the same act. An issue's _Done means_ naming an already-merged `NNN` gets a new ADR too, with the body saying why the named file was not edited.
 6. **Land it by pull request**, one decision per PR, and report the link.
 
+## The proposal before the decision
+
+A brainstorm answers with a proposal document, not an ADR: the ADR records a pick, and nothing is picked yet. Attach the file; keep the chat to the verdict and the fork.
+
+- **Open on the decision that is expensive to reverse**, not on the feature. Where a store holds one kind of record, that decision is where the new text lives: a page state that dies on close, or a second table with a lifetime, a schema and its own restore path.
+- **A generated draft is not a new kind of record.** The model's reply stays in the page until the person accepts it, and the accept is the write path that already exists. State it, because that clause is what keeps the change small.
+- **Name the line in _What it never does_ that the ask crosses**, and who owns the re-decision. A stated refusal is not an obstacle to route around; it is the price, and the proposal states it.
+- **A kill criterion is measurable inside the product's own prohibitions.** Where telemetry is refused, the number comes from a study of named people over named days, never from a counter the app would have to add.
+- **A first step is cheaper than the first slice.** Paper-test the reply with ten people before the mode is built, and name the number it must beat.
+- **Check the call shape of the capability, not only its availability.** A one-shot call with no session and no streaming decides the interaction — one turn at a time, a capped transcript — before any interface is drawn.
+
 ## The conflict pass
 
 Read the edited documents against each other before opening the pull request. A decision can be right and still contradict the sentence beside it.

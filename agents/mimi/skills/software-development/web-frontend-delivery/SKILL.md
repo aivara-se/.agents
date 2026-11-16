@@ -43,6 +43,8 @@ metadata:
 
 A prerendered `200` is not the whole check: the server's HTML can be right while the client replaces it with the framework's error page. The `curl` response and the painted page are two assertions.
 
+**A green deploy proves a job ran, not that the site is reachable.** One layer out from the page sits the host's own switch: a custom domain with no DNS record leaves every deploy green and every visitor stranded on a name that does not resolve. Resolve the public URL before calling anything live — `references/github-pages-project-site.md`.
+
 ## Changing a screen the operator already likes
 
 The rejection to expect is "this changes the UI too much": it judges the shape, not the quality. The app has one primary job (the timetable, the list, the editor); everything else borrows a few pixels.
@@ -124,7 +126,7 @@ One pass over each route's response:
 - `references/sveltekit-cloudflare-pages.md` — prerender output, `_redirects`, trailing slashes, the emulator, the preview.
 - `references/icon-sets.md` — stroke and size at 16px, brand marks, the `fill` and scoping traps, tree-shaking.
 - `references/design-tokens-and-contrast.md` — another design's ground, the worst-case surface, the panel rule.
-- `references/github-pages-project-site.md` — root versus `/<repository>/`, the base path, `CNAME`, the DNS switch.
+- `references/github-pages-project-site.md` — root versus `/<repository>/`, the base path, `CNAME`, the DNS switch, and the configured custom domain that answers NXDOMAIN.
 - `references/quick-tunnel-preview.md` — a link the operator can open when the host builds only the default branch.
 - `references/product-page-value-copy.md` — the value-first page: argument order, copy rules, layout checks.
 - `references/device-storage-migration.md` — seed version, orphaned rows, the user's own row, transactions, a versioned key.

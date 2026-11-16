@@ -160,6 +160,20 @@ gh pr merge N --rebase --delete-branch
 gh pr merge --auto --squash --delete-branch
 ```
 
+### Enqueue by node id when the press did nothing
+
+On a merge-queue repository `gh pr merge` can print the strategy warning, exit 0, and leave the queue untouched — typically because an `autoMergeRequest` in a method the queue does not use is still armed. Re-pressing, `--auto`, and another `--<method>` flag all reproduce it.
+
+```bash
+gh api graphql -f query='query{repository(owner:"<owner>",name:"<repo>"){mergeQueue(branch:"main"){entries(first:5){nodes{state position pullRequest{number}}}}}}'
+ID=$(gh pr view N --repo <owner>/<repo> --json id -q .id)
+gh api graphql -f query='mutation($id:ID!){enqueuePullRequest(input:{pullRequestId:$id}){mergeQueueEntry{state position}}}' -f id="$ID"
+```
+
+- `QUEUED` with a position is the entry you were owed; then poll `isInMergeQueue` and `mergeQueueEntry{state}` until `MERGED`.
+- The REST surface has no merge-queue enqueue: `PUT /pulls/N/enqueue` is 404 and `PUT /pulls/N/merge` is 405 `Changes must be made through the merge queue`. A 405 naming the queue is a statement about the repository, not a permission problem to retry.
+- The arm can stay armed SQUASH while the queue lands a rebase. Read the merge commit's parents, not the arm.
+
 ### After a rebase merge, local branches still look unmerged
 
 A rebase merge rewrites every commit, so `git rev-list --count origin/main..<branch>` stays non-zero on a branch that landed and `git branch -d` refuses it. Prove publication with `git cherry -v origin/main <branch>`: a line starting `-` means the patch is equivalent to one upstream; `+` is work that never landed. Answer "anything unpublished?" with `git status --porcelain` and `git stash list` in every clone and linked worktree, then `git cherry` per local branch. An untracked core dump or a stale branch is not unpublished work; name it as such rather than deleting it unasked.
@@ -207,7 +221,7 @@ Then read the blocker per pull request in one call: `gh pr view <n> -R <repo> --
 | --- | --- | --- |
 | `BEHIND` | Strict required checks: the head lacks the base tip | `gh pr update-branch <n> --rebase`, wait for the new run, re-request review (the push dismissed it) |
 | `BLOCKED` / `REVIEW_REQUIRED` | A verdict is missing, not a check | `reviewRequests` names who owes it; a documents-only change waits on the operator alone |
-| `CLEAN` + `APPROVED` + armed, still open | The arm is inert: a method the ruleset forbids, or an arm taken before the head's checks went green | Read `autoMergeRequest.mergeMethod` against `allowed_merge_methods`, then `gh pr merge <n> --disable-auto` and press `gh pr merge <n> --rebase`; exit 0 with `The merge strategy for main is set by the merge queue` is an enqueue — prove it with a `mergeQueue` entry |
+| `CLEAN` + `APPROVED` + armed, still open | The arm is inert: a method the ruleset forbids, or an arm taken before the head's checks went green | Read `autoMergeRequest.mergeMethod` against `allowed_merge_methods`, then `gh pr merge <n> --disable-auto` and press `gh pr merge <n> --rebase`. That press exits 0 with `The merge strategy for main is set by the merge queue` **whether or not it enqueued anything** — the line is `gh`'s warning, not GitHub's answer. Prove it with `isInMergeQueue`; an empty queue means enqueue by node id (below) |
 | `UNKNOWN` | GitHub has not computed the merge | `git fetch origin <head-sha>` then `git merge-tree --write-tree origin/main <head-sha>`; exit 0 is clean |
 | `gh pr checks` empty | The workflow never loaded, so nothing ran | `gh run list --commit <head-sha>`; see `references/ci-troubleshooting.md` |
 
