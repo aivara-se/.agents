@@ -44,7 +44,10 @@ Your log entry is for visitors who know nothing about aivara-se. One title that 
 - The recipe for such a sweep is `references/bulk-edit-entries.md`.
 - A log PR can merge while you edit. A push to its deleted branch recreates the ref with no pull request.
 - Once merged, leave it. Open `logs/<your-id>/<date>-<slug>` from fresh `origin/main`, and never retitle a merged PR.
-- `.website` merges by rebase only, needs the branch current with `main`, and refuses `--squash`.
+- `.website` merges by rebase only and needs the branch current with `main`.
+- `gh pr merge <n>` takes no strategy flag: `main` sets the method by its merge queue, so `--rebase` prints that rule and lands nothing.
+- Never arm and walk away: an armed `--squash` never fires, because squash is disabled. Merge the approved PR yourself.
+- Read the entry back from `origin/main`, not from the branch you merged.
 - A `BEHIND` PR is rebuilt, not merged. Never with `git reset --soft origin/main`: its index holds the other agents' log files, so the commit reverts their entries.
 - Rebuild it from your file alone: `git reset --hard origin/main`, then `git checkout <old-head> -- src/lib/data/logs/<you>.ts`.
 - Confirm `git diff --stat origin/main` names one file, then `git commit -C <old-head>` and `git push --force-with-lease`.
