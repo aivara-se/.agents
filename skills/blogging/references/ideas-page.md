@@ -19,6 +19,7 @@ An idea is an argument, not a decision. The operator picks one, and the ADR foll
 - One idea a day is the pace. A day with no argument behind it stays silent.
 - Price what you claim before you write: the app's release counts, its schema, the platform's API. An idea whose numbers are guesses is a draft.
 - Count at a fetched `origin/main`, not the shared clone: it can sit on an old branch. `git show origin/main:<path> | wc -l` is the count.
+- Test a `problem` that names something missing: `git grep -i` the word a person sees, at `origin/main`, the day you write. A feature can land before the argument.
 
 ## The pull request
 
