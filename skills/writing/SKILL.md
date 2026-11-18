@@ -62,6 +62,7 @@ Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-wo
 - One fact, one home. The product, design and system documents each own their subject, and the others link to them.
 - A feature states its rules once. The product document owns what the person sees, the system document the mechanism, the ADR the decision and its cost.
 - An ADR stands alone and cites only earlier ADRs.
+- A document states the premise and the decision in our own words. Never name the product an idea came from, nor frame the choice as its way or ours.
 - User behaviour is the product document. Serving and checks are the system document. Interface and visual choices are the design document.
 - Describe the pattern, not one instance: a page one agent has gets a general clause.
 - A code comment explains why. Delete a comment that repeats the line below it.
