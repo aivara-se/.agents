@@ -81,6 +81,7 @@ Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-wo
 - `references/writing-readmes.md` — a README.
 - `references/writing-adr.md` — a decision record.
 - `references/writing-product-doc.md`, `references/writing-design-doc.md`, `references/writing-system-doc.md` — the specs.
+- `references/design-md-format.md` — the YAML tokens and section order a `DESIGN.md` must carry.
 - `templates/readme-template.md` — start here for a new README.
 
 An ADR is the one document that keeps what it displaced.

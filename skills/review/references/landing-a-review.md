@@ -61,6 +61,7 @@ gh api graphql -f query='mutation($id:ID!){enqueuePullRequest(input:{pullRequest
 ```
 
 - `QUEUED` with a position is the entry you were owed. Poll `isInMergeQueue` until the pull request reads `MERGED`.
+- A strategy the call names as forbidden is the refusal: stop, and report it.
 - The REST surface has no merge-queue enqueue: `PUT /pulls/<n>/enqueue` is 404, and `PUT /pulls/<n>/merge` is 405.
 - Three queued in a row can land within a minute. An entry `AWAITING_CHECKS` for minutes is a slow runner, not a stuck press.
 - The arm may stay armed SQUASH while the queue lands a rebase. Read the merge commit's parents, not the arm.

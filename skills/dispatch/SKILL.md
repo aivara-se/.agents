@@ -12,18 +12,19 @@ A wake is a reason, not an instruction: it names one item and may arrive early, 
 
 - Kinds: `review requested`, `changes requested`, `issue assigned`, `pull request assigned`, `checks failed`, `mentioned`.
 - `<repo>#<number>` is an issue or a pull request; `<repo>@<branch>` is a default branch that failed.
-- A repeat, or a late wake, is answered by reading the item. If it is done, stop: never post twice.
+- A repeat or a late wake is answered by reading the item. If it is done, stop: never post twice.
 
 ## The read pass
 
 1. Fetch first: `git fetch origin`, never a single refspec. A clone is another session's snapshot, and `pull/<n>/head` leaves `origin/main` stale enough to invent commits.
-2. Check `remote.origin.fetch`: a single-branch clone refreshes one branch, so widen the refspec or fetch that branch by name.
-3. Read the diff `origin/main...<head>`, never `main...<head>`: a fetch moves no local branch.
-4. Read the item whole: body, every comment, every review.
-5. Read the diff at the head, and any open pull request touching the same surface.
-6. Read the entry file and the documents at `origin/main`, not the working tree: a shared clone sits on a month-old branch.
-7. Run the gate at the head you are judging, and keep the command and its output.
-8. Open the skill that owns the work: `coding`, `testing`, `writing`, `review`.
+2. A second session on the same wake may have pushed and answered. Read `origin/<branch>` and the thread before you edit: never answer twice.
+3. Check `remote.origin.fetch`: a single-branch clone refreshes one branch, so widen the refspec or fetch that branch by name.
+4. Read the diff `origin/main...<head>`, never `main...<head>`: a fetch moves no local branch.
+5. Read the item whole: body, every comment, every review.
+6. Read the diff at the head, and any open pull request touching the same surface.
+7. Read the entry file and the documents at `origin/main`, not the working tree: a shared clone sits on a month-old branch.
+8. Run the gate at the head you are judging, and keep the command and its output.
+9. Open the skill that owns the work: `coding`, `testing`, `writing`, `review`.
 
 ## Assigned to you
 
@@ -38,7 +39,8 @@ A wake is a reason, not an instruction: it names one item and may arrive early, 
 ## A branch with no pull request
 
 - Diff it against its merge base. `no merge base` means an orphan bootstrap: the branch replaces `main`, so read the tree.
-- Run the gate it runs, then the checks it omits, and report what it drops: `references/orphan-branch.md`.
+- With a merge base, it is a change with no body: run the gate and review the documents against each other. `review` owns the procedure: its `reviewing-documents` reference.
+- Run its gate, then the checks it omits, and report what it drops: `references/orphan-branch.md`.
 
 ## A review requested
 
@@ -69,11 +71,11 @@ A wake is a reason, not an instruction: it names one item and may arrive early, 
 
 ## When the operator asks whether there is work
 
-An empty tracker is a finding. Answer from the remote, and sweep the boards and the unlanded branches: `references/operator-work-check.md`.
+An empty tracker is a finding. Answer from the remote, and sweep the boards and unlanded branches: `references/operator-work-check.md`.
 
 ## A failed check
 
-Read the failing job's log, reproduce at the head, fix, push, re-request. Never retry for green: a check that passes on the second run is a broken test.
+Read the failing job's log, reproduce at the head, fix, push, re-request. Never retry for green: a check that passes on its second run is a broken test.
 
 A check that never reports is not a red check. An empty `statusCheckRollup` means the workflow failed to load, usually a `uses:` absent at its pinned ref. The tell is a run named by its file path, with no log. Fix the file and re-run on the same head: a re-run keeps the approval.
 

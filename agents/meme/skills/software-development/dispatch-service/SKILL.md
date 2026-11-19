@@ -12,12 +12,16 @@ when-to-use: Any code, test, ADR-following, stacked-PR or tagging work in aivara
 
 # Dispatch service
 
-Go, standard library only, module `github.com/aivara-se/dispatch`. `internal/receiver` verifies deliveries and wakes agents; `cmd/dispatch` wires it; `internal/run`, `internal/audit` and `internal/config` are the rest.
+Go, module `github.com/aivara-se/dispatch`. The repository carries two trees; read the one the task names before anything else.
+
+- **`main` is v1.** `internal/receiver` verifies deliveries and wakes agents; `cmd/dispatch` wires it; `internal/run`, `internal/audit` and `internal/config` are the rest. Standard library only.
+- **`next` is 2.0.** A brief hands over one slice (`M0`, `M1`, ...); the documents sit at the root (`PRODUCT.md`, `SYSTEMS.md`, `config/README.md`, `docs/adrs/001..`), and the code is built slice by slice. M0 added `internal/config`, `internal/record`, `internal/webhook`, `internal/engine` and `cmd/dispatch`, with `modernc.org/sqlite` as the one pure-Go driver.
+- **Branch a 2.0 slice from `origin/next`, not `origin/main`**, in a fresh worktree: `coding`'s default is `main`, and the brief's base wins.
 
 ## Specs and versions
 
-- **The documents are the spec:** `docs/PRODUCT.md` (changelog), `docs/SYSTEMS.md`, `docs/adrs/`. Design PRs merge before code; while implementing, do not edit them, and say in the code PR that they were left out.
-- **One PR per version.** Build only the version named. An ADR's clauses are the scope; its edge-case list is out.
+- **The documents are the spec:** `PRODUCT.md`, `SYSTEMS.md` and `config/README.md` at the root in 2.0, under `docs/` in v1; `docs/adrs/` in both. Design PRs merge before code; while implementing, do not edit them, and say in the code PR that they were left out.
+- **One PR per version or slice.** Build only the version or slice named. An ADR's clauses are the scope; its edge-case list is out.
 - **The changelog moves in a separate docs commit after the code lands**, with README and AGENTS.md. That work is prose that counts or refuses:
   - the intro's "carries N flows", the fixed reason sentences, the acting deliveries;
   - `What vX does not do` and `Edge cases vX leaves unhandled`: a bullet saying "only X is read", or that a refusal wakes nobody, goes false first — delete it, add the new version's gaps;
@@ -31,6 +35,14 @@ Go, standard library only, module `github.com/aivara-se/dispatch`. `internal/rec
 - **Read built state from code and release, never tags.** A release tags `VERSION` (`vX.Y.Z`), so later versions ride the release tag. Read `decide`/`payload` in `internal/receiver/receiver.go`, confirm with `git log -S <symbol> -- internal/receiver/receiver.go`, run its tests. Never read state off `receiver_test.go`: a type there is often a negative test for a refused flow.
 - **"Implement vX" can name a version already on `main`.** Prove the flow absent first; if it exists, answer with the commit, its release (`git describe --tags --contains <sha>`) and its tests passing by name — a missing tag is not missing code.
 - **Check the version's open docs PRs** before implementing and before opening code PRs: a review fix or new ADR can rewrite its contract (`git diff origin/main <docs-branch>`); if it disagrees with `main`, build to `main` and name the proposal. **"What is left" starts with a refresh:** `git fetch --all --tags --prune`, then `git checkout main && git merge --ff-only origin/main`.
+
+### A 2.0 slice
+
+- **The slice brief is the handover.** It names the files to touch, the fields it adds, the readings it takes and the tests it demands; the documents stay frozen. Build exactly that, and name in the body what the brief puts out of scope.
+- **A field the brief adds goes into both places at once:** `config/dispatch.json` and `config/README.md`.
+- **Let `go mod tidy` own the `go` directive.** A newer toolchain stores the patch form (`go 1.26.0`); hand-lowering it to `go 1.26` makes the next `go build` refuse with `updates to go.mod needed`.
+- **CI keeps three jobs:** `validate` (setup-go, `gofmt -l .`, `go vet`, `go build`, `go test`), `docs` and `agents`. When `next` has no Go job, the workflow on `main` is the house shape.
+- **Prove ingress with a real signed delivery:** `references/webhook-live-check.md` builds the binary, posts, reads the record and stops it with a signal.
 
 ## Implementing an ADR
 
@@ -56,6 +68,7 @@ Go, standard library only, module `github.com/aivara-se/dispatch`. `internal/rec
 Do the pass yourself, per version, before pushing.
 
 - **Commit before mutating.** Replace one clause with `true`/`false`/`""`, run only the test that should catch it, restore with `git checkout -- <file>`, read `RED` or `STILL GREEN`. `git checkout --` restores HEAD, so on an uncommitted tree it deletes the fix under test; grep the restored file for the original token. `scripts/mutation-pass.sh <file> <old> <new> <test-regex> [package]` runs one pass: it refuses unless the token occurs once, restores, prints the verdict.
+- **A mutation that stays green can mean a second guard on the same path already enforces the clause.** The test still reddens, so the behaviour is pinned, but the mutated check is dead code. Delete the redundant guard and keep the test; do not add a test-only hook for a case the boundary already refuses.
 - **A clause masked by an earlier flow's precedence never reddens a reason test.** `decide` checks flows in order, so an overlapping predicate lets the earlier case win. Pin it with a budget test: spend the other flow's limit first, assert the new flow still wakes.
 - **A dedupe test only reddens if its fixture yields the same login twice:** name the author in the body so the login appears in both lists. A test asserting a run was _not_ started still passes when a clause goes if the flow refused for another reason: assert the `why` string too, and expect to rewrite those strings when a blank delivery starts acting.
 
@@ -70,11 +83,12 @@ Gate before pushing:
 ```sh
 gofmt -l .        # empty
 go vet ./...
-GOTMPDIR=$HOME/.cache/go-tmp go test -count=1 ./...
+go build ./...
+TMPDIR=$HOME/tmp GOTMPDIR=$HOME/.cache/go-tmp go test -count=1 ./...
 git diff --check
 ```
 
-`/tmp` is noexec here, so an unset `GOTMPDIR` fails every test binary `permission denied`; create it with `mkdir -p "$HOME/.cache/go-tmp"`.
+`/tmp` is noexec here: create `$HOME/tmp` and `$HOME/.cache/go-tmp` first; without them every test binary fails `permission denied`.
 
 ## Branch, PR and stack
 
@@ -112,4 +126,4 @@ A release is one annotated `vX.Y.Z` tag cut from `VERSION` on a push to `main` (
 ## Boundaries
 
 - **The site's Dispatch page** (`aivara-se/.website`, `/dispatch`) is value copy, not a changelog: that repo's `PRODUCT.md` forbids mechanisms, limits and record formats, and `projects.ts` carries no status or version. Only a claim the version falsifies touches it. `git fetch` and read `main` (that clone is often on an old branch), hold each sentence against the new behaviour, and `curl -sL https://aivara.se/dispatch/` to confirm the deployed page.
-- The organisation webhook subscription (new events) and the host deploy are the operator's. The service calls no GitHub API, holds no credential, keeps no state beyond the audit file.
+- The organisation webhook subscription (new events) and the host deploy are the operator's. v1 calls no GitHub API, holds no credential and keeps no state beyond the audit file; 2.0 holds the SQLite record, and its later slices read through the App.

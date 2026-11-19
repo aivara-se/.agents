@@ -13,16 +13,25 @@ What to check, and which verdict each check earns. How the review reads is `writ
 1. Write the item's contract before the diff, in the item's own words. Name what it must do, must never do, and leaves out of scope.
 2. Read the body and the thread: what was claimed, what the task asked, what the operator said there.
 3. Read the diff twice, for what it does and for what the body says. The gap is a finding. Work it could have done instead is a follow-up.
-4. Run it at the pinned sha (`headRefOid`), not the branch, in a clean tree. Re-read it before you post: a review attaches to the head that exists then.
-5. Test the claim: the empty input, the bug reproduced on the parent, the new test failing with the fix removed.
-6. Look at what checks cannot see in the lines it wrote or made false: swallowed errors, a widened surface, a new dependency, a credential.
-7. Read the prose: a sentence over the limit gets a comment, not a block.
+4. Run it at the pinned sha (`headRefOid`), not the branch, in a clean tree.
+5. Re-read the head before you post: a review attaches to the head that exists then.
+6. Test the claim: the empty input, the bug reproduced on the parent, the new test failing with the fix removed.
+7. Look at what checks cannot see in the lines it wrote or made false: swallowed errors, a widened surface, a new dependency, a credential.
+8. Read the prose: a sentence over the limit gets a comment, not a block.
+
+A branch with no pull request has no `headRefOid`. Pin `origin/<branch>` and re-read it before the verdict: a force-push moves it, and a stale worktree runs the gate on the old tree.
+
+A UI mock is held to the same standard, against the product's behaviour and the design's tokens: `references/reviewing-a-mock.md`.
+
+A documents-only item — a plan, a spec, a design — is held to the other documents and the standard, not only the gate: `references/reviewing-documents.md`.
+
+Read the matching reference before the first pass.
 
 A line the item does not carry is not a contract line. Unchanged code is not this change's — but a line the change makes false is.
 
 Grep the repository for the claim, not only the diff: one fact lives in several files. Zero hits for a path the diff stops naming mean the change dropped its last pointer.
 
-Test a decision record against its sources and itself, never against the decision you would have made. An accepted ADR is immutable: a change overrides it with a new ADR naming the clauses it replaces. Only the operator can sanction an edit in place.
+Test a decision record against its sources, never against the decision you would have made: `writing` owns the record's own rules.
 
 ## Before you request changes
 
@@ -48,8 +57,6 @@ An approval is one commit's, and a force-push can drop that commit: re-read `hea
 
 A branch you rebased is a branch you pushed: under `require_last_push_approval` your approval stops counting, and re-approving clears nothing. Let the author rebase, or get another login's approval.
 
-Two pull requests on one file merge as one: the first landing makes the second `CONFLICTING`. Order them small insert first.
-
 ## The loop
 
 - Rounds converge. The first finds; the second verifies the findings and what the fix broke. A new subject in round two is an issue, a third the operator's.
@@ -68,18 +75,11 @@ gh pr review <n> --request-changes --body-file <path>   # or --approve
 
 Post a `block` with `--comment`: it is not a work order. An earlier `CHANGES_REQUESTED` still blocks the merge.
 
-Read your own earlier reviews first. At an unmoved head a second is noise; at a moved head, name what earlier rounds settled.
+Read your own earlier reviews first. At an unmoved head a second is noise. At a moved head, diff the old sha to the new one, list each earlier finding fixed or open, and name what the fix broke.
 
 ## Landing it
 
-When the task is to merge as well as review, the press is part of the work and not its end.
-
-- A queue-gated `gh pr merge` exits 0 whether or not it queued anything. Read `isInMergeQueue`, never the message.
-- An empty queue after the press is yours to fix: enqueue by node id, then poll until `MERGED`.
-- The queue lands its own method, so read the merge commit's parents rather than the armed request.
-- A strategy the call names as forbidden is the refusal: stop, and report it.
-
-Depth: `references/landing-a-review.md`.
+When the task is to merge as well as review, the press is part of the work and has its own rules: `references/landing-a-review.md`.
 
 ## What a review is not
 
