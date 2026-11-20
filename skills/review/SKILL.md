@@ -23,7 +23,7 @@ A line the item does not carry is not a contract line. Unchanged code is not thi
 
 Grep the repository for the claim, not only the diff. One fact lives in several files, so a change that corrects one copy leaves the others false. Zero hits for a path the diff stops naming mean the change dropped its last pointer.
 
-Test a decision record against its sources and itself, never against the decision you would have made. An accepted ADR is immutable: a change overrides it with a new ADR naming the clauses it replaces. Only the operator can sanction an edit in place.
+Test a decision record against its sources and itself, never against the decision you would have made. Its immutability and the edit rule are `writing`'s `references/writing-adr.md`.
 
 ## Before you request changes
 
