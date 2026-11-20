@@ -53,7 +53,7 @@ Reviewing `aivara-se/pereda`'s `apps/android` needs a JVM the sandbox does not s
 
 ## Pitfalls
 
-- **`/tmp` is a noexec tmpfs.** `go run` and any compiled artifact there fail with `fork/exec … permission denied`, which reads like a compiler bug. Build from `$HOME` (`mkdir -p ~/tmp/<name>`).
+- **`/tmp` is a noexec tmpfs.** `go run` and any compiled artifact there fail with `fork/exec … permission denied`, which reads like a compiler bug. Build from `$HOME`, and point Go's temp dir there: `mkdir -p ~/tmp/go && export TMPDIR=~/tmp/go GOTMPDIR=~/tmp/go`. Without it `go test` writes each package's test binary to `/tmp` and every test fails to start.
 - **A missing binary is not a missing credential.** With `gh` gone and a valid token in `~/.config/gh/hosts.yml`, reinstall the binary. `gh auth login` rotates the token.
 - **`gofmt -l` prints the file when it needs formatting.** Read the output.
 - **A JVM dependency that unpacks a native library fails under noexec `/tmp`.** `sqlite-jdbc` extracts into `java.io.tmpdir`, so tests die at `DriverManager.getConnection` with `UnsatisfiedLinkError`. Aim the JVM at `$HOME` from an init script (`tasks.withType(Test) { systemProperty 'java.io.tmpdir', "$HOME/tmp/jvm" }`), never by editing the repository.

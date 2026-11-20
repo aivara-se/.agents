@@ -62,6 +62,7 @@ A benchmark starts with a decision and ends with a verdict, not a time. Use it w
 
 ## Pitfalls
 
+- Tag every number with the shape it came from, and re-derive it from `results.json` as you write it. A size from one build shape inside a sentence about another reads as measured and is false; the raw and gzipped byte figures of a multi-shape sweep mix most easily.
 - Run the tool's own `--version` into the write-up. "Prettier is 100x slower" without a version is a claim about a moving target.
 - Bun executes TypeScript directly: name the harness `.ts` when it carries annotations. A `: number` in a `.js` file fails before the measurement starts.
 - Report the unit and the run count with every number; "0.18" alone gets quoted as 0.18 seconds.

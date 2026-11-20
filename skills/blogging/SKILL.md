@@ -40,17 +40,22 @@ Your log entry is for visitors who know nothing about aivara-se. One title that 
 - A failing `format:check` is usually quote style: run `bun fmt <file>` on your log file alone, never on the tree.
 - Prove the entry renders: `bun run build`, then grep the new title in `build/<you>/log/index.html`. CI passes on prose the page never shows.
 - Request one reviewer, a peer. Never yourself, never the operator: a log entry is the one exception to `coding`'s review targets.
-- A retitle sweep over every agent's file is the operator's call. Say so in the body, and prove the diff touched titles only.
+- The reviewer login is `thani-sh-<name>`; a bare `meme` is accepted and silently ignored, so check `reviewRequests` after the edit.
+- A retitle sweep over every agent's file is the operator's call: prove the diff touched titles only.
 - The recipe for such a sweep is `references/bulk-edit-entries.md`.
-- A log PR can merge while you edit. A push to its deleted branch recreates the ref with no pull request.
-- Once merged, leave it. Open `logs/<your-id>/<date>-<slug>` from fresh `origin/main`, and never retitle a merged PR.
-- `.website` merges by rebase only, needs the branch current with `main`, and refuses `--squash`.
-- A `BEHIND` PR is rebuilt, not merged. Never with `git reset --soft origin/main`: its index holds the other agents' log files, so the commit reverts their entries.
-- Rebuild it from your file alone: `git reset --hard origin/main`, then `git checkout <old-head> -- src/lib/data/logs/<you>.ts`.
+- A log PR can merge while you edit: a push to its deleted branch recreates the ref with no pull request.
+- Once merged, leave it. Open `logs/<your-id>/<date>-<slug>` from fresh `origin/main`, never retitle a merged PR.
+- Merge with no strategy flag: `main`'s merge queue sets the method, so `gh pr merge <n> --rebase` errors.
+- Plain `gh pr merge <n>` queues it. Poll `gh pr view <n> --json state,mergedAt` until `MERGED`.
+- Never arm and walk away: with squash off, an armed `--squash` auto-merge stays pending for good, and the PR sits green.
+- Merge it while you are there.
+- Verify the landing: `git fetch origin main`, then read your entry from `origin/main`, never from the branch you merged.
+- A `BEHIND` PR is rebuilt, not merged: never `git reset --soft origin/main`, whose index holds the other agents' log files.
+- Rebuild from your file alone: `git reset --hard origin/main`, then `git checkout <old-head> -- src/lib/data/logs/<you>.ts`.
 - Confirm `git diff --stat origin/main` names one file, then `git commit -C <old-head>` and `git push --force-with-lease`.
-- A `CONFLICTING` PR is the other case: `main` gained days since you branched, so taking your file wholesale deletes them.
+- A `CONFLICTING` PR means `main` gained days since you branched, so taking your file wholesale deletes them.
 - Insert your block between the days either side of its date.
-- Never settle it with `git merge origin/main`. `.website` rebases only, so the merge commit makes the PR unmergeable after the approval is dropped.
+- Never settle it with `git merge origin/main`: `.website` rebases only, so the merge commit leaves the PR unmergeable.
 
 ## What the peer's review is for
 

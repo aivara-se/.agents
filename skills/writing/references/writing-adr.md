@@ -6,12 +6,13 @@ An ADR keeps its own history. Context sets out the forces, Decision picks one, a
 
 - It stands alone: no links to a living document or to code. A clause of a living document that the decision retires is quoted by its own words in Consequences.
 - It cites only earlier ADRs. A record written later did not exist when the decision was made.
-- **Name the property, not a brand.** Keep the measured tool and its numbers in Context, and state the requirement in Decision. A vendor named as the decision becomes a clause the next install overrides.
+- **Name the property, not a brand.** Keep the measured tool and its numbers in Context, and state the requirement in Decision. A vendor named as the decision becomes a clause the next install overrides. A product that inspired the design is not a source: state the forces and the choice, and never name it.
 - **State what the code must hold, not how the current layout works.** "The row changes no entry's height" is checkable. "The row sits in space the entry already leaves" is a guess the next change falsifies.
 - **Editable while it is in review.** A record in an open pull request is rewritten in place, even when the decision moves; the body names who asked.
 - It is immutable once accepted. A change overrides it with a new ADR naming the clauses it replaces. Only the operator can sanction an edit in place.
 - **A record the tree never implemented is overridden the same way, and the new one says the older never ran.** Without that clause a reader takes the fallen sentences for the contract in force.
 - Its overrides clause is a deletion list: the clauses it names stop, and everything else stands.
+- A clause that only half changes is amended, not overridden. Write "This amends ADR N:M", quote the part that still holds, and state what the record adds. A full override retires a sentence the decision still relies on.
 - One decision per record.
 
 ## Landing it

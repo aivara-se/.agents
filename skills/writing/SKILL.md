@@ -13,13 +13,14 @@ Good writing is short enough to finish, and it puts the answer first.
 - A message, issue comment or pull-request body is 150 words.
 - Longer is a document: write the file, attach it in chat as `MEDIA:/absolute/path`, and link it in a GitHub body.
 - Draft to about 130 words: trimming a long draft costs rounds.
-- Draft a capped file at 85% of the cap — an agent file at 240, a `SKILL.md` at 760.
+- Draft a capped file at 85% of the cap: an agent file at 240, a `SKILL.md` at 760.
 - Count with `wc -w <file>`, never an estimate: each backticked name is a word, so a rule-dense file runs longer than it reads.
+- Measure a capped document with the checker's own `splitSections` and `countWords`, imported by absolute path. A counter of your own re-derives the split.
 - A `SKILL.md` is 900 words, a reference 750, an agent file 280.
-- A product or system document is budgeted too: a fixed heading set, a cap per section, their sum as total.
+- A product or system document is budgeted too: a fixed heading set, a cap per section, their sum.
 - The cap is a ceiling, not a target. A rule squeezed out of the document is invented at the point of use.
 - Meet a budget by cutting filler. A rule the operator named stays; if the budget still fails, ask which clause pays.
-- A cap quoted in more than one place is swept in the same edit: the example message, every total.
+- A cap quoted in two places is swept in the same edit: the example message, every total.
 - One rule per bullet, 30 words or less; a step in a document is 20. The reason is a clause; the story goes in the commit.
 
 ## Shape
@@ -60,9 +61,10 @@ Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-wo
 ## Where a fact lives
 
 - One fact, one home. The product, design and system documents each own their subject, and the others link to them.
-- A feature states its rules once. The product document owns what the person sees, the system document the mechanism, the ADR the decision and its cost.
+- A feature states its rules once. The product document owns what a person sees, the system document the mechanism, the ADR the decision and its cost.
 - An ADR stands alone and cites only earlier ADRs.
-- User behaviour is the product document. Serving and checks are the system document. Interface and visual choices are the design document.
+- A document states the premise and the decision in our own words. Never name the product an idea came from, nor frame it as its way or ours.
+- User behaviour is the product document, serving and checks the system document, interface and visual choices the design document.
 - Describe the pattern, not one instance: a page one agent has gets a general clause.
 - A code comment explains why. Delete a comment that repeats the line below it.
 - When a change makes a document untrue, fix it in the same change and `git grep` the tree for the old name. It survives in workflows and `.gitignore`.
@@ -80,6 +82,7 @@ Prose follows the writing rules of ASD-STE100: we keep the rules, not its 900-wo
 - `references/writing-readmes.md` — a README.
 - `references/writing-adr.md` — a decision record.
 - `references/writing-product-doc.md`, `references/writing-design-doc.md`, `references/writing-system-doc.md` — the specs.
+- `references/design-md-format.md` — the YAML tokens and section order a `DESIGN.md` must carry.
 - `templates/readme-template.md` — start here for a new README.
 
 An ADR is the one document that keeps what it displaced.

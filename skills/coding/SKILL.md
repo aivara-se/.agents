@@ -16,7 +16,7 @@ Run the repository's formatter and accept its output.
 - Two surfaces carry every behaviour twice: fix one, then read the other against the same promise and name the surface it binds.
 - Never pick between two readings in silence. Say which you took, and why.
 - A frozen document that contradicts the task is a blocker. Name the file, the line and the input, in one question.
-- Cut the work branch from `origin/main` in a fresh worktree, synced with `git pull --ff-only`: a clone may hold unlanded work.
+- Cut the work branch from the base the task names, `origin/main` by default, in a fresh worktree. Sync it with `git pull --ff-only`: a clone may hold unlanded work.
 - Never run `git checkout origin/main -- .`: it dirties the index while HEAD stays behind.
 - Build in the order the architecture document numbers. The reviewer compares against it.
 - Reuse the service's vocabulary: a new outcome is a value in the existing field unless the design says otherwise.
@@ -34,11 +34,11 @@ Run the repository's formatter and accept its output.
 - A dependency is a cost. Justify it in the body or do not add it.
 - Never a second package manager, lockfile, formatter or test runner.
 - A script that runs commands is TypeScript at `scripts/<name>.ts`, run with `bun`. Never Python or shell.
-- A script names its arguments where the command is written, and prints no secret.
+- A script names its arguments where written, and prints no secret.
 
 ## A formatter rollout
 
-- One config file and one pinned version per repository, checked by a step in the job the branch requires — never a second job.
+- One config file and one pinned version per repository, checked by a step in the required job, never a second job.
 - A repo that already has a formatter keeps it; where house rules forbid a second, scope it out and ask.
 - Order, commands and the proof: `references/formatter-rollout.md`.
 
@@ -57,7 +57,7 @@ Run the repository's formatter and accept its output.
 
 - One version, one pull request, one branch, merged bottom-up.
 - A follow-up amends the commit below it while no pull request exists (`references/spec-conflicts.md`).
-- Read `gh pr view <n> --json state` before you push: auto-merge can land it, and a push after `MERGED` carries no pull request.
+- Read `gh pr view <n> --json state` before you push: auto-merge can land it, and a push after `MERGED` is lost.
 - Ask `thani-sh` and one peer whose role owns the risk: MaMa architecture, MeMe durability, MiMi a measurement, MoMo untrusted input.
 - Confirm the request landed: `gh pr view <n> --json reviewRequests`. A missing login is dropped; add it with `gh pr edit --add-reviewer`.
 - Read the reviews before reporting done. A request for changes is the next step.

@@ -27,6 +27,9 @@ Settle three forks, or the draft is a rewrite:
 - Every acceptance item must be checkable by someone other than its author: a time, a count, a replayable input trace.
 - A constraint the product cannot meet alone is written with the step the user or the platform must take.
 - A promise tied to a mechanism breaks when the mechanism changes. When a platform step is swapped, re-read every document that named it.
+- **`Not this version` holds work that may return. A unit the operator puts out of the picture is deleted.**
+- Remove it from Scope, Behaviour, the system document and the design. Keep no sentence that explains the absence: a line saying it is out of scope is still a reference.
+- **A happy-path version does not carry its edge cases.** When the operator asks for the simplest build, cut the deferred branches: a second unit per root, parallel work, a retry. Keep only the guarantees that make the version true.
 
 ## Shipping a version
 

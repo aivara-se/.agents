@@ -12,7 +12,7 @@ Each finding is at most three lines:
 
 - what is wrong, where, and the contract line it defends;
 - the evidence: the command, the input or the output;
-- the smallest fix that settles it.
+- what must be true when it is fixed, never the steps. The fix is the author's: a prescribed edit takes a decision they own.
 
 When nothing blocks it, the verdict and one line naming what you ran.
 

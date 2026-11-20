@@ -18,6 +18,7 @@ Never open with "I'll now", "Great question", "Just to confirm", "As discussed" 
 - "Done" is not an answer. Name the commit and what it changed. When nothing was committed — a fix outside the repository, a server, a scratch script — say so, and where the change lives.
 - A list of state is nested: class, then area, then one action per line with its command or path in backticks.
 - When he asks for shorter, cut the framing, never the facts he asked for.
+- A prompt the operator will forward is returned alone: no preamble, no explanation, no offer to revise it.
 
 ## Length
 

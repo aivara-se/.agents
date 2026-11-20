@@ -19,7 +19,7 @@ Mirror a sibling, not a blank page: the sibling carries the organisation's shape
 
 ## Procedure
 
-1. **Recon.** Clone the reference and read its tree: `.github/workflows/`, `AGENTS.md`, `README.md`, `.gitignore`, `docs/` (`PRODUCT.md`, `SYSTEMS.md`, `adrs/`) and the manifest (`go.mod`). Read the shared repos too: `aivara-se/.agents` holds the donor `AGENTS.md` template and the skills; `aivara-se/.github` holds the baseline settings and workflow policy (`docs/SETTINGS.md`) — every repository carries a workflow named `validate`.
+1. **Recon.** Clone the reference and read its tree: `.github/workflows/`, `AGENTS.md`, `README.md`, `.gitignore`, `docs/` (`PRODUCT.md`, `SYSTEMS.md`, `adrs/`) and the manifest (`go.mod`). Read the shared repositories too: `aivara-se/.github` holds the canonical entry file (`docs/ENTRY.md`), the document checker and the baseline settings (`docs/SETTINGS.md`); `aivara-se/.template` is the copy a new repository starts from; `aivara-se/.agents` holds the skills and agent profiles, and its own `AGENTS.md` is not the entry file. Every repository carries a workflow named `validate`.
 2. **Settle the blocking facts before writing.** The stack decides the steps of `validate`, `.gitignore` and the system document; the product's shape decides the product document. Ask for both in one batch, options with a recommended default first — he decides in batches and answers as a numbered list.
 3. **Write the deliverables.**
 4. **Verify, then open a pull request.**
@@ -27,7 +27,7 @@ Mirror a sibling, not a blank page: the sibling carries the organisation's shape
 ## What a bootstrap ships
 
 - `.github/workflows/validate.yml` — the gate, workflow and job named `validate`, copied from the reference (Go: `actions/checkout@v7`, `actions/setup-go@v7` with `go-version-file: go.mod`, then `gofmt -l .`, `go vet ./...`, `go test ./...`).
-- `AGENTS.md` — the donor template from `aivara-se/.agents`, slots filled, in the reference's shape.
+- `AGENTS.md` — copied unchanged from `aivara-se/.github/docs/ENTRY.md`.
 - `docs/PRODUCT.md` — what it is for, who for, how it is judged, what it never does, what v1 does not do, acceptance.
 - `docs/SYSTEMS.md` — where it runs, the request path, configuration and secrets, failure modes, checks.
 - `docs/adrs/000-record-architecture-decisions.md` — the meta ADR; then one ADR per significant choice, numbered, Context / Decision / Consequences.
@@ -43,8 +43,10 @@ Mirror a sibling, not a blank page: the sibling carries the organisation's shape
 - **Follow the new stack's scaffold, not the reference's.** The reference carries the shape — workflow name, `AGENTS.md`, the document set; the stack carries its own commands and config format. Read the installed package's version before writing config from memory; `references/sveltekit-stack.md` is the working recipe for a SvelteKit server app.
 - **Add the Format step to the gate.** `validate.yml` runs `bun fmt --no-script --check .`; run `bun fmt --no-script .` then the check, or CI fails on formatting alone. Bun's formatter needs no config file and no dependency.
 - **An empty Go module fails its own gate.** `go vet ./...` and `go test ./...` exit 1 with `matched no packages`; only `gofmt -l .` is clean. Ship `go.mod` and a minimal `cmd/<name>/main.go` stub, matching the reference's `go` directive (the floor is `go 1.26`).
-- **Adopt `AGENTS.md`, do not fork it.** Fill every `{{UPPER_SNAKE_CASE}}` slot. Adopters omit the donor's `Agent Skills` section — the shared skills are read from the `.agents` checkout through `skills.external_dirs`, not copied per repository.
+- **Copy the entry file; never edit it.** `aivara-se/.github/docs/ENTRY.md` is the whole file — no slots, no per-repository line, and its own sentence says a differing copy fails. `bun run scripts/validate-agents.ts --canon docs/ENTRY.md --entry <repo>/AGENTS.md` reports the first differing line. Run that check yourself: a repository's own `validate.yml` can run only the document checker, so a forked entry file still goes green in its own CI.
 - **One fact, one home.** PRODUCT, SYSTEMS and the ADRs must not restate each other; link instead. Add no fact, rule or section the request did not ask for.
+- **An orphan bootstrap branch has no merge base with the default branch.** `git diff origin/main...origin/next` fails with `no merge base`, and no pull request can merge it: the branch can only replace `main` by force-push or a reset. Say which one in the pull request before treating the branch as landable, and say what happens to the old history.
+- **A bootstrap with no issue and no milestone has no work item.** README and the workflow can both promise the next milestone while the tracker is empty; check `gh issue list` and `gh api repos/<org>/<repo>/milestones` before reporting the bootstrap complete.
 - **No hard-wrap.** One paragraph, one bullet, one line per markdown line; a wrapped sentence is an artefact in the diff and the rendered page.
 - **Prefer an external source of truth to a self-kept one.** A draft where the service keeps its own durable state — a ledger, a tally it rebuilds at boot — draws a change request: the org prefers the provider's or remote API as the record and keeps the service stateless across a restart.
 - Name which numbers are provisional (ports, units, keys) when the design comes from a thin brief, and flag them in the pull request.
@@ -56,6 +58,7 @@ Run before pushing, and report what each printed:
 - The gate: `gofmt -l .` prints nothing; `go vet ./...` and `go test ./...` exit 0.
 - Every relative markdown link resolves to a file in the tree; no `{{` slot remains.
 - The document gate prints `pass`: `bun /tmp/validate-docs.ts . --require`.
+- The entry file matches: `bun run scripts/validate-agents.ts --canon docs/ENTRY.md --entry <repo>/AGENTS.md` prints `matches`.
 - Green CI is a per-sha fact: confirm it on the head commit (`gh pr checks`), not on the branch.
 
 Then push a branch, open the pull request, and request review from the operator (`thani-sh`) and one peer agent. The body says what changed, what was verified and how, and what was left out.
