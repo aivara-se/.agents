@@ -12,6 +12,7 @@ An ADR keeps its own history. Context sets out the forces, Decision picks one, a
 - It is immutable once accepted. A change overrides it with a new ADR naming the clauses it replaces. Only the operator can sanction an edit in place.
 - **A record the tree never implemented is overridden the same way, and the new one says the older never ran.** Without that clause a reader takes the fallen sentences for the contract in force.
 - Its overrides clause is a deletion list: the clauses it names stop, and everything else stands.
+- A clause that only half changes is amended, not overridden. Write "This amends ADR N:M", quote the part that still holds, and state what the record adds. A full override retires a sentence the decision still relies on.
 - One decision per record.
 
 ## Landing it

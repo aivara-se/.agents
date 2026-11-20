@@ -23,6 +23,6 @@ A plan, a spec or a design changes documents, not code. One gate still runs, but
 - A conflict with a document in another repository is an issue there. The branch cannot fix it and is not failed for it; report the line.
 - The mock's sample data is a document. The prompt states one postcondition and the record stores another, an output reads "1 commits", or a satisfied postcondition sits on a pending flow. The product's rules apply to it.
 - A permission inside `Never` is a Scope conflict: `Never` is refused in every version, while `In` is this version's work. A limit belongs in `In` or `Behaviour`.
-- A count comes from `git diff --name-status | grep -c '^D'` or an explicit list, never the diffstat or a directory listing. One hidden file turns a finding into a retraction.
+- A tree that moves or restarts documents is diffed as a tree, not a patch: `git ls-tree -r --name-only origin/main <path>` against the head. A restarted numbering at `001` deletes records no changed line names. Count deletions from `git diff --name-status | grep -c '^D'`, never the diffstat; one hidden file turns a finding into a retraction.
 - A contradiction inside one bullet is the strongest finding: "the agent performs every write" and "the engine writes only the labels" cannot both hold.
 - Report the conflict, not the rewrite. Naming which side wins is the author's decision; naming the two lines is yours.

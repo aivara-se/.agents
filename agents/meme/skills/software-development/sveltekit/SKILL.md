@@ -62,6 +62,13 @@ export default defineConfig({
 - **`paths.base` is the path the host serves the artifact under, and getting it wrong is silent.** Both shells carry `base` in their bootstrap, and `asset()` resolves through it for every run-time fetch. Set it from an env var **only when the site really is served under a path**: a Pages site with its own domain (`gh api repos/<owner>/<repo>/pages` → `cname`, `html_url`) is served at the root of that domain, and the project path 301s to it. A base there sends every fetch to `/<base>/...`, where nothing answers — and the shell's relative URLs still boot and look right, so the app opens with an empty word list and no error in the DOM.
 - Keep the seed data (`static/lists/*.json`) as files fetched at run time, not inlined imports, when precache and IndexedDB seeding depend on them being files.
 
+## Serving under a path prefix
+
+- **`base` is not a mount.** A proxy that forwards `/dispatch/...` needs `paths.base`, and even then SvelteKit rewrites only the paths it builds (`%sveltekit.assets%`, `asset()`, `$app/paths`), never the ones in markup: `href="/jobs/..."`, `redirect(302, '/flows/x')` and `new EventSource('/api/stream')` stay root-absolute and leave the prefix. Read each from `$app/paths` (`base`), and grep the tree for `href="/`, `redirect(` and `EventSource(` before you claim a mount works.
+- **Prove it at the prefix, not at `/`.** Stub the app's own API, `node build`, then `curl -w '%{http_code}' :PORT/dispatch/`, the redirect, one nested page, and `grep -o 'href="[^"]*"'` the served HTML. A root-mounted build answers 404 at the prefix and 302s to a root path, and no gate sees either.
+- **`handle_path` strips the prefix; `handle` does not.** Strip it and the app serves at `/` while its links point at the site root, where another app answers. Pass the prefix through and give the app the same `base`.
+- **A proxy sorts path matchers by specificity, not file order.** Caddy orders `handle` blocks by the length of their path, so `/dispatch/v1/webhook/github` keeps its upstream even when `/dispatch*` is written above it. Do not reorder the file to fix it, and do not nest unless the nesting means something.
+
 ## Type checking
 
 - `svelte-kit sync` writes `node_modules/$app/tsconfig.json`; the project's `tsconfig.json` extends `$app/tsconfig`, which sets `checkJs`, `verbatimModuleSyntax` and `isolatedModules` — overwriting either of the last two fails the build's warning check.

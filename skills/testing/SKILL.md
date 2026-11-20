@@ -38,4 +38,7 @@ when-to-use: Any change that adds or alters behaviour, any bug fix, and any chan
 - Quote the command and the tree. A report without both is a claim, not a verification.
 - No test command, or one nothing runs? Say so in the handoff instead of claiming coverage.
 - A test that passes only sometimes is broken. Fix or delete it in the same change. Never retry for green.
+- Stop a server you started by pid, never `pkill -f`: `review`'s `references/probing-a-service.md`.
+- A Go gate that dies with `fork/exec /tmp/go-build…: permission denied` met a noexec temp dir: `export TMPDIR=$HOME/tmp GOTMPDIR=$HOME/tmp` and rerun.
+- A new `_test.go` can report `undefined: <helper>` from a single-file check while the helper sits in a sibling test file. Run the package's command first.
 - Check a front end in a browser: `references/browser-checks.md`.
