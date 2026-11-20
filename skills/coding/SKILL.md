@@ -70,7 +70,7 @@ Run the repository's formatter and accept its output.
 
 - A request for changes is a proposal: ask whether it is true, in scope, and worth the cost. If not, answer on the thread.
 - When it holds, apply it and ask that reviewer again.
-- A push re-runs the gate and drops approvals: an approval belongs to a commit, not a branch. Rebase as the base moves, then re-request.
+- A push re-runs the gate and drops approvals; `review` names why. Rebase as the base moves, then re-request.
 - A rebase that meets another agent's doc commit conflicts on summaries, not facts. Keep their new bullets, and recount any number.
 - A rebase against a revert keeps the revert. Keep only the lines your change still owns.
 
