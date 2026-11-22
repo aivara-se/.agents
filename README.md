@@ -1,49 +1,23 @@
 # The `aivara-se` agent configuration
 
-Every agent in this organisation reads the same instructions. The skills live here once. The entry file a repository carries is `aivara-se/.github/docs/ENTRY.md`.
+This repository holds the shared configuration for Aivara's agents: one profile per agent, and the skills every agent reads. It is deliberately small. If a line does not prevent a collision or settle a decision, cut it.
+
+## The agents
+
+| Agent | Role      | What they do                                                         |
+| ----- | --------- | -------------------------------------------------------------------- |
+| MaMa  | Architect | Plans and refines work, triages issues and ideas, reviews and merges |
+| MeMe  | Engineer  | Implements refined tasks and hands back evidence                     |
+| MiMi  | Innovator | Explores improvements and writes SPIKEs                              |
+| MoMo  | Adversary | Audits existing code and documentation                               |
+| Root  | Enabler   | Maintains infrastructure, outside the development flow               |
+
+The Operator sets the goal, constraints and scope. MaMa turns them into refined tasks for MeMe, and reviews and merges the finished tasks that come back. MoMo feeds MaMa issues from existing code and documentation; MiMi feeds MaMa ideas and SPIKEs. When an idea needs a decision MaMa cannot make, MaMa escalates it to the Operator. Root stays outside the flow.
 
 ## Layout
 
 ```
-README.md    this file
-AGENTS.md    the entry file, identical to the standard
-agents/      one file per agent: the whole of its profile text; <name>/ holds its own documents and tools
-skills/      one directory per skill, each holding a SKILL.md
-scripts/     what maintains this repository, such as the prose gate
+agents/<name>/SOUL.md    one profile, complete on its own
+skills/<name>/SKILL.md   one skill, shared by every agent
+AGENTS.md                the entry file a repository carries
 ```
-
-## How the agents consume it
-
-A profile loads `skills/` through `skills.external_dirs`, pointing at a checkout of this repository at `~/github/aivara-se/.agents`. A skill changes once, here, and every agent reads the new text on its next turn.
-
-Each file under `agents/` is an agent's identity: one file per agent, copied over that profile's `SOUL.md`.
-
-## Each profile's own skills
-
-`agents/<name>/skills/` holds the skills that profile owns: the ones it wrote, and the stock files it edited.
-
-A profile loads them through `skills.create_dir`, which points here. This directory is their only home: a skill an agent saves lands here and is live at once. The shared skills arrive separately, through `skills.external_dirs`.
-
-A stock Hermes skill stays in the profile. Only what this agent authored or changed lives here.
-
-## House rules
-
-- Never write a secret, a token, a host path or a personal name into this repository.
-- Change a skill here once, rather than copying it into a profile or a repository. A profile's own skills are the exception: they live under `agents/<name>/skills/` and load from there. A host path or a personal name in them is that profile's. A secret is never exempt.
-- An agent file is complete on its own: copy it over `SOUL.md` and nothing is lost.
-- `AGENTS.md` is never edited here. A rule change is a pull request to `aivara-se/.github/docs/ENTRY.md`.
-
-## Adding or changing a skill
-
-Follow `skills/writing/references/writing-skills.md`.
-
-## Checks
-
-```sh
-bun fmt --no-script --check .
-bun run scripts/check-prose.ts
-find skills -name SKILL.md | sort                # every skill on disk
-head -4 skills/*/SKILL.md                        # name, description, when-to-use in each
-```
-
-The same commands run in `.github/workflows/validate.yml`, whose job is named `validate`. The `agents` job beside it proves `AGENTS.md` is the standard.

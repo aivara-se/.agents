@@ -2,13 +2,19 @@ name: validate
 
 on:
   pull_request:
-  push:
-    branches: [main]
   merge_group:
 
 jobs:
-  agents:
+  validate-agents:
     uses: aivara-se/.github/.github/workflows/validate-agents.yml@main
+
+  validate-docs:
+    uses: aivara-se/.github/.github/workflows/validate-docs.yml@main
+
+  validate-config:
+    uses: aivara-se/.github/.github/workflows/validate-config.yml@main
+    secrets:
+      ORG_READ_TOKEN: ${{ secrets.ORG_READ_TOKEN }}
 
   validate:
     runs-on: ubuntu-latest
@@ -16,26 +22,5 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v7
-
       - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.4.4
-
-      - name: Format
-        run: bun fmt --no-script --check .
-
-      - name: Prose budgets
-        run: bun run scripts/check-prose.ts
-
-      - name: Skill front matter
-        run: |
-          fail=0
-          for f in skills/*/SKILL.md; do
-            dir=$(basename "$(dirname "$f")")
-            [ "$(head -1 "$f")" = "---" ] || { echo "::error file=$f::no front matter"; fail=1; }
-            [ "$(sed -n '2p' "$f" | cut -d: -f1)" = "name" ] || { echo "::error file=$f::the first key is not name"; fail=1; }
-            [ "$(sed -n '2p' "$f" | sed 's/^name: //')" = "$dir" ] || { echo "::error file=$f::name must equal the directory name ($dir)"; fail=1; }
-            [ "$(sed -n '2,4p' "$f" | cut -d: -f1 | tr '\n' ' ')" = "name description when-to-use " ] || { echo "::error file=$f::the keys are name, description, when-to-use"; fail=1; }
-            [ "$(sed -n '5p' "$f")" = "---" ] || { echo "::error file=$f::front matter is not four lines"; fail=1; }
-          done
-          exit $fail
+      - run: bun fmt --no-script --check .
