@@ -19,7 +19,7 @@ Five Slack apps, one per profile: `mama`, `meme`, `mimi`, `momo`, `r00t`. Worksp
 | momo    | momo     | `U0CKZTT2JV8` | `B0CKUQPB0SH` | `D0CKZTT2YBC` |
 | r00t    | root     | `U0CKJMYCJEB` | `B0CKTSBKADR` | `D0CKZTU2KDY` |
 
-The operator (mnmtanish) is the only human in the workspace with user id `U0CKUN9J9NH`.
+The operator (`mnmtanish`, user id `U064Y0MKCMD`) is the only human in the workspace; every other member is a bot.
 
 ## Behaviour
 
